@@ -1,0 +1,39 @@
+from typing import List
+from fastapi import Query
+from starlette.responses import JSONResponse
+
+from schemas.user_schemas import UserCreate, UserUpdate
+from fastapi import APIRouter, Depends
+from repositories.user_repository import UserRepository
+from services.user_service import UserService
+from dependences.dependencies import get_user_repo
+user_router = APIRouter(prefix="/users", tags=["Users"])
+
+
+@user_router.get("/")
+async def get_users(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+    user_repo: UserRepository = Depends(get_user_repo)
+):
+    service = UserService(user_repo)
+    user_list = service.list_users(page=page, page_size=page_size)
+    return (JSONResponse(status_code=200, content={"user_list": user_list}))
+
+@user_router.post("/")
+async def create_user(user: UserCreate, user_repo: UserRepository = Depends(get_user_repo)):
+    service = UserService(user_repo)
+    user_create = service.create_user(user)
+    return (JSONResponse(status_code=200, content={"user_create": user_create}))
+
+@user_router.put("/")
+async def update_user(user: UserUpdate, user_repo: UserRepository = Depends(get_user_repo)):
+    service = UserService(user_repo)
+    user_update = service.update_user(user)
+
+    return (JSONResponse(status_code=200, content={"user_update": user_update}))
+
+@user_router.delete("/")
+async def delete_user(ids: List[str], user_repo: UserRepository = Depends(get_user_repo)):
+    service = UserService(user_repo)
+    return await service.delete_user(ids)
