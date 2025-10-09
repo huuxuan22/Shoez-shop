@@ -16,7 +16,7 @@ from exceptions.register_handlers import register_all_handlers
 from dependences.dependencies import set_language_dependency
 from middleware.auth_middlewave import  AuthMiddlewave
 from middleware.locale_middlewave import LocaleMiddlewave
-from config.database import connect_to_mongo, close_mongo_connection
+from config.database import connect_to_mongo, close_mongo_connection, get_database
 
 # Load environment variables
 load_dotenv()
@@ -47,8 +47,11 @@ app.add_middleware(AuthMiddlewave)
 app.add_middleware(LocaleMiddlewave)
 app.add_middleware(SessionMiddleware, secret_key=setting.secret_key)
 
-
-
+@app.middleware("http")
+async def db_session_middleware(request: Request, call_next):
+    request.state.db = get_database()
+    response = await call_next(request)
+    return response
 
 @app.on_event("startup")
 async def startup_event():

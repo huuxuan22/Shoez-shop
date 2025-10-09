@@ -2,6 +2,7 @@ from typing import List
 from fastapi import Query
 from starlette.responses import JSONResponse
 
+from dependences.permissions import require_roles
 from schemas.user_schemas import UserCreate, UserUpdate
 from fastapi import APIRouter, Depends
 from repositories.user_repository import UserRepository
@@ -10,14 +11,15 @@ from dependences.dependencies import get_user_repo
 user_router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@user_router.get("/")
+@user_router.get("/get-all")
+@require_roles("ADMIN")
 async def get_users(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
     user_repo: UserRepository = Depends(get_user_repo)
 ):
     service = UserService(user_repo)
-    user_list = service.list_users(page=page, page_size=page_size)
+    user_list = await service.list_users(page=page, page_size=page_size)
     return (JSONResponse(status_code=200, content={"user_list": user_list}))
 
 @user_router.post("/")

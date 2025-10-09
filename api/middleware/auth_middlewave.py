@@ -2,8 +2,8 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi import Request, Response
 from config.config import get_settings
 from config.enum import MessageKey
-from dependences.dependencies import set_language_dependency
-from exceptions.exception import AuthTokenMissingException, SystemException, AppException
+from dependences.dependencies import set_language_dependency, get_user_repo
+from exceptions.exception import AuthTokenMissingException, SystemException, AppException,UnauthorizedException
 from repositories.user_repository import UserRepository
 from utils.auth import validate_token
 from exceptions.exception import AuthTokenMissingException,AuthException
@@ -11,21 +11,29 @@ from config.logging_conf import logger
 from response.response import response_fail
 from i18n.translator import _
 from fastapi.responses import JSONResponse
+from config.context import current_user
 settings = get_settings()
 
 
-def _authenticate_user(self, request: Request):
-    token = request.cookies.get("access_token", None)
-    current_user = request.cookies.get("current_user", None)
+async def _authenticate_user(self, request: Request):
+    token = request.cookies.get("token_access")
+    cookie_user = request.cookies.get("current_user")
     if not token:
-        raise AuthTokenMissingException(MessageKey.USER_NOT_FOUND)
+        raise AuthTokenMissingException(MessageKey.TOKEN_INVALID)
 
     decoded_token = validate_token(token)
     email = decoded_token["email"]
-    user = UserRepository(request.state.db).get_user_principal(email)
+    db = request.state.db
+    user_repo = UserRepository(db)
+
+    # ✅ Gọi hàm async để lấy user
+    user = await user_repo.get_user_principal(email)
+
     if not user:
         raise AuthTokenMissingException(MessageKey.USER_NOT_FOUND)
-    current_user.set(user.email)
+    if not user:
+        raise AuthTokenMissingException(MessageKey.USER_NOT_FOUND)
+    current_user.set(user["email"])
     request.state.user = user
 
 class AuthMiddlewave(BaseHTTPMiddleware):
@@ -109,7 +117,7 @@ class AuthMiddlewave(BaseHTTPMiddleware):
             by_pass = self._should_bypass_auth(path, method)
 
             if not by_pass:
-                _authenticate_user(self, request)
+                await _authenticate_user(self, request)
 
             response = await call_next(request)
             return response

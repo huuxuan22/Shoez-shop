@@ -18,4 +18,8 @@ class UserRepository(BaseRepository[User]):
             users.append(user)
         return users
 
+    async def get_user_principal(self, email: str):
+        return await self.db["users"].find_one({"email": email}, {"_id": 0})
+
+
 

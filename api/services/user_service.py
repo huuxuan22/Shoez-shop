@@ -1,3 +1,5 @@
+from fastapi.encoders import jsonable_encoder
+
 from repositories.user_repository import UserRepository
 from datetime import datetime
 from typing import Dict, Any, Optional,List
@@ -12,12 +14,13 @@ class UserService:
         self.user_repository = user_repository
 
     async def list_users(self, page: int = 1, page_size: int = 10):
-        return await self.user_repository.get_all(page=page, page_size=page_size)
+        users = await self.user_repository.get_all(page=page, page_size=page_size)
+        return jsonable_encoder(users)
 
     async def create_user(self, user: UserCreate):
         user_dict = user.dict()
         user_dict['created_at'] = user_dict['updated_at'] = datetime.now()
-
+        user_dict["role"] = "USER"
         return await self.user_repository.create(user_dict)
 
     async def update_user(self, user_update: UserUpdate) -> Optional[User]:

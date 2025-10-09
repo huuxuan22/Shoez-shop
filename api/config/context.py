@@ -9,7 +9,7 @@ request_id: ContextVar[uuid.UUID] = ContextVar(
 )
 
 current_email: ContextVar[Optional[str]] = ContextVar("current_email", default=None)
-
+current_user: ContextVar[Optional[str]] = ContextVar("current_user", default=None)
 lang_var: ContextVar[str] = ContextVar("lang", default="en")
 
 def get_current_lang() -> str:
