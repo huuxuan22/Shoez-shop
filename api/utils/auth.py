@@ -25,7 +25,6 @@ from jose import jwt
 # ... import setting của bạn
 
 def generate_token(data: dict[str, Any], exprices_delta: Optional[int] = None) -> str:
-    # Sao chép và làm sạch dữ liệu
     to_encode = {}
     for key, value in data.items():
         if isinstance(value, datetime):

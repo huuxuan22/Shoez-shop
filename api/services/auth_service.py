@@ -1,6 +1,7 @@
 from http.client import HTTPException
 
 import httpx
+from alembic.util import status
 from sqlalchemy.orm import Session
 
 from config.config import Settings
@@ -8,12 +9,13 @@ from config.enum import MessageKey
 from exceptions.exception import UserExistException, UserNotFoundException
 from repositories.role_repository import RoleRepository
 from repositories.user_repository import UserRepository
-from schemas.auth_schemas import UserCreate, LoginRequest
-from utils.utils import hash_password, verify_password
+from schemas.auth_schemas import UserCreate, LoginRequest, UserPrincipal, TokenResponse
+from utils.utils import hash_password, verify_password, convert_uuid_to_str
 from config.enum import RoleEnum
 from authlib.integrations.starlette_client import OAuth
 from utils import auth
 from fastapi.responses import RedirectResponse
+from model.user_model import User
 settings = Settings()
 
 oauth = OAuth()
@@ -26,35 +28,31 @@ oauth.register(
 )
 
 class AuthService:
-    def __init__(self, db: Session):
-        self.db = db
-        self.userRepository = UserRepository()
-        # self.roleRepository = RoleRepository()
-    def create_account(self, userCreate: UserCreate):
-        user_data = userCreate.dict()
-        user_data['password'] = hash_password(user_data['password'])
-        user_data['role_id'] = RoleEnum.USER
-        user = self.userRepository.create(user_data)
+    def __init__(self, user_repository: UserRepository):
+        self.user_repository = user_repository
 
-        user_dict = {
-            "id": str(user.id),
-            "email": user.email,
-            "full_name": user.full_name,
-            "numberphone": user.numberphone,
-            "avatar": user.avatar,
-            "is_active": user.is_active,
-            "role": {
-                "id": user.role.id,
-                "name": user.role.name,
-                "description": user.role.description
-            }
-        }
-        return user_dict
+    async def login(self, email: str, password: str) -> "TokenResponse":
+        # Lấy user principal từ repo
+        user_dict = await self.user_repository.get_user_principal(email)
+        if not user_dict:
+            raise HTTPException(status_code=404, detail="User not found")
 
-    def login(self, login: LoginRequest):
-        user = self.userRepository.get_by("email", login.email,unique=True)
-        if not user:
-            raise UserNotFoundException(MessageKey.USER_NOT_FOUND)
+        # Kiểm tra password
+        if password != user_dict.get("password"):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid password")
+
+        user_principal = UserPrincipal(**user_dict)
+        to_encode = convert_uuid_to_str(user_principal.dict())
+        # Tạo token
+        token_access = auth.generate_token(to_encode, exprices_delta=30 * 24 * 3600)
+        token_refresh = auth.generate_token(to_encode, exprices_delta=7 * 24 * 3600)
+
+        return TokenResponse(
+            message="Login successful",
+            access_token=token_access,
+            refresh_token=token_refresh,
+            user_principal=user_principal
+        )
 
     @staticmethod
     async def get_google_redirect_uri(request):

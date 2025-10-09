@@ -17,24 +17,21 @@ settings = get_settings()
 
 async def _authenticate_user(self, request: Request):
     token = request.cookies.get("token_access")
-    cookie_user = request.cookies.get("current_user")
     if not token:
         raise AuthTokenMissingException(MessageKey.TOKEN_INVALID)
 
     decoded_token = validate_token(token)
     email = decoded_token["email"]
+
     db = request.state.db
     user_repo = UserRepository(db)
 
-    # ✅ Gọi hàm async để lấy user
     user = await user_repo.get_user_principal(email)
-
     if not user:
         raise AuthTokenMissingException(MessageKey.USER_NOT_FOUND)
-    if not user:
-        raise AuthTokenMissingException(MessageKey.USER_NOT_FOUND)
-    current_user.set(user["email"])
+    current_user.set(user)
     request.state.user = user
+
 
 class AuthMiddlewave(BaseHTTPMiddleware):
 

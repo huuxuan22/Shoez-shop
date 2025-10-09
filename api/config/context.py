@@ -1,7 +1,6 @@
 import uuid
 from contextvars import ContextVar
-from typing import Optional
-
+from typing import Optional, Dict, Any
 from urllib3 import request
 
 request_id: ContextVar[uuid.UUID] = ContextVar(
@@ -9,7 +8,7 @@ request_id: ContextVar[uuid.UUID] = ContextVar(
 )
 
 current_email: ContextVar[Optional[str]] = ContextVar("current_email", default=None)
-current_user: ContextVar[Optional[str]] = ContextVar("current_user", default=None)
+current_user: ContextVar[Optional[Dict[str, Any]]] = ContextVar("current_user", default=None)
 lang_var: ContextVar[str] = ContextVar("lang", default="en")
 
 def get_current_lang() -> str:

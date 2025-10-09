@@ -1,13 +1,16 @@
 from fastapi import APIRouter, Depends
+from starlette import status
 from starlette.responses import JSONResponse
 
 from dependences.dependencies import get_user_repo
+from exceptions import UserNotFoundException
 from repositories.user_repository import UserRepository
 from services.auth_service import AuthService
 from services.user_service import UserService
 from utils import auth
 from fastapi import Request, Response
-from schemas.auth_schemas import UserCreate, LoginRequest
+from schemas.auth_schemas import UserCreate, LoginRequest, TokenResponse
+
 auth_router = APIRouter(tags=["Auth"], prefix="/auth")
 @auth_router.post("/register")
 async def register(user: UserCreate,response : Response ,user_repo: UserRepository = Depends(get_user_repo)):
@@ -20,28 +23,22 @@ async def register(user: UserCreate,response : Response ,user_repo: UserReposito
     response.set_cookie("token_refresh", token_refresh, httponly=True, max_age=86400)
     return response
 
-@auth_router.post("/login")
-async def login(response: Response,login: LoginRequest = None,user_repo: UserRepository = Depends(get_user_repo)):
-    user = await user_repo.get_user_principal(login.email)
-    token_access = auth.generate_token(user, exprices_delta=30 * 24 * 3600)
-    token_refresh = auth.generate_token(user, exprices_delta=7 * 24 * 3600)
+@auth_router.post("/login", response_model=TokenResponse)
+async def login(
+    response: Response,
+    login: LoginRequest,
+    user_repo: UserRepository = Depends(get_user_repo)
+):
+    service = AuthService(user_repo)
+    result: TokenResponse = await service.login(login.email, login.password)
 
-    # 4️⃣ (Tùy chọn) Lưu token vào cookie
-    response.set_cookie(key="token_access", value=token_access, httponly=True)
-    response.set_cookie(key="token_refresh", value=token_refresh, httponly=True)
-    response.set_cookie(key="current_user", value=user["email"], httponly=False)
+    # ✅ Set cookies
+    response.set_cookie(key="token_access", value=result.access_token, httponly=True)
+    response.set_cookie(key="token_refresh", value=result.refresh_token, httponly=True)
+    response.set_cookie(key="current_user", value=result.user_principal.email, httponly=False)
 
-    # 5️⃣ Trả response
-    return {
-        "message": "Login successful",
-        "access_token": token_access,
-        "refresh_token": token_refresh,
-        "user": {
-            "email": user["email"],
-            "role": user["role"],
-            "full_name": user.get("full_name"),
-        },
-    }
+    return result
+
 
 @auth_router.get("/google/login")
 async def facebook(request: Request):
