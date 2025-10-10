@@ -6,11 +6,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from starlette.middleware.sessions import SessionMiddleware
 
+from config.minio_client import minio_client
 from controllers.auth_controller import auth_router
-from controllers.image_controller import image_router
 import boto3
 from config.config import get_settings
 import exceptions.handlers
+from controllers.product_controller import product_router
 from controllers.user_controller import user_router
 from exceptions.register_handlers import register_all_handlers
 from dependences.dependencies import set_language_dependency
@@ -28,10 +29,15 @@ app = FastAPI(
     docs_url="/docs",    # đường dẫn Swagger UI
     redoc_url="/redoc"   # đường dẫn ReDoc
 )
+settings = get_settings()
+# Tạo bucket nếu chưa tồn tại
+if not minio_client.bucket_exists(settings.minio_bucket):
+    minio_client.make_bucket(settings.minio_bucket)
+
 register_all_handlers(app)
 # Include routers
-app.include_router(image_router,prefix=PRE_FIX)
 app.include_router(auth_router, prefix=PRE_FIX)
+app.include_router(product_router, prefix=PRE_FIX)
 app.include_router(user_router, prefix=PRE_FIX)
 setting = get_settings()
 
@@ -52,16 +58,6 @@ async def db_session_middleware(request: Request, call_next):
     request.state.db = get_database()
     response = await call_next(request)
     return response
-
-@app.on_event("startup")
-async def startup_event():
-    s3 = boto3.client(
-        "s3",
-        endpoint_url=setting.minio_url,
-        aws_access_key_id=setting.aws_access_key_id,
-        aws_secret_access_key=setting.aws_secret_access_key,
-        region_name="us-east-1"
-    )
 
 # Add CORS middleware
 app.add_middleware(

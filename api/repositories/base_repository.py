@@ -19,6 +19,9 @@ class BaseRepository(Generic[ModelType]):
     async def __aenter__(self):
         return self
 
+    async def update_one(self, filter_dict: dict, update_dict: dict):
+        return await self.collection.update_one(filter_dict, update_dict)
+
     async def __aexit__(self, exc_type, exc, tb):
         # nếu cần cleanup, handle ở đây
         pass
@@ -47,6 +50,9 @@ class BaseRepository(Generic[ModelType]):
             return self._convert_id(created_doc)
         except PyMongoError as e:
             raise Exception(f"Failed to create document: {str(e)}")
+
+    async def find_one(self, query):
+        return await self.collection.find_one(query)
 
     async def create_all(self, attributes_list: List[Dict[str, Any]]) -> List[ModelType]:
         """

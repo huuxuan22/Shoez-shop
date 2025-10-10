@@ -2,6 +2,9 @@
 from fastapi import Request
 from config.context import lang_var
 from fastapi import Depends
+
+from repositories.image_repository import ImageRepository
+from repositories.product_repository import ProductRepository
 from repositories.user_repository import UserRepository
 from config.database import get_database
 
@@ -18,4 +21,12 @@ async def set_language_dependency(request: Request):
 async def get_user_repo():
     async with UserRepository(get_database()) as repo:
         yield repo
+
+async def get_product_repo():
+    async with ProductRepository(get_database()) as repo:
+        yield repo
+
+async def get_image_repo():
+    yield ImageRepository()
+
 

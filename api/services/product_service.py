@@ -1,64 +1,49 @@
 import uuid
+from typing import List
 
-from fastapi import UploadFile
-from sqlalchemy.orm import Session
+from starlette.concurrency import run_in_threadpool
 
-from model import ProductImages
-from services.s3_client import s3, settings
+from repositories.image_repository import ImageRepository
+from repositories.product_repository import ProductRepository
 
-from repositories.product_image_repository import ProductImagesRepository
 
 
 class ProductService:
-    def __init__(self, db: Session):
-        self.db = db
-        self.product_images_repository = ProductImagesRepository(db)
+    def __init__(self, image_repo: ImageRepository, product_repo: ProductRepository):
+        self.image_repo = image_repo
+        self.product_repo = product_repo
 
-    def upload_files(self, files: list[UploadFile] = None):
-        if files is None:
-            files = []
+    async def upload_product_images(self, product_id: str, files: List):
+        product = await self.product_repo.get_by_id(product_id)
+        if not product:
+            raise ValueError("Product not found")
 
-        for file in files:
-            file_name = file.filename
-            object_key = f"/Streetwear/{uuid.UUID}-{file_name}"
+        uploaded_urls = []
 
-            s3.upload_fileobj(file.file, settings.bucket_name, object_key)
+        for upload_file in files:
+            fileobj = upload_file.file
+            fileobj.seek(0, 2)
+            length = fileobj.tell()
+            fileobj.seek(0)
 
-            file_url = f"http://localhost:9000/{settings.bucket_name}/{object_key}"
+            filename = f"{uuid.uuid4().hex}_{upload_file.filename}"
 
-            new_product_image = ProductImages(
-                ile_name=file_name,
-                file_url = file_url,
-                object_key = object_key
+            url = await run_in_threadpool(
+                self.image_repo.upload,
+                fileobj,
+                filename,
+                upload_file.content_type
             )
 
-            self.product_images_repository.session.add(new_product_image)
-            self.product_images_repository.session.commit()
+            uploaded_urls.append(url)
 
-    def get_all_object_by_object_key(self):
-        product_images = self.product_images_repository.session.query(ProductImages).all()
-        result = []
+        # Gộp ảnh cũ và mới
+        existing_images = product.get("images", [])
+        all_images = existing_images + uploaded_urls
 
-        for image in product_images:
-            # Lấy object_key từ DB
-            object_key = image.object_key
+        await self.product_repo.update_images(product_id, all_images)
 
-            # Lấy metadata từ MinIO bằng boto3
-            try:
-                response = s3.head_object(
-                    Bucket=settings.bucket_name,
-                    Key=object_key
-                )
-                size = response["ContentLength"]  # bytes
-            except Exception as e:
-                size = None  # Nếu file không tồn tại hoặc lỗi
+        return {"product_id": product_id, "images": all_images}
 
-            result.append({
-                "id": image.id,
-                "ile_name": image.file_name,
-                "object_key": object_key,
-                "file_url": image.file_url,
-                "size": size
-            })
 
-        return result
+

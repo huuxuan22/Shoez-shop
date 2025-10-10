@@ -62,7 +62,8 @@ class AuthMiddlewave(BaseHTTPMiddleware):
         "/auth/facebook/callback",
         "pwd",
         "/test",
-        "/users/"
+        "/users/",
+        "/products/",
     ]
 
     __prefix_paths = [

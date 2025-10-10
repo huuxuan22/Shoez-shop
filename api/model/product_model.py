@@ -1,24 +1,60 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, ARRAY
-from sqlalchemy.orm import relationship, backref
+from typing import List, Optional, Union
+from pydantic import BaseModel, Field
+from bson import ObjectId
+from uuid import UUID, uuid4
+
+from model.mongodb_base_model import BaseMongoModel
 
 
+class SizeItem(BaseModel):
+    size: int
+    stock: int
 
-class Product():
-    __tablename__ = "products"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
-    description = Column(String, nullable=False)
-    tym = Column(Integer, nullable=False) # số lượng yêu thích
-    dislike = Column(String, nullable=False)
-    price = Column(Float, nullable=False)
-    image_url = Column(ARRAY(String), nullable=False)
-    category_id = Column(Integer, ForeignKey('categories.id'), nullable=False)
+class Product(BaseMongoModel):
+    name: str
+    brand: Optional[str] = None
+    category: Optional[str] = None
+    description: Optional[str] = None
+    price: float
+    discount: Optional[float] = 0.0
+    stock: Optional[int] = 0
+    sizes: Optional[List[SizeItem]] = []
+    images: Optional[List[str]] = []
+    colors: Optional[List[str]] = []
+    rating: Optional[float] = 0.0
+    total_reviews: Optional[int] = Field(0, alias="totalReviews")
+    is_active: bool = True  # dễ filter sản phẩm đang còn bán
 
-    #relation ship
-    product_variant  = relationship("ProductVariant", backref=backref("products"), cascade="all, delete-orphan")
-    order_item = relationship("OrderItem", backref="products")
-    comment = relationship("Comment", backref="products")
-    cart_item = relationship("CartItem", backref="products")
-    favourite_product = relationship("FavouriteProduct", backref="products")
-    product_images = relationship("ProductImages", backref="products")
+    class Config:
+        validate_by_name = True  # tên mới trong Pydantic v2
+        from_attributes = True  # nếu bạn dùng ORM (MongoDB, SQLAlchemy, v.v.)
+        json_encoders = {
+            ObjectId: lambda v: str(v),
+            UUID: lambda v: str(v),
+        }
+        json_schema_extra = {  # thay schema_extra
+            "example": {
+                "name": "Giày Nike Air Force 1",
+                "brand": "Nike",
+                "category": "Sneaker",
+                "description": "Giày sneaker cổ điển, da trắng",
+                "price": 2200000,
+                "discount": 10,
+                "stock": 150,
+                "sizes": [
+                    {"size": 38, "stock": 30},
+                    {"size": 39, "stock": 50},
+                    {"size": 40, "stock": 70}
+                ],
+                "images": [
+                    "https://cdn.shop.com/products/airforce1-1.jpg",
+                    "https://cdn.shop.com/products/airforce1-2.jpg",
+                    "https://cdn.shop.com/products/airforce1-3.jpg"
+                ],
+                "colors": ["white", "black"],
+                "rating": 4.8,
+                "totalReviews": 320
+            }
+        }
+

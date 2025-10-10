@@ -6,8 +6,11 @@ from pydantic import Field
 class Settings(BaseSettings):
     debug: bool = Field(default=False, alias="DEBUG")
     minio_url: str = Field(..., alias="MINIO_URL")
-    aws_access_key_id: str = Field(..., alias="MINIO_ACCESS_KEY")
-    aws_secret_access_key: str = Field(..., alias="MINIO_SECRET_KEY")
+    minio_access_key: str = Field(..., alias="MINIO_ACCESS_KEY")
+    minio_secret_key: str = Field(..., alias="MINIO_SECRET_KEY")
+    minio_bucket: str = Field(..., alias="MINIO_BUCKET")
+    port_image: str = Field(..., alias="PORT_IMAGE")
+    minio_secure: bool = False
     system_log_file : str = Field(..., alias="SYSTEM_LOG_FILE")
     api_prefix: str = Field(..., alias="API_PREFIX")
     secret_key: str = Field(..., alias="SECRET_KEY")
