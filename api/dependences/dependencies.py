@@ -3,6 +3,7 @@ from fastapi import Request
 from config.context import lang_var
 from fastapi import Depends
 
+from repositories.cart_repository import CartRepository
 from repositories.image_repository import ImageRepository
 from repositories.product_repository import ProductRepository
 from repositories.user_repository import UserRepository
@@ -24,6 +25,10 @@ async def get_user_repo():
 
 async def get_product_repo():
     async with ProductRepository(get_database()) as repo:
+        yield repo
+
+async def get_cart_repo():
+    async with CartRepository(get_database()) as repo:
         yield repo
 
 async def get_image_repo():

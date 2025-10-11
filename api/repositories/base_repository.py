@@ -33,6 +33,30 @@ class BaseRepository(Generic[ModelType]):
             del document['_id']
         return document
 
+    async def delete_many_and_return(self, ids: List[str], id_key: str = "_id") -> List[ModelType]:
+        """
+        Xóa nhiều document theo danh sách ID và trả về các object đã xóa.
+        """
+        if not ids:
+            return []
+
+        # Chuyển string ID sang ObjectId nếu cần
+        if id_key == "_id":
+            object_ids = [ObjectId(i) for i in ids if ObjectId.is_valid(i)]
+            filter_query = {id_key: {"$in": object_ids}}
+        else:
+            filter_query = {id_key: {"$in": ids}}
+
+        # Lấy danh sách document trước khi xóa
+        cursor = self.collection.find(filter_query)
+        documents_to_delete = await cursor.to_list(length=len(ids))
+        documents_to_delete = [self._convert_id(doc) for doc in documents_to_delete]
+
+        # Xóa
+        await self.collection.delete_many(filter_query)
+
+        return documents_to_delete
+
     async def create(self, attributes: Dict[str, Any]) -> ModelType:
         """
         Creates the model instance.

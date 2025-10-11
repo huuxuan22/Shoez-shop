@@ -1,11 +1,15 @@
-from sqlalchemy import Column, Integer, ForeignKey,UUID
-from sqlalchemy.orm import relationship, backref
+from typing import List, Optional
+from pydantic import BaseModel, Field
+from bson import ObjectId
 
+from model import Product
+from model.mongodb_base_model import BaseMongoModel
 
+class CartItem(BaseModel):
+    product: Product   # Toàn bộ thông tin Product
+    quantity: int
 
-class Cart():
-    __tablename__ = "carts"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(UUID, ForeignKey('users.id'), nullable=False)
-    cart_item = relationship("CartItem", backref=backref("carts"), cascade="all, delete-orphan")
+class Cart(BaseMongoModel):
+    userId: str
+    items: List[CartItem] = []
+    totalPrice: float = 0.0

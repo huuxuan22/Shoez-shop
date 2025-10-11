@@ -1,18 +1,15 @@
-from sqlalchemy import Column, Integer, ForeignKey, Boolean, String, UUID
-from sqlalchemy.orm import relationship
-
-
-
-class Order():
-    __tablename__ = "orders"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    total  = Column(Integer, default=0)
-    status = Column(Boolean, default=False)
-    payment_method = Column(String)
-    shipping = Column(String)
-    notes = Column(String)
-
-    user_id = Column(UUID, ForeignKey('users.id'))
-    order_item = relationship('OrderItem', backref="orders")
-
+# from typing import List, Optional
+# from pydantic import BaseModel, Field
+# from bson import ObjectId
+#
+# from model import Product
+# from model.mongodb_base_model import BaseMongoModel
+#
+# class CartItem(BaseModel):
+#     product: Product   # Toàn bộ thông tin Product
+#     quantity: int
+#
+# class Cart(BaseMongoModel):
+#     userId: str
+#     items: List[CartItem] = []
+#     totalPrice: float = 0.0
