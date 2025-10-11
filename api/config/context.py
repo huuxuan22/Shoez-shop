@@ -1,6 +1,8 @@
 import uuid
 from contextvars import ContextVar
+from http.client import HTTPException
 from typing import Optional, Dict, Any
+from fastapi import HTTPException, status
 from urllib3 import request
 
 request_id: ContextVar[uuid.UUID] = ContextVar(
@@ -13,3 +15,9 @@ lang_var: ContextVar[str] = ContextVar("lang", default="en")
 
 def get_current_lang() -> str:
     return lang_var.get()
+
+def get_current_user() -> dict:
+    user = current_user.get()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    return user

@@ -12,6 +12,7 @@ import boto3
 from config.config import get_settings
 import exceptions.handlers
 from controllers.cart_controller import cart_router
+from controllers.order_controller import order_router
 from controllers.product_controller import product_router
 from controllers.user_controller import user_router
 from exceptions.register_handlers import register_all_handlers
@@ -39,6 +40,7 @@ register_all_handlers(app)
 # Include routers
 app.include_router(auth_router, prefix=PRE_FIX)
 app.include_router(product_router, prefix=PRE_FIX)
+app.include_router(order_router, prefix=PRE_FIX)
 app.include_router(cart_router, prefix=PRE_FIX)
 
 app.include_router(user_router, prefix=PRE_FIX)
