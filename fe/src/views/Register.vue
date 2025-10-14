@@ -150,20 +150,38 @@ const form = reactive({
 });
 
 const currentSlide = ref(0);
+
+// Cách 1: Sử dụng ảnh từ thư mục public (Khuyến nghị)
 const images = [
   {
     id: 1,
-    url: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
+    url: "/images/register/slide-1.jpg",
   },
   {
     id: 2,
-    url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80",
+    url: "/images/register/slide-2.jpg",
   },
   {
     id: 3,
-    url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80",
+    url: "/images/register/slide-3.jpg",
   },
 ];
+
+// Cách 2: Sử dụng link từ Internet
+// const images = [
+//   {
+//     id: 1,
+//     url: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
+//   },
+//   {
+//     id: 2,
+//     url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80",
+//   },
+//   {
+//     id: 3,
+//     url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80",
+//   },
+// ];
 
 let slideInterval;
 
