@@ -73,6 +73,14 @@ const routes = [
     }
   },
   {
+    path: "/checkout",
+    name: "Checkout",
+    component: () => import("@/views/Checkout.vue"),
+    meta: {
+      title: "Chi tiết sản phẩm - Shoez Shop"
+    }
+  },
+  {
     path: "/cart",
     name: "Cart",
     component: () => import("@/views/Cart.vue"),
