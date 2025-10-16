@@ -1,1 +1,9 @@
-<template><div class="container mx-auto px-4 py-8"><h1 class="text-3xl font-bold mb-6">Gio hang</h1><div class="text-center py-12"><p class="text-gray-500 text-lg">Trang gio hang dang duoc phat trien...</p></div></div></template><script setup>// Cart page</script> 
+<template>
+    <CartLayout />
+</template>
+
+<script setup>
+import CartLayout from '@/layouts/CartLayout.vue';
+</script>
+
+<style scoped></style>

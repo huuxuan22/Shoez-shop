@@ -10,6 +10,7 @@ import Contact from "@/views/Contact.vue";
 // Templates
 import AboutView from "@/templates/AboutTemplate.vue";
 import About from "@/views/About.vue";
+import ProductListLayout from "@/layouts/ProductListLayout.vue";
 
 const routes = [
   {
@@ -58,9 +59,9 @@ const routes = [
   {
     path: "/products",
     name: "Products",
-    component: () => import("@/views/Products.vue"),
+    component: ProductListLayout,
     meta: {
-      title: "Sản phẩm - Shoez Shop"
+      title: "Về chúng tôi - Shoez Shop"
     }
   },
   {
@@ -128,13 +129,13 @@ router.beforeEach((to, from, next) => {
   }
 
   // Check auth requirements (placeholder for future implementation)
-  if (to.meta.requiresAuth) {
-    const isAuthenticated = localStorage.getItem('token');
-    if (!isAuthenticated) {
-      next({ name: 'Login' });
-      return;
-    }
-  }
+  // if (to.meta.requiresAuth) {
+  //   const isAuthenticated = localStorage.getItem('token');
+  //   if (!isAuthenticated) {
+  //     next({ name: 'Login' });
+  //     return;
+  //   }
+  // }
 
   // Check guest requirements (redirect logged in users away from login/register)
   if (to.meta.requiresGuest) {
