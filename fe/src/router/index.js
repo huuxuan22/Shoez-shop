@@ -8,7 +8,8 @@ import Register from "@/views/Register.vue";
 import Contact from "@/views/Contact.vue";
 
 // Templates
-import AboutView from "@/templates/AboutView.vue";
+import AboutView from "@/templates/AboutTemplate.vue";
+import About from "@/views/About.vue";
 
 const routes = [
   {
@@ -40,7 +41,7 @@ const routes = [
   {
     path: "/about",
     name: "About",
-    component: AboutView,
+    component: About,
     meta: {
       title: "Về chúng tôi - Shoez Shop"
     }

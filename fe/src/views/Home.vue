@@ -1,9 +1,10 @@
 <template>
-  <HomeTemplate />
+  <HomeLayout />
 </template>
 
 <script setup>
-import HomeTemplate from '@/templates/HomeTemplate.vue'
+import HomeLayout from '@/layouts/HomeLayout.vue';
+
 
 // Có thể thêm các logic cụ thể cho view home ở đây
 // như fetching data, SEO, etc.
