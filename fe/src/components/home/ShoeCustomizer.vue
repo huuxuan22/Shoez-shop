@@ -62,9 +62,6 @@
                             </button>
                         </div>
                     </div>
-
-                    <!-- Action Buttons -->
-
                 </div>
 
                 <!-- Right Column - Shoe Preview với hiệu ứng 3D -->
@@ -114,89 +111,146 @@
                 </div>
             </div>
 
-            <!-- Design Gallery -->
+            <!-- Design Gallery với hiệu ứng trượt -->
             <div class="mt-20">
                 <h3 class="text-3xl font-bold text-center mb-12 text-gray-900">Thiết kế nổi bật từ cộng đồng</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <div v-for="design in featuredDesigns" :key="design.id"
-                        class="group relative bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer border border-gray-200/60 hover:border-gray-300 overflow-hidden"
-                        @click="loadDesign(design)">
-                        <!-- Background gradient effect -->
-                        <div
-                            class="absolute inset-0 bg-gradient-to-br from-white to-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                        </div>
 
-                        <!-- Shine effect on hover -->
-                        <div
-                            class="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000">
-                        </div>
+                <!-- Container cho slider -->
+                <div class="relative overflow-hidden">
+                    <!-- Slider track -->
+                    <div class="flex space-x-8 transition-transform duration-500 ease-in-out"
+                        :style="{ transform: `translateX(-${currentSlide * (100 / visibleCards)}%)` }"
+                        ref="sliderTrack">
+                        <!-- Card với hiệu ứng Juventus style -->
+                        <div v-for="design in featuredDesigns" :key="design.id"
+                            class="flex-shrink-0 w-full sm:w-1/2 lg:w-1/4 px-2">
+                            <div class="group relative bg-white shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer border border-gray-200/60 hover:border-gray-300 overflow-hidden"
+                                @click="loadDesign(design)">
 
-                        <!-- Content -->
-                        <div class="relative z-10">
-                            <!-- Image container with elegant frame -->
-                            <div
-                                class="relative h-40 mb-4 flex items-center justify-center bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 group-hover:border-gray-200 transition-colors duration-300 overflow-hidden">
-                                <!-- Image with scale effect -->
-                                <img :src="design.preview" :alt="design.name"
-                                    class="max-h-32 object-contain transition-transform duration-500 group-hover:scale-110" />
-
-                                <!-- Hover overlay -->
+                                <!-- Background gradient effect -->
                                 <div
-                                    class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 rounded-xl">
+                                    class="absolute inset-0 bg-gradient-to-br from-white to-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                                 </div>
 
-                                <!-- Corner accents -->
+                                <!-- Juventus Style Stripes Effect -->
                                 <div
-                                    class="absolute top-2 left-2 w-2 h-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                </div>
-                                <div
-                                    class="absolute top-2 right-2 w-2 h-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                </div>
-                                <div
-                                    class="absolute bottom-2 left-2 w-2 h-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                </div>
-                                <div
-                                    class="absolute bottom-2 right-2 w-2 h-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                </div>
-                            </div>
-
-                            <!-- Design info -->
-                            <div class="space-y-3">
-                                <div>
-                                    <h4
-                                        class="font-semibold text-gray-900 text-lg leading-tight group-hover:text-gray-800 transition-colors duration-300">
-                                        {{ design.name }}
-                                    </h4>
-                                    <p class="text-sm text-gray-500 mt-1">by {{ design.creator }}</p>
+                                    class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-700 overflow-hidden">
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 delay-200">
+                                    </div>
+                                    <div
+                                        class="absolute top-0 left-0 w-4 h-full bg-gradient-to-b from-black/10 to-transparent -translate-y-full group-hover:translate-y-0 transition-transform duration-700">
+                                    </div>
+                                    <div
+                                        class="absolute top-0 left-8 w-4 h-full bg-gradient-to-b from-black/5 to-transparent -translate-y-full group-hover:translate-y-0 transition-transform duration-700 delay-100">
+                                    </div>
+                                    <div
+                                        class="absolute top-0 left-16 w-4 h-full bg-gradient-to-b from-black/3 to-transparent -translate-y-full group-hover:translate-y-0 transition-transform duration-700 delay-200">
+                                    </div>
                                 </div>
 
-                                <!-- Stats and action -->
-                                <div class="flex items-center justify-between pt-2">
-                                    <div class="flex items-center space-x-2">
-                                        <div class="flex items-center space-x-1 bg-red-50 px-3 py-1 rounded-full">
-                                            <span class="text-red-500 text-sm">❤️</span>
-                                            <span class="text-xs font-medium text-gray-700">{{ design.likes }}</span>
+                                <!-- Content -->
+                                <div class="relative z-10">
+                                    <!-- Image hiển thị đầy đủ không bọc div -->
+                                    <div class="relative w-full h-64 overflow-hidden">
+                                        <!-- Background pattern -->
+                                        <div
+                                            class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                            <div class="absolute inset-0 bg-gradient-to-br from-black/5 to-transparent">
+                                            </div>
+                                        </div>
+
+                                        <!-- Image full display -->
+                                        <img :src="design.preview" :alt="design.name"
+                                            class="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:rotate-1" />
+
+                                        <!-- Hover overlay với hiệu ứng Juventus -->
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-br from-black/0 to-black/0 group-hover:from-black/5 group-hover:to-transparent transition-all duration-500">
+                                        </div>
+
+                                        <!-- Corner accents Juventus style -->
+                                        <div
+                                            class="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-black opacity-0 group-hover:opacity-100 transition-all duration-500 delay-300">
+                                        </div>
+                                        <div
+                                            class="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-black opacity-0 group-hover:opacity-100 transition-all duration-500 delay-400">
+                                        </div>
+                                        <div
+                                            class="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-black opacity-0 group-hover:opacity-100 transition-all duration-500 delay-500">
+                                        </div>
+                                        <div
+                                            class="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-black opacity-0 group-hover:opacity-100 transition-all duration-500 delay-600">
                                         </div>
                                     </div>
 
-                                    <button
-                                        class="relative bg-gradient-to-r from-gray-900 to-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-gray-800 hover:to-gray-900 transition-all duration-300 transform group-hover:scale-105 shadow-md hover:shadow-lg active:scale-95 overflow-hidden"
-                                        @click.stop="loadDesign(design)">
-                                        <!-- Button shine effect -->
-                                        <div
-                                            class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000">
+                                    <!-- Design info -->
+                                    <div class="p-6 space-y-4">
+                                        <div>
+                                            <h4
+                                                class="font-bold text-gray-900 text-xl leading-tight group-hover:text-gray-800 transition-colors duration-300 mb-2">
+                                                {{ design.name }}
+                                            </h4>
+                                            <p class="text-sm text-gray-500 font-medium">by {{ design.creator }}</p>
                                         </div>
-                                        <span class="relative">Sử dụng</span>
-                                    </button>
+
+                                        <!-- Stats and action -->
+                                        <div
+                                            class="flex items-center justify-between pt-4 border-t border-gray-100 group-hover:border-gray-200 transition-colors duration-300">
+                                            <div class="flex items-center space-x-2">
+                                                <div
+                                                    class="flex items-center space-x-1 bg-red-50 px-3 py-2 rounded-full border border-red-100">
+                                                    <span class="text-red-500 text-sm">❤️</span>
+                                                    <span class="text-xs font-bold text-gray-700">{{ design.likes
+                                                        }}</span>
+                                                </div>
+                                            </div>
+
+                                            <button
+                                                class="relative bg-black text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-gray-800 transition-all duration-300 transform group-hover:scale-105 shadow-md hover:shadow-lg active:scale-95 overflow-hidden border-2 border-black"
+                                                @click.stop="loadDesign(design)">
+                                                <!-- Button shine effect -->
+                                                <div
+                                                    class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000">
+                                                </div>
+                                                <span class="relative">SỬ DỤNG</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Border glow effect Juventus style -->
+                                <div
+                                    class="absolute inset-0 border-2 border-transparent bg-gradient-to-r from-black via-gray-800 to-black opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10">
+                                    <div class="absolute inset-[2px] bg-white"></div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Border glow effect -->
-                        <div
-                            class="absolute inset-0 rounded-2xl border-2 border-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10">
-                            <div class="absolute inset-[2px] rounded-2xl bg-white"></div>
-                        </div>
+                    <!-- Navigation buttons -->
+                    <button @click="prevSlide"
+                        class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/80 hover:bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-xl z-10 backdrop-blur-sm">
+                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                            </path>
+                        </svg>
+                    </button>
+
+                    <button @click="nextSlide"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/80 hover:bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-xl z-10 backdrop-blur-sm">
+                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                            </path>
+                        </svg>
+                    </button>
+
+                    <!-- Slide indicators -->
+                    <div class="flex justify-center space-x-2 mt-8">
+                        <button v-for="index in totalSlides" :key="index" @click="goToSlide(index - 1)"
+                            class="w-3 h-3 rounded-full transition-all duration-300"
+                            :class="currentSlide === index - 1 ? 'bg-black w-8' : 'bg-gray-300 hover:bg-gray-400'">
+                        </button>
                     </div>
                 </div>
 
@@ -213,7 +267,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 
 // Current customization state
 const currentModel = ref({})
@@ -226,6 +280,23 @@ const is3DMode = ref(true)
 const mouseX = ref(0)
 const mouseY = ref(0)
 const isMouseOver = ref(false)
+
+// Slider state
+const currentSlide = ref(0)
+const sliderTrack = ref(null)
+const autoSlideInterval = ref(null)
+
+// Responsive slide settings
+const visibleCards = computed(() => {
+    if (typeof window === 'undefined') return 4
+    if (window.innerWidth < 640) return 1
+    if (window.innerWidth < 1024) return 2
+    return 4
+})
+
+const totalSlides = computed(() => {
+    return Math.ceil(featuredDesigns.length / visibleCards.value)
+})
 
 // Sample data
 const shoeModels = [
@@ -316,6 +387,38 @@ const featuredDesigns = [
         creator: 'Thu Hà',
         likes: 113,
         settings: { upper: '#FFA500', sole: '#000000', laces: '#FFFFFF', logo: '#000000' }
+    },
+    {
+        id: 5,
+        name: 'Midnight Black',
+        preview: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
+        creator: 'Văn Cường',
+        likes: 201,
+        settings: { upper: '#000000', sole: '#2C2C2C', laces: '#000000', logo: '#FFFFFF' }
+    },
+    {
+        id: 6,
+        name: 'Arctic White',
+        preview: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
+        creator: 'Minh Anh',
+        likes: 89,
+        settings: { upper: '#FFFFFF', sole: '#FFFFFF', laces: '#000000', logo: '#000000' }
+    },
+    {
+        id: 7,
+        name: 'Royal Purple',
+        preview: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
+        creator: 'Ngọc Hà',
+        likes: 134,
+        settings: { upper: '#800080', sole: '#2C2C2C', laces: '#FFFFFF', logo: '#FFFFFF' }
+    },
+    {
+        id: 8,
+        name: 'Gold Edition',
+        preview: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
+        creator: 'Quốc Bảo',
+        likes: 167,
+        settings: { upper: '#FFD700', sole: '#000000', laces: '#000000', logo: '#000000' }
     }
 ]
 
@@ -351,6 +454,32 @@ const lightingEffect = computed(() => {
         background: `radial-gradient(circle at ${gradientX}% ${gradientY}%, rgba(255,255,255,0.3) 0%, transparent 50%)`
     }
 })
+
+// Slider methods
+const nextSlide = () => {
+    currentSlide.value = (currentSlide.value + 1) % totalSlides.value
+}
+
+const prevSlide = () => {
+    currentSlide.value = currentSlide.value === 0 ? totalSlides.value - 1 : currentSlide.value - 1
+}
+
+const goToSlide = (index) => {
+    currentSlide.value = index
+}
+
+const startAutoSlide = () => {
+    autoSlideInterval.value = setInterval(() => {
+        nextSlide()
+    }, 5000) // Change slide every 5 seconds
+}
+
+const stopAutoSlide = () => {
+    if (autoSlideInterval.value) {
+        clearInterval(autoSlideInterval.value)
+        autoSlideInterval.value = null
+    }
+}
 
 // Initialize with first model
 currentModel.value = shoeModels[0]
@@ -443,6 +572,15 @@ const loadDesign = (design) => {
     currentFixedAngle.value = 0
     is3DMode.value = true
 }
+
+// Lifecycle
+onMounted(() => {
+    startAutoSlide()
+})
+
+onUnmounted(() => {
+    stopAutoSlide()
+})
 </script>
 
 <style scoped>
@@ -454,7 +592,6 @@ const loadDesign = (design) => {
 /* Container 3D */
 .container-3d {
     perspective: 1000px;
-    /* giúp 3D nhìn rõ hơn */
 }
 
 /* Giày 3D */
@@ -463,16 +600,13 @@ const loadDesign = (design) => {
     transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
         filter 0.5s cubic-bezier(0.23, 1, 0.32, 1);
     animation: float 6s ease-in-out infinite;
-    /* hiệu ứng float mặc định */
 }
 
 /* Khi hover container */
 .container-3d:hover .shoe-3d {
     filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
     transform: rotateY(10deg) rotateX(5deg);
-    /* hiệu ứng 3D */
     animation: none;
-    /* tắt float khi hover */
 }
 
 /* Keyframes float */
@@ -487,22 +621,6 @@ const loadDesign = (design) => {
         transform: translateY(-10px);
     }
 }
-
-
-/* Keyframes float */
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0px);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
-}
-
-
 
 /* Smooth transitions */
 * {
@@ -532,7 +650,6 @@ const loadDesign = (design) => {
 .shoe-3d:not(:hover) {
     animation: float 6s ease-in-out infinite;
 }
-
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
@@ -565,5 +682,21 @@ const loadDesign = (design) => {
 .color-picker::-webkit-scrollbar-thumb {
     background: #cbd5e0;
     border-radius: 3px;
+}
+
+/* Slider animations */
+.slider-enter-active,
+.slider-leave-active {
+    transition: all 0.5s ease;
+}
+
+.slider-enter-from {
+    opacity: 0;
+    transform: translateX(50px);
+}
+
+.slider-leave-to {
+    opacity: 0;
+    transform: translateX(-50px);
 }
 </style>
