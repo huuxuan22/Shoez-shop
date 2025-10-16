@@ -1,13 +1,24 @@
 <template>
-    <div class="min-h-screen bg-white">
-        <!-- Header component sẽ được thêm ở đây -->
-        <main>
-            <slot />
-        </main>
-        <!-- Footer component sẽ được thêm ở đây -->
-    </div>
+    <Header />
+    <HeroSection />
+    <FeaturedProductsSection />
+    <FullwithHero />
+    <ShoeCustomizer />
+    <BrandSection />
+    <TestimonialsSection />
+    <NewsletterSection />
+    <Footer />
 </template>
 
 <script setup>
-// Có thể thêm logic layout chung ở đây
+import BrandSection from '@/components/home/BrandSection.vue';
+import FeaturedProductsSection from '@/components/home/FeaturedProductsSection.vue';
+import FullwithHero from '@/components/home/FullwithHero.vue';
+import HeroSection from '@/components/home/HeroSection.vue';
+import NewsletterSection from '@/components/home/NewsletterSection.vue';
+import ShoeCustomizer from '@/components/home/ShoeCustomizer.vue';
+import TestimonialsSection from '@/components/home/TestimonialsSection.vue';
+import Footer from '@/templates/Footer.vue';
+import Header from '@/templates/Header.vue';
+
 </script>
