@@ -75,8 +75,6 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
-
 const props = defineProps({
     products: {
         type: Array,
@@ -101,9 +99,16 @@ const formatPrice = (price) => {
 }
 
 const addToCart = (product) => {
-    // Logic thêm vào giỏ hàng
-    console.log('Thêm vào giỏ:', product)
-    // Có thể emit event hoặc sử dụng store
+    const { useCartStore } = require('@/stores/cart');
+    const cartStore = useCartStore();
+    
+    // Add with default color and size
+    const defaultColor = product.colors[0];
+    const defaultSize = product.sizes[0];
+    
+    cartStore.addToCart(product, defaultColor, defaultSize, 1);
+    
+    alert(`✅ Đã thêm ${product.name} (${defaultColor}, size ${defaultSize}) vào giỏ hàng!`);
 }
 </script>
 

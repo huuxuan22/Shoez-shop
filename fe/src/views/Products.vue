@@ -65,12 +65,15 @@
                   :key="color.name"
                   @click="toggleColor(color.name)"
                   :class="[
-                    'px-3 py-1 rounded-full text-sm border-2 transition-all',
+                    'px-3 py-1 rounded-full text-sm border-2 transition-all flex items-center gap-2',
                     filters.colors.includes(color.name)
-                      ? 'border-blue-600 bg-blue-50 text-blue-700 font-semibold'
+                      ? ['border-2', color.activeBorder, color.activeBg, color.activeText, 'font-semibold']
                       : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
                   ]"
                 >
+                  <span 
+                    :class="['w-4 h-4 rounded-full border-2 border-gray-400', color.class]"
+                  ></span>
                   {{ color.name }}
                 </button>
               </div>
@@ -87,7 +90,7 @@
                   :class="[
                     'py-2 rounded-lg text-sm border-2 transition-all',
                     filters.sizes.includes(size)
-                      ? 'border-blue-600 bg-blue-600 text-white font-semibold'
+                      ? 'border-black bg-black text-white font-semibold'
                       : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
                   ]"
                 >
@@ -158,7 +161,7 @@
                 @click="viewMode = 'grid'"
                 :class="[
                   'p-2 rounded-lg transition-colors',
-                  viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  viewMode === 'grid' ? 'bg-black text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 ]"
               >
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -169,7 +172,7 @@
                 @click="viewMode = 'list'"
                 :class="[
                   'p-2 rounded-lg transition-colors',
-                  viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  viewMode === 'list' ? 'bg-black text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 ]"
               >
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -225,14 +228,14 @@
 
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="text-xl font-bold text-blue-600">{{ formatPrice(product.price) }}</p>
+                    <p class="text-xl font-bold text-black">{{ formatPrice(product.price) }}</p>
                     <p v-if="product.originalPrice" class="text-sm text-gray-400 line-through">
                       {{ formatPrice(product.originalPrice) }}
                     </p>
                   </div>
                   <button 
                     @click.stop="addToCart(product)"
-                    class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -252,7 +255,7 @@
             <p class="text-gray-500 mb-4">Thử điều chỉnh bộ lọc để xem thêm sản phẩm</p>
             <button 
               @click="clearFilters"
-              class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors"
             >
               Xóa bộ lọc
             </button>
@@ -289,14 +292,62 @@ const filters = ref({
 const availableBrands = ['Nike', 'Adidas', 'Puma', 'Vans', 'New Balance', 'Converse'];
 const availableCategories = ['Sneakers', 'Running', 'Casual', 'Lifestyle', 'Basketball', 'Skate', 'Retro'];
 const availableColors = [
-  { name: 'Đen' },
-  { name: 'Trắng' },
-  { name: 'Xanh' },
-  { name: 'Đỏ' },
-  { name: 'Xám' },
-  { name: 'Hồng' },
-  { name: 'Be' },
-  { name: 'Navy' }
+  { 
+    name: 'Đen', 
+    class: 'bg-black',
+    activeBorder: 'border-black',
+    activeBg: 'bg-black',
+    activeText: 'text-white'
+  },
+  { 
+    name: 'Trắng', 
+    class: 'bg-white',
+    activeBorder: 'border-gray-800',
+    activeBg: 'bg-white',
+    activeText: 'text-black'
+  },
+  { 
+    name: 'Xanh', 
+    class: 'bg-blue-500',
+    activeBorder: 'border-blue-600',
+    activeBg: 'bg-blue-500',
+    activeText: 'text-white'
+  },
+  { 
+    name: 'Đỏ', 
+    class: 'bg-red-500',
+    activeBorder: 'border-red-600',
+    activeBg: 'bg-red-500',
+    activeText: 'text-white'
+  },
+  { 
+    name: 'Xám', 
+    class: 'bg-gray-500',
+    activeBorder: 'border-gray-600',
+    activeBg: 'bg-gray-500',
+    activeText: 'text-white'
+  },
+  { 
+    name: 'Hồng', 
+    class: 'bg-pink-400',
+    activeBorder: 'border-pink-500',
+    activeBg: 'bg-pink-400',
+    activeText: 'text-white'
+  },
+  { 
+    name: 'Be', 
+    class: 'bg-amber-200',
+    activeBorder: 'border-amber-400',
+    activeBg: 'bg-amber-200',
+    activeText: 'text-gray-800'
+  },
+  { 
+    name: 'Navy', 
+    class: 'bg-blue-900',
+    activeBorder: 'border-blue-900',
+    activeBg: 'bg-blue-900',
+    activeText: 'text-white'
+  }
 ];
 const availableSizes = [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45];
 
@@ -614,11 +665,5 @@ const formatPrice = (price) => {
 // Handle image load error
 const handleImageError = (event) => {
   event.target.src = '/images/shoes/placeholder.jpg';
-};
-
-// Add to cart
-const addToCart = (product) => {
-  // TODO: Implement add to cart functionality
-  alert(`Đã thêm ${product.name} vào giỏ hàng!`);
 };
 </script>

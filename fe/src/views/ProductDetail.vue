@@ -5,14 +5,14 @@
       <nav class="flex mb-8" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
           <li class="inline-flex items-center">
-            <router-link to="/" class="text-gray-700 hover:text-blue-600">
+            <router-link to="/" class="text-gray-700 hover:text-black">
               Trang chủ
             </router-link>
           </li>
           <li>
             <div class="flex items-center">
               <span class="mx-2 text-gray-400">/</span>
-              <router-link to="/products" class="text-gray-700 hover:text-blue-600">
+              <router-link to="/products" class="text-gray-700 hover:text-black">
                 Sản phẩm
               </router-link>
             </div>
@@ -62,7 +62,7 @@
               @click="selectedImage = img"
               :class="[
                 'relative pt-[100%] bg-white rounded-lg overflow-hidden cursor-pointer border-2 transition-all',
-                selectedImage === img ? 'border-blue-600 shadow-lg' : 'border-gray-200 hover:border-gray-400'
+                selectedImage === img ? 'border-black shadow-lg' : 'border-gray-200 hover:border-gray-400'
               ]"
             >
               <img 
@@ -79,7 +79,7 @@
         <div>
           <div class="bg-white rounded-lg shadow-lg p-8">
             <!-- Brand -->
-            <p class="text-blue-600 font-semibold mb-2 uppercase tracking-wider">{{ product.brand }}</p>
+            <p class="text-black font-semibold mb-2 uppercase tracking-wider">{{ product.brand }}</p>
             
             <!-- Product Name -->
             <h1 class="text-4xl font-bold text-gray-800 mb-4">{{ product.name }}</h1>
@@ -100,7 +100,7 @@
             <!-- Price -->
             <div class="mb-8">
               <div class="flex items-baseline gap-4">
-                <p class="text-4xl font-bold text-blue-600">{{ formatPrice(product.price) }}</p>
+                <p class="text-4xl font-bold text-black">{{ formatPrice(product.price) }}</p>
                 <p v-if="product.originalPrice" class="text-2xl text-gray-400 line-through">
                   {{ formatPrice(product.originalPrice) }}
                 </p>
@@ -113,7 +113,7 @@
             <!-- Color Selection -->
             <div class="mb-8">
               <label class="block text-gray-700 font-semibold mb-3">
-                Màu sắc: <span class="text-blue-600">{{ selectedColor }}</span>
+                Màu sắc: <span class="text-black">{{ selectedColor }}</span>
               </label>
               <div class="flex flex-wrap gap-3">
                 <button
@@ -121,12 +121,13 @@
                   :key="color"
                   @click="selectedColor = color"
                   :class="[
-                    'px-6 py-3 rounded-lg border-2 font-semibold transition-all',
+                    'px-6 py-3 rounded-lg border-2 font-semibold transition-all flex items-center gap-2',
                     selectedColor === color
-                      ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-md transform scale-105'
+                      ? getColorClasses(color).active
                       : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
                   ]"
                 >
+                  <span :class="['w-4 h-4 rounded-full border-2 border-gray-400', getColorClasses(color).dot]"></span>
                   {{ color }}
                 </button>
               </div>
@@ -136,9 +137,9 @@
             <div class="mb-8">
               <div class="flex justify-between items-center mb-3">
                 <label class="block text-gray-700 font-semibold">
-                  Size: <span class="text-blue-600">{{ selectedSize || 'Chọn size' }}</span>
+                  Size: <span class="text-black">{{ selectedSize || 'Chọn size' }}</span>
                 </label>
-                <button class="text-blue-600 text-sm hover:underline">Hướng dẫn chọn size</button>
+                <button class="text-black text-sm hover:underline">Hướng dẫn chọn size</button>
               </div>
               <div class="grid grid-cols-6 gap-2">
                 <button
@@ -148,7 +149,7 @@
                   :class="[
                     'py-3 rounded-lg border-2 font-semibold transition-all',
                     selectedSize === size
-                      ? 'border-blue-600 bg-blue-600 text-white shadow-md'
+                      ? 'border-black bg-black text-white shadow-md'
                       : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
                   ]"
                 >
@@ -192,8 +193,7 @@
             <!-- Action Buttons -->
             <div class="flex gap-4 mb-8">
               <button 
-                @click="addToCart"
-                class="flex-1 bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+                class="flex-1 bg-black text-white px-8 py-4 rounded-lg font-semibold hover:bg-gray-800 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
               >
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -201,9 +201,11 @@
                 Thêm vào giỏ
               </button>
               <button 
-                @click="buyNow"
-                class="flex-1 bg-orange-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-orange-700 transition-all transform hover:scale-105 shadow-lg"
+                class="flex-1 bg-black text-white px-8 py-4 rounded-lg font-semibold hover:bg-gray-800 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
               >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
                 Mua ngay
               </button>
             </div>
@@ -577,24 +579,64 @@ const handleImageError = (event) => {
   event.target.src = '/images/shoes/placeholder.jpg';
 };
 
-// Add to cart
-const addToCart = () => {
-  if (!selectedSize.value) {
-    alert('Vui lòng chọn size giày!');
-    return;
+// Get color classes based on color name
+const getColorClasses = (colorName) => {
+  const lowerColor = colorName.toLowerCase();
+  
+  // Màu đơn
+  if (lowerColor.includes('đen')) {
+    return {
+      dot: 'bg-black',
+      active: 'border-black bg-black text-white shadow-md transform scale-105'
+    };
+  }
+  if (lowerColor.includes('trắng')) {
+    return {
+      dot: 'bg-white',
+      active: 'border-gray-800 bg-white text-black shadow-md transform scale-105'
+    };
+  }
+  if (lowerColor.includes('xanh') && !lowerColor.includes('navy')) {
+    return {
+      dot: 'bg-blue-500',
+      active: 'border-blue-600 bg-blue-500 text-white shadow-md transform scale-105'
+    };
+  }
+  if (lowerColor.includes('đỏ')) {
+    return {
+      dot: 'bg-red-500',
+      active: 'border-red-600 bg-red-500 text-white shadow-md transform scale-105'
+    };
+  }
+  if (lowerColor.includes('xám')) {
+    return {
+      dot: 'bg-gray-500',
+      active: 'border-gray-600 bg-gray-500 text-white shadow-md transform scale-105'
+    };
+  }
+  if (lowerColor.includes('hồng')) {
+    return {
+      dot: 'bg-pink-400',
+      active: 'border-pink-500 bg-pink-400 text-white shadow-md transform scale-105'
+    };
+  }
+  if (lowerColor.includes('be')) {
+    return {
+      dot: 'bg-amber-200',
+      active: 'border-amber-400 bg-amber-200 text-gray-800 shadow-md transform scale-105'
+    };
+  }
+  if (lowerColor.includes('navy')) {
+    return {
+      dot: 'bg-blue-900',
+      active: 'border-blue-900 bg-blue-900 text-white shadow-md transform scale-105'
+    };
   }
   
-  alert(`Đã thêm ${quantity.value}x ${product.value.name} (${selectedColor.value}, size ${selectedSize.value}) vào giỏ hàng!`);
-};
-
-// Buy now
-const buyNow = () => {
-  if (!selectedSize.value) {
-    alert('Vui lòng chọn size giày!');
-    return;
-  }
-  
-  // Redirect to checkout
-  alert('Chuyển đến trang thanh toán...');
+  // Mặc định
+  return {
+    dot: 'bg-gray-400',
+    active: 'border-black bg-black text-white shadow-md transform scale-105'
+  };
 };
 </script>
