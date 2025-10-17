@@ -23,9 +23,14 @@ export const loginApi = async (data) => {
 
 }
 
+export const registerApi = async (data) => {
+    return await BaseAxios.post(`${PREFIX_AUTH}/register`, data);
+}
+
 export default {
     loginWithGoogle,
     handleCallback,
     loginWithFacebook,
-    loginApi
+    loginApi,
+    registerApi
 }
