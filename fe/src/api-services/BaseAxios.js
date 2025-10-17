@@ -39,79 +39,40 @@ BaseAxios.interceptors.request.use(
 // Response interceptor - Enhanced error handling
 BaseAxios.interceptors.response.use(
   (response) => {
-    // Log response time in development
-    if (import.meta.env.DEV && response.config.metadata) {
-      const duration = new Date() - response.config.metadata.startTime;
-      console.log(`✅ API Response: ${response.config.method?.toUpperCase()} ${response.config.url} - ${duration}ms`);
-    }
-
+    // Trả luôn data nếu request thành công
     return response.data;
   },
   (error) => {
-    // Handle different error scenarios
     if (error.response) {
       const { status, data } = error.response;
 
-      switch (status) {
-        case 401:
-          // Unauthorized - clear auth data and redirect to login
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
+      if (status === 401) {
+        // Xử lý Unauthorized
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
 
-          // Only redirect if not already on login page
-          if (!window.location.pathname.includes('/login')) {
-            console.warn("🔐 Session expired, redirecting to login...");
-            window.location.href = '/login';
-          }
-          break;
-
-        case 403:
-          console.error("🚫 Access forbidden - insufficient permissions");
-          break;
-
-        case 404:
-          console.error("🔍 Resource not found");
-          break;
-
-        case 422:
-          console.error("📝 Validation Error:", data);
-          break;
-
-        case 500:
-          console.error("🔥 Server Error - please try again later");
-          break;
-
-        default:
-          console.error(`⚠️ API Error ${status}:`, data);
+        if (!window.location.pathname.includes('/login')) {
+          console.warn("🔐 Session expired, redirecting to login...");
+          window.location.href = '/login';
+        }
+      } else if (status === 403) {
+        // Xử lý Forbidden
+        console.error("🚫 Access forbidden - insufficient permissions");
       }
 
-      // Return structured error object
+      // Nếu không phải 401/403, reject bình thường để phía gọi xử lý
       return Promise.reject({
         status,
-        message: data?.message || data?.detail || `HTTP ${status} Error`,
+        message: data?.message || `HTTP ${status} Error`,
         data: data,
         isApiError: true
       });
-    } else if (error.request) {
-      // Network error
-      console.error("🌐 Network Error:", error.message);
-      return Promise.reject({
-        status: 0,
-        message: "Network error - please check your internet connection",
-        data: null,
-        isNetworkError: true
-      });
     } else {
-      // Request setup error
-      console.error("⚙️ Request Setup Error:", error.message);
-      return Promise.reject({
-        status: -1,
-        message: error.message,
-        data: null,
-        isConfigError: true
-      });
+      // Lỗi mạng hoặc cấu hình request
+      return Promise.reject(error);
     }
   }
 );
+
 
 export default BaseAxios;
