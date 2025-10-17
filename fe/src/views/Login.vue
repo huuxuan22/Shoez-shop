@@ -1,57 +1,42 @@
 <template>
+  <!-- Toast Notification - Teleport to body để hiển thị khi chuyển trang -->
+  <Teleport to="body">
+    <Transition name="toast">
+      <div v-if="toast.show" class="fixed top-4 right-4 z-[9999]">
+        <ToastNotification :message="toast.message" :type="toast.type" @close="toast.show = false" />
+      </div>
+    </Transition>
+  </Teleport>
+
   <div class="min-h-screen flex flex-col md:flex-row bg-white">
     <!-- Phần hình ảnh với slideshow 3D -->
-    <div
-      class="w-full md:w-1/2 relative overflow-hidden bg-gray-100 h-[400px] md:h-auto"
-    >
+    <div class="w-full md:w-1/2 relative overflow-hidden bg-gray-100 h-[400px] md:h-auto">
       <div class="absolute inset-0 flex items-center justify-center">
         <div class="relative w-full h-full">
           <div class="slideshow-3d h-full w-full perspective-1000">
-            <transition-group
-              name="slide"
-              tag="div"
-              class="relative h-full w-full"
-            >
-              <div
-                v-for="(image, index) in images"
-                :key="image.id"
-                v-show="currentSlide === index"
-                class="slide-3d absolute inset-0 flex items-center justify-center transform-style-preserve-3d"
-                :class="{
+            <transition-group name="slide" tag="div" class="relative h-full w-full">
+              <div v-for="(image, index) in images" :key="image.id" v-show="currentSlide === index"
+                class="slide-3d absolute inset-0 flex items-center justify-center transform-style-preserve-3d" :class="{
                   'slide-active': currentSlide === index,
                   'slide-prev':
                     currentSlide ===
                     (index - 1 + images.length) % images.length,
                   'slide-next': currentSlide === (index + 1) % images.length,
-                }"
-              >
-                <img
-                  :src="image.url"
-                  :alt="'Slide ' + (index + 1)"
-                  class="object-cover w-full h-full rounded-lg shadow-xl"
-                />
-                <div
-                  class="absolute inset-0 bg-black bg-opacity-20 rounded-lg"
-                ></div>
+                }">
+                <img :src="image.url" :alt="'Slide ' + (index + 1)"
+                  class="object-cover w-full h-full rounded-lg shadow-xl" />
+                <div class="absolute inset-0 bg-black bg-opacity-20 rounded-lg"></div>
               </div>
             </transition-group>
           </div>
 
           <!-- Slide indicators -->
-          <div
-            class="absolute bottom-8 left-0 right-0 flex justify-center space-x-2"
-          >
-            <button
-              v-for="(image, index) in images"
-              :key="'indicator-' + image.id"
-              @click="goToSlide(index)"
-              class="w-3 h-3 rounded-full transition-all"
-              :class="
-                currentSlide === index
-                  ? 'bg-white w-6'
-                  : 'bg-white bg-opacity-50'
-              "
-            ></button>
+          <div class="absolute bottom-8 left-0 right-0 flex justify-center space-x-2">
+            <button v-for="(image, index) in images" :key="'indicator-' + image.id" @click="goToSlide(index)"
+              class="w-3 h-3 rounded-full transition-all" :class="currentSlide === index
+                ? 'bg-white w-6'
+                : 'bg-white bg-opacity-50'
+                "></button>
           </div>
         </div>
       </div>
@@ -66,52 +51,34 @@
         </div>
 
         <form class="mt-6 space-y-4" @submit.prevent="onSubmit">
-          <FormInput
-            v-model="username"
-            label="Tài khoản"
-            id="username"
-            placeholder="Nhập tài khoản"
-          />
-          <span class="text-red-500 text-sm">{{ usernameError }}</span>
+          <div>
+            <FormInput v-model="email" label="Email" id="email" type="email" placeholder="Nhập email"
+              :class="{ 'border-red-500': emailError }" />
+            <span v-if="emailError" class="text-red-500 text-sm mt-1 block">{{ emailError }}</span>
+          </div>
 
-          <FormInput
-            v-model="password"
-            label="Mật khẩu"
-            id="password"
-            type="password"
-            placeholder="Nhập mật khẩu"
-          />
-          <span class="text-red-500 text-sm">{{ passwordError }}</span>
+          <div>
+            <FormInput v-model="password" label="Mật khẩu" id="password" type="password" placeholder="Nhập mật khẩu"
+              :class="{ 'border-red-500': passwordError }" />
+            <span v-if="passwordError" class="text-red-500 text-sm mt-1 block">{{ passwordError }}</span>
+          </div>
 
           <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
+              <input id="remember-me" name="remember-me" type="checkbox"
+                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
               <label for="remember-me" class="ml-2 block text-sm text-gray-700">
                 Ghi nhớ đăng nhập
               </label>
             </div>
 
-            <a
-              href="#"
-              class="text-sm font-medium text-blue-600 hover:text-blue-500"
-            >
+            <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-500">
               Quên mật khẩu?
             </a>
           </div>
 
           <div>
-            <FormButton
-              label="Đăng nhập"
-              type="submit"
-              variant="black"
-              @click="onSubmit"
-              class="w-full"
-            />
+            <FormButton label="Đăng nhập" type="submit" variant="black" @click="onSubmit" class="w-full" />
           </div>
         </form>
 
@@ -126,36 +93,29 @@
 
         <div class="grid grid-cols-2 gap-3">
           <!-- Nút đăng nhập bằng Google -->
-          <button
-            type="button"
+          <button type="button"
             class="w-full flex items-center justify-center px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all"
-            :onclick="loginWithGoogle"
-            >
-            <svg
-              class="w-5 h-5 mr-2"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 48 48"
-            >
-              <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
-              <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
-              <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
-              <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+            :onclick="loginWithGoogle">
+            <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+              <path fill="#FFC107"
+                d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+              <path fill="#FF3D00"
+                d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
+              <path fill="#4CAF50"
+                d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
+              <path fill="#1976D2"
+                d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
             </svg>
             Google
           </button>
-          
+
           <!-- Nút đăng nhập bằng Facebook -->
-          <button
-            type="button"
+          <button type="button"
             class="w-full flex items-center justify-center px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all"
-            :onClick="loginWithFacebook"
-          >
-            <svg
-              class="w-5 h-5 mr-2 text-blue-600"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 320 512"
-            >
-              <path fill="currentColor" d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/>
+            :onClick="loginWithFacebook">
+            <svg class="w-5 h-5 mr-2 text-blue-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+              <path fill="currentColor"
+                d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z" />
             </svg>
             Facebook
           </button>
@@ -163,9 +123,7 @@
 
         <p class="text-center text-sm text-gray-500">
           Chưa có tài khoản?
-          <a href="/register" class="font-medium text-blue-600 hover:text-blue-500"
-            >Đăng ký ngay</a
-          >
+          <a href="/register" class="font-medium text-black-600 hover:text-gray-500">Đăng ký ngay</a>
         </p>
       </div>
     </div>
@@ -179,19 +137,64 @@ import FormButton from "../components/FormButton.vue";
 import { useRoute, useRouter } from "vue-router";
 import * as yup from 'yup'
 import { useForm } from "vee-validate";
-import AuthService from "@/api-services/AuthService";
+import { useAuthStore } from "@/stores/auth";
+import ToastNotification from '@/components/ToastNotification.vue';
+import AuthService from '@/api-services/AuthService';
 
+let timer = null;
 const route = useRoute();
 const router = useRouter();
+const authStore = useAuthStore();
 
-const schema = yup.object({
-  username: yup.string().required("Vui lòng nhập tài khoản"),
-  password: yup.string().required("Vui lòng nhập mật khẩu").min(6, "Mật khẩu tối thiểu 6 ký tự"),
-})
+// Định nghĩa email và password
+const email = ref('');
+const password = ref('');
 
-const { handleSubmit } = useForm({
-  validationSchema: schema,
+// Error messages
+const emailError = ref('');
+const passwordError = ref('');
+
+const toast = reactive({
+  show: false,
+  message: '',
+  type: 'info',
 });
+
+// 3. Thêm hàm kích hoạt toast
+function showToast(message, type = 'info') {
+  if (timer) {
+    clearTimeout(timer);
+  }
+  toast.show = true;
+  toast.message = message;
+  toast.type = type;
+
+  timer = setTimeout(() => {
+    toast.show = false;
+  }, 3000);
+}
+
+// Validation function
+const validateEmail = (email) => {
+  if (!email) {
+    return 'Vui lòng nhập email';
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return 'Email không hợp lệ';
+  }
+  return '';
+};
+
+const validatePassword = (password) => {
+  if (!password) {
+    return 'Vui lòng nhập mật khẩu';
+  }
+  if (password.length < 6) {
+    return 'Mật khẩu tối thiểu 6 ký tự';
+  }
+  return '';
+};
 
 const currentSlide = ref(0);
 const images = [
@@ -245,22 +248,74 @@ onBeforeUnmount(() => {
   clearInterval(slideInterval);
 });
 
-const onSubmit =async () => {
-  console.log("Vào đây rồi ");
-  
-  const response = await AuthService.login({username:username.value,password:password.value})
+const onSubmit = async () => {
+  // Clear previous errors
+  emailError.value = '';
+  passwordError.value = '';
+
+  // Validate email
+  const emailValidation = validateEmail(email.value);
+  if (emailValidation) {
+    emailError.value = emailValidation;
+    return;
+  }
+
+  // Validate password
+  const passwordValidation = validatePassword(password.value);
+  if (passwordValidation) {
+    passwordError.value = passwordValidation;
+    return;
+  }
+
+  // If validation passes, proceed with login
+  try {
+    console.log('Email:', email.value);
+    console.log('Password:', password.value);
+
+    const response = await authStore.login({
+      email: email.value,
+      password: password.value,
+    });
+
+    // Hiển thị toast thành công
+    showToast('Đăng nhập thành công!', 'success');
+
+    // Delay chuyển trang 1.5 giây để user thấy toast
+    setTimeout(() => {
+      router.push('/');
+    }, 1500);
+  } catch (error) {
+    const errorMessage = error.data?.detail || error.message || 'Sai email hoặc mật khẩu!';
+    showToast(errorMessage, 'error');
+  }
 };
 
 const loginWithGoogle = () => {
   console.log("vafo dday roi nah");
   AuthService.loginWithGoogle();
 }
- const loginWithFacebook = () => {
+const loginWithFacebook = () => {
   AuthService.loginWithFacebook()
- }
+}
 </script>
 
 <style scoped>
+/* Toast animations */
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.3s ease;
+}
+
+.toast-enter-from {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.toast-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
 /* Slideshow 3D animations */
 .slideshow-3d {
   perspective: 1000px;
