@@ -9,7 +9,6 @@ class LoginRequest(BaseModel):
     password: str
 
 class UserCreate(BaseModel):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4)
     email : EmailStr = Field(..., min_length=6, max_length=64, description="Email address")
     password : str = Field(..., min_length=6, max_length=64)
     full_name : str

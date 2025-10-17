@@ -12,16 +12,22 @@ from fastapi import Request, Response
 from schemas.auth_schemas import UserCreate, LoginRequest, TokenResponse
 
 auth_router = APIRouter(tags=["Auth"], prefix="/auth")
-@auth_router.post("/register")
-async def register(user: UserCreate,response : Response ,user_repo: UserRepository = Depends(get_user_repo)):
-    service = UserService(user_repo)
-    user_create =await service.create_user(user)
-    token_access = auth.generate_token(user_create,exprices_delta=30*24*3600)
-    token_refresh = auth.generate_token(user_create, exprices_delta=7*24*3600)
-    response = JSONResponse(content={"message": "USER_CREATED"})
-    response.set_cookie("token_access", token_access, httponly=True, max_age=86400)
-    response.set_cookie("token_refresh", token_refresh, httponly=True, max_age=86400)
-    return response
+
+@auth_router.post("/register", response_model=TokenResponse)
+async def register(
+    user: UserCreate,
+    response: Response,
+    user_repo: UserRepository = Depends(get_user_repo)
+):
+    service = AuthService(user_repo)
+    result: TokenResponse = await service.register(user)
+    
+    # Set cookies
+    response.set_cookie(key="token_access", value=result.access_token, httponly=True)
+    response.set_cookie(key="token_refresh", value=result.refresh_token, httponly=True)
+    response.set_cookie(key="current_user", value=result.user_principal.email, httponly=False)
+    
+    return result
 
 @auth_router.post("/login", response_model=TokenResponse)
 async def login(

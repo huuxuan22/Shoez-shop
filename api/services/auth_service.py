@@ -1,11 +1,11 @@
-from http.client import HTTPException
 
+from fastapi import HTTPException
 import httpx
 from alembic.util import status
 from sqlalchemy.orm import Session
 
 from config.config import Settings
-from config.enum import MessageKey
+from config.enum import ErrorCode, MessageKey
 from exceptions.exception import UserExistException, UserNotFoundException
 from repositories.role_repository import RoleRepository
 from repositories.user_repository import UserRepository
@@ -16,6 +16,7 @@ from authlib.integrations.starlette_client import OAuth
 from utils import auth
 from fastapi.responses import RedirectResponse
 from model.user_model import User
+from i18n.translator import translate
 settings = Settings()
 
 oauth = OAuth()
@@ -31,24 +32,77 @@ class AuthService:
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
 
+    async def register(self, user_data: UserCreate) -> "TokenResponse":
+        """
+        Đăng ký user mới
+        
+        Args:
+            user_data: Thông tin user cần đăng ký (email, password, full_name, numberphone, etc.)
+            
+        Returns:
+            TokenResponse: Access token, refresh token và thông tin user
+            
+        Raises:
+            HTTPException: Nếu email đã tồn tại hoặc có lỗi validation
+        """
+        # Kiểm tra email đã tồn tại chưa
+        existing_user = await self.user_repository.get_by_email(user_data.email)
+        if existing_user:
+            raise HTTPException(
+                status_code=ErrorCode.CONFLICT, 
+                detail=translate(MessageKey.USER_EXIST)
+            )
+        
+        # Hash password trước khi lưu
+        hashed_password = hash_password(user_data.password)
+        
+        # Tạo user mới
+        user_dict = user_data.dict()
+        user_dict['password'] = hashed_password
+        user_dict['role'] = "USER"
+        
+        # Lưu user vào database
+        created_user = await self.user_repository.create(user_dict)
+        
+        # Tạo user principal để trả về
+        user_principal = UserPrincipal(
+            id=created_user.get('id'),
+            email=created_user.get('email'),
+            full_name=created_user.get('full_name'),
+            numberphone=created_user.get('numberphone'),
+            avatar=created_user.get('avatar'),
+            is_active=created_user.get('is_active', True),
+            role=created_user.get('role')
+        )
+        
+        # Tạo token
+        to_encode = convert_uuid_to_str(user_principal.dict())
+        token_access = auth.generate_token(to_encode, exprices_delta=30 * 24 * 3600)
+        token_refresh = auth.generate_token(to_encode, exprices_delta=7 * 24 * 3600)
+        
+        return TokenResponse(
+            message=translate(MessageKey.USER_CREATED),
+            access_token=token_access,
+            refresh_token=token_refresh,
+            user_principal=user_principal
+        )
+
     async def login(self, email: str, password: str) -> "TokenResponse":
-        # Lấy user principal từ repo
         user_dict = await self.user_repository.get_user_principal(email)
         if not user_dict:
-            raise HTTPException(status_code=404, detail="User not found")
+            raise HTTPException(status_code=ErrorCode.NOT_FOUND, detail="Không tìm thấy người dùng")
 
-        # Kiểm tra password
         if password != user_dict.get("password"):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid password")
+            raise HTTPException(status_code=ErrorCode.BAD_REQUEST, detail="Sai mật khẩu")
 
         user_principal = UserPrincipal(**user_dict)
         to_encode = convert_uuid_to_str(user_principal.dict())
-        # Tạo token
+
         token_access = auth.generate_token(to_encode, exprices_delta=30 * 24 * 3600)
         token_refresh = auth.generate_token(to_encode, exprices_delta=7 * 24 * 3600)
 
         return TokenResponse(
-            message="Login successful",
+            message=translate(MessageKey.LOGIN_SUCCESS),
             access_token=token_access,
             refresh_token=token_refresh,
             user_principal=user_principal
