@@ -98,6 +98,87 @@ const routes = [
       requiresAuth: true
     }
   },
+  // Admin routes
+  {
+    path: "/admin",
+    name: "AdminDashboard",
+    component: () => import("@/views/admin/Dashboard.vue"),
+    meta: {
+      title: "Dashboard - Admin - Shoez Shop",
+      requiresAuth: true,
+      requiresAdmin: true
+    }
+  },
+  {
+    path: "/admin/products",
+    name: "AdminProducts",
+    component: () => import("@/views/admin/Products.vue"),
+    meta: {
+      title: "Quản lý sản phẩm - Admin - Shoez Shop",
+      requiresAuth: true,
+      requiresAdmin: true
+    }
+  },
+  {
+    path: "/admin/orders",
+    name: "AdminOrders",
+    component: () => import("@/views/admin/Orders.vue"),
+    meta: {
+      title: "Quản lý đơn hàng - Admin - Shoez Shop",
+      requiresAuth: true,
+      requiresAdmin: true
+    }
+  },
+  {
+    path: "/admin/customers",
+    name: "AdminCustomers",
+    component: () => import("@/views/admin/Dashboard.vue"), // Placeholder
+    meta: {
+      title: "Quản lý khách hàng - Admin - Shoez Shop",
+      requiresAuth: true,
+      requiresAdmin: true
+    }
+  },
+  {
+    path: "/admin/categories",
+    name: "AdminCategories",
+    component: () => import("@/views/admin/Dashboard.vue"), // Placeholder
+    meta: {
+      title: "Quản lý danh mục - Admin - Shoez Shop",
+      requiresAuth: true,
+      requiresAdmin: true
+    }
+  },
+  {
+    path: "/admin/brands",
+    name: "AdminBrands",
+    component: () => import("@/views/admin/Dashboard.vue"), // Placeholder
+    meta: {
+      title: "Quản lý thương hiệu - Admin - Shoez Shop",
+      requiresAuth: true,
+      requiresAdmin: true
+    }
+  },
+  {
+    path: "/admin/analytics",
+    name: "AdminAnalytics",
+    component: () => import("@/views/admin/Dashboard.vue"), // Placeholder
+    meta: {
+      title: "Thống kê - Admin - Shoez Shop",
+      requiresAuth: true,
+      requiresAdmin: true
+    }
+  },
+  {
+    path: "/admin/settings",
+    name: "AdminSettings",
+    component: () => import("@/views/admin/Dashboard.vue"), // Placeholder
+    meta: {
+      title: "Cài đặt - Admin - Shoez Shop",
+      requiresAuth: true,
+      requiresAdmin: true
+    }
+  },
   // Error pages
   {
     path: "/403",
