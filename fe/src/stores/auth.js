@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { loginApi } from "@/api-services/AuthService";
+import { loginApi, registerApi } from "@/api-services/AuthService";
 
 export const useAuthStore = defineStore("auth", {
     state: () => ({
@@ -26,6 +26,26 @@ export const useAuthStore = defineStore("auth", {
                 return res;
             } catch (error) {
                 console.error("❌ Login failed:", error.message || error);
+                throw error;
+            }
+        },
+
+        async register(credentials) {
+            try {
+                const res = await registerApi(credentials);
+
+                this.user = res.user_principal;
+                this.accessToken = res.access_token;
+                this.refreshToken = res.refresh_token;
+
+                // Lưu localStorage
+                localStorage.setItem("token", res.access_token);
+                localStorage.setItem("refresh_token", res.refresh_token);
+                localStorage.setItem("user", JSON.stringify(res.user_principal));
+
+                return res;
+            } catch (error) {
+                console.error("❌ Registration failed:", error.message || error);
                 throw error;
             }
         },
