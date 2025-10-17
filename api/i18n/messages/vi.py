@@ -12,7 +12,7 @@ MESSAGES = {
     "logout_success": "Đăng xuất thành công",
     "unauthorized": "Không có quyền truy cập",
     "token_not_found": "Không tìm thấy token của bạn",
-    "token_invalid": "Token không hợp lệ",
+    "token_invalid": "Tài khoản này không tồn tại",
     "not_found_user_token": "Không thấy thông tin người dùng từ email",
     
     # User management

@@ -74,7 +74,16 @@ class MessageKey(str, Enum):
     TASK_STATUS_COMPLETED = "task_status_completed"
     TASK_STATUS_CANCELLED = "task_status_cancelled"
 
-
+class ErrorCode(int, Enum):
+    BAD_REQUEST = 400
+    UNAUTHORIZED = 401
+    FORBIDDEN = 403
+    NOT_FOUND = 404
+    METHOD_NOT_ALLOWED = 405
+    CONFLICT = 409
+    UNPROCESSABLE_ENTITY = 422
+    INTERNAL_SERVER_ERROR = 500
+    SERVICE_UNAVAILABLE = 503
 
 class LanguageCode(str, Enum):
     ENGLISH = "en"
