@@ -60,9 +60,19 @@ class AuthService:
         user_dict = user_data.dict()
         user_dict['password'] = hashed_password
         user_dict['role'] = "USER"
+        # Don't add id field here, it will be set after creation
         
         # Lưu user vào database
         created_user = await self.user_repository.create(user_dict)
+        
+        # Set id = _id after creation
+        if created_user and '_id' in created_user:
+            created_user['id'] = str(created_user['_id'])
+            # Update the document to add id field
+            await self.user_repository.db["users"].update_one(
+                {"_id": created_user['_id']},
+                {"$set": {"id": created_user['id']}}
+            )
         
         # Tạo user principal để trả về
         user_principal = UserPrincipal(
@@ -92,7 +102,9 @@ class AuthService:
         if not user_dict:
             raise HTTPException(status_code=ErrorCode.NOT_FOUND, detail="Không tìm thấy người dùng")
 
-        if password != user_dict.get("password"):
+        # Verify password using bcrypt
+        hashed_password = user_dict.get("password")
+        if not auth.verify_password(password, hashed_password):
             raise HTTPException(status_code=ErrorCode.BAD_REQUEST, detail="Sai mật khẩu")
 
         user_principal = UserPrincipal(**user_dict)

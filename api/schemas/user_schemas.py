@@ -9,6 +9,9 @@ class UserBase(BaseModel):
     age: Optional[int] = None
     numberphone: Optional[str] = None
     avatar: Optional[str] = None
+    address: Optional[str] = None
+    birthday: Optional[str] = None  # Format: YYYY-MM-DD
+    gender: Optional[str] = None  # Values: male, female, other
     is_active: bool = True
     role_id: Optional[int] = None
 
@@ -24,12 +27,13 @@ class IdUser(BaseModel):
 
 class UserUpdate(BaseModel):
     id: str
-    age: Optional[int] = None
     full_name: Optional[str] = None
     numberphone: Optional[str] = None
+    address: Optional[str] = None
+    birthday: Optional[str] = None  # Format: YYYY-MM-DD
+    gender: Optional[str] = None  # Values: male, female, other
     avatar: Optional[str] = None
-    is_active: Optional[bool] = None
-    role_id: Optional[int] = None
+    
 
 
 class UserResponse(UserBase):

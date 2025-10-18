@@ -5,5 +5,11 @@ import "./assets/main.css";
 import router from "./router";
 import i18n from "@/config/language/i18n";
 import { createPinia } from "pinia";
+import { useAuthStore } from "@/stores/auth";
+
 const pinia = createPinia();
-createApp(App).use(pinia).use(i18n).use(router).mount("#app");
+const app = createApp(App);
+app.use(pinia).use(i18n).use(router);
+const authStore = useAuthStore();
+authStore.initializeAuth();
+app.mount("#app");

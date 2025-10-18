@@ -3,12 +3,16 @@ from datetime import datetime, timedelta
 from typing import Optional, Any
 
 from jose import jwt, JWTError
+from passlib.context import CryptContext
 
 from config.config import get_settings
 from pydantic import BaseModel
 
 from config.enum import MessageKey
 from exceptions.exception import AuthTokenMissingException, AuthException
+
+# Password hashing context
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class TokenData(BaseModel):
@@ -96,6 +100,16 @@ def validate_token(token: str) -> dict[str,Any]:
     if not role:
         raise AuthTokenMissingException(MessageKey.USER_NOT_FOUND)
     return {"email": email, "role": role}
+
+# Hash password
+def hash_password(password: str) -> str:
+    """Hash a password using bcrypt"""
+    return pwd_context.hash(password)
+
+# Verify password
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a password against a hash"""
+    return pwd_context.verify(plain_password, hashed_password)
 
 
 

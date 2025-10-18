@@ -19,6 +19,33 @@ export const useAuthStore = defineStore("auth", {
     },
 
     actions: {
+        // Initialize auth from localStorage
+        initializeAuth() {
+            const token = localStorage.getItem("token");
+            const refreshToken = localStorage.getItem("refresh_token");
+            const userStr = localStorage.getItem("user");
+
+            if (token) {
+                this.accessToken = token;
+            }
+            if (refreshToken) {
+                this.refreshToken = refreshToken;
+            }
+            if (userStr) {
+                try {
+                    this.user = JSON.parse(userStr);
+                } catch (error) {
+                    console.error("❌ Failed to parse user from localStorage:", error);
+                    this.user = null;
+                }
+            }
+        },
+
+        async updateUser(updatedData) {
+            this.user = { ...this.user, ...updatedData };
+            localStorage.setItem("user", JSON.stringify(this.user));
+        },
+
         async login(credentials) {
             try {
                 const res = await loginApi(credentials);

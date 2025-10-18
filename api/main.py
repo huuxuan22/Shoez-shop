@@ -8,9 +8,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from config.minio_client import minio_client
 from controllers.auth_controller import auth_router
-import boto3
 from config.config import get_settings
-import exceptions.handlers
 from controllers.cart_controller import cart_router
 from controllers.order_controller import order_router
 from controllers.product_controller import product_router
