@@ -6,6 +6,7 @@ import Home from "@/views/Home.vue";
 import Login from "@/views/Login.vue";
 import Register from "@/views/Register.vue";
 import Contact from "@/views/Contact.vue";
+import AdminLogin from "@/views/AdminLogin.vue";
 
 // Templates
 import AboutView from "@/templates/AboutTemplate.vue";
@@ -96,6 +97,16 @@ const routes = [
     meta: {
       title: "Hồ sơ - Shoez Shop",
       requiresAuth: true
+    }
+  },
+  // Admin login route
+  {
+    path: "/admin/login",
+    name: "AdminLogin",
+    component: AdminLogin,
+    meta: {
+      title: "Admin Login - Shoez Shop",
+      requiresGuest: true
     }
   },
   // Admin routes
@@ -217,19 +228,39 @@ router.beforeEach((to, from, next) => {
     document.title = to.meta.title;
   }
 
-  // Check auth requirements (placeholder for future implementation)
-  // if (to.meta.requiresAuth) {
-  //   const isAuthenticated = localStorage.getItem('token');
-  //   if (!isAuthenticated) {
-  //     next({ name: 'Login' });
-  //     return;
-  //   }
-  // }
+  const isAuthenticated = localStorage.getItem('token');
+  const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+  const isAdmin = user?.role?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'administrator';
+
+  // Check auth requirements
+  if (to.meta.requiresAuth) {
+    if (!isAuthenticated) {
+      next({ name: 'Login' });
+      return;
+    }
+  }
+
+  // Check admin requirements
+  if (to.meta.requiresAdmin) {
+    if (!isAuthenticated) {
+      next({ name: 'AdminLogin' });
+      return;
+    }
+    if (!isAdmin) {
+      next({ name: 'Forbidden' });
+      return;
+    }
+  }
 
   // Check guest requirements (redirect logged in users away from login/register)
   if (to.meta.requiresGuest) {
-    const isAuthenticated = localStorage.getItem('token');
     if (isAuthenticated) {
+      // If trying to access admin login but already logged in as admin
+      if (to.name === 'AdminLogin' && isAdmin) {
+        next({ name: 'AdminDashboard' });
+        return;
+      }
+      // Regular user trying to access login
       next({ name: 'Home' });
       return;
     }

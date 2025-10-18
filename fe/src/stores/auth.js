@@ -8,6 +8,16 @@ export const useAuthStore = defineStore("auth", {
         refreshToken: null,
     }),
 
+    getters: {
+        isAuthenticated: (state) => !!state.accessToken,
+        isAdmin: (state) => {
+            if (!state.user) return false;
+            const role = state.user.role?.toLowerCase();
+            return role === 'admin' || role === 'administrator';
+        },
+        userRole: (state) => state.user?.role || null,
+    },
+
     actions: {
         async login(credentials) {
             try {
