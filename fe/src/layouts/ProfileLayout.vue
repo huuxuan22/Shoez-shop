@@ -1,5 +1,12 @@
 <template>
     <div class="min-h-screen bg-gray-50">
+        <Teleport to="body">
+            <Transition name="toast">
+                <div v-if="toast.show" class="fixed top-4 right-4 z-[9999]">
+                    <ToastNotification :message="toast.message" :type="toast.type" @close="toast.show = false" />
+                </div>
+            </Transition>
+        </Teleport>
         <div class="container mx-auto px-4 py-8">
             <!-- Header -->
             <ProfileHeader :user="user" :active-tab="activeTab" @update:active-tab="activeTab = $event" />
@@ -52,31 +59,75 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '@/stores/auth';
+import UserService from '@/api-services/UserService';
 
 // Import components
 import ProfileHeader from '@/components/profile/ProfileHeader.vue';
 import ProfileInfo from '@/components/profile/ProfileInfo.vue';
 import ProfilePassword from '@/components/profile/ProfilePassword.vue';
 import ProfileAvatar from '@/components/profile/ProfileAvatar.vue';
+import ToastNotification from '@/components/ToastNotification.vue';
 
+// Auth Store
+const authStore = useAuthStore();
+const { user: authUser } = storeToRefs(authStore);
+let timer = null;
 
 // State
 const activeTab = ref('info');
 const isLoading = ref(false);
 const isUploading = ref(false);
 
-// User data
-const user = reactive({
-    id: 1,
-    fullName: 'Nguyễn Văn A',
-    email: 'nguyenvana@example.com',
-    phone: '0901234567',
-    address: '123 Nguyễn Văn Linh, Quận 7, TP.HCM',
-    birthday: '1990-01-01',
-    gender: 'male',
-    avatar: '/images/avatars/default-avatar.jpg',
-    joinDate: '2023-01-15'
+const toast = reactive({
+    show: false,
+    message: '',
+    type: 'info',
+});
+
+// 3. Thêm hàm kích hoạt toast
+function showToast(message, type = 'info') {
+    if (timer) {
+        clearTimeout(timer);
+    }
+    toast.show = true;
+    toast.message = message;
+    toast.type = type;
+
+    timer = setTimeout(() => {
+        toast.show = false;
+    }, 3000);
+}
+
+// Map user data from API to component format
+const user = computed(() => {
+    if (!authUser.value) {
+        return {
+            id: '',
+            fullName: '',
+            email: '',
+            phone: '',
+            address: '',
+            birthday: '',
+            gender: 'male',
+            avatar: '',
+            joinDate: new Date().toISOString()
+        };
+    }
+
+    return {
+        id: authUser.value.id,
+        fullName: authUser.value.full_name || '',
+        email: authUser.value.email || '',
+        phone: authUser.value.numberphone || '',
+        address: authUser.value.address || '',
+        birthday: authUser.value.birthday || '',
+        gender: authUser.value.gender || 'male',
+        avatar: authUser.value.avatar || '',
+        joinDate: authUser.value.created_at || new Date().toISOString()
+    };
 });
 
 // Tabs configuration với đường dẫn trực tiếp
@@ -97,15 +148,29 @@ const tabs = [
 const handleUpdateProfile = async (profileData) => {
     isLoading.value = true;
     try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Prepare data for API (map to API format)
+        const apiData = {
+            id: authUser.value.id,
+            full_name: profileData.fullName,
+            numberphone: profileData.phone,
+            address: profileData.address,
+            birthday: profileData.birthday,
+            gender: profileData.gender
+        };
+        debugger;
+        // Call API
+        const response = await UserService.updateProfile(apiData);
+        console.log(response);
 
-        // Update user data
-        Object.assign(user, profileData);
-
-        toast.success('Cập nhật thông tin thành công!');
+        // Update user data in auth store
+        if (response.user_update) {
+            // Dùng action trong store để cập nhật
+            await authStore.updateUser(response.user_update);
+        }
+        showToast('Cập nhật thành công!', 'success');
     } catch (error) {
-        toast.error('Có lỗi xảy ra khi cập nhật thông tin');
+        showToast('Cập nhật không thành công!', 'error');
+        throw error;
     } finally {
         isLoading.value = false;
     }
@@ -117,10 +182,10 @@ const handleChangePassword = async (passwordData) => {
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        toast.success('Đổi mật khẩu thành công!');
+        console.log('✅ Đổi mật khẩu thành công!');
         return true;
     } catch (error) {
-        toast.error('Có lỗi xảy ra khi đổi mật khẩu');
+        console.error('❌ Có lỗi xảy ra khi đổi mật khẩu:', error);
         return false;
     } finally {
         isLoading.value = false;
@@ -130,16 +195,20 @@ const handleChangePassword = async (passwordData) => {
 const handleAvatarChange = async (file) => {
     isUploading.value = true;
     try {
-        // Simulate upload
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // Upload avatar to server
+        const response = await UserService.uploadAvatar(file);
 
-        // Create preview URL
-        const previewUrl = URL.createObjectURL(file);
-        user.avatar = previewUrl;
+        // Update avatar in auth store
+        if (authUser.value && response.avatar_url) {
+            authUser.value.avatar = response.avatar_url;
+            // Update localStorage
+            localStorage.setItem("user", JSON.stringify(authUser.value));
+        }
 
-        toast.success('Cập nhật ảnh đại diện thành công!');
+        console.log('✅ Cập nhật ảnh đại diện thành công!');
     } catch (error) {
-        toast.error('Có lỗi xảy ra khi tải lên ảnh');
+        console.error('❌ Có lỗi xảy ra khi tải lên ảnh:', error);
+        throw error;
     } finally {
         isUploading.value = false;
     }

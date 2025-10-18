@@ -1,5 +1,6 @@
 from typing import List
-from fastapi import Query
+from fastapi import Query, UploadFile, File
+from fastapi.encoders import jsonable_encoder
 from starlette.responses import JSONResponse
 
 from dependences.permissions import require_roles
@@ -31,11 +32,21 @@ async def create_user(user: UserCreate, user_repo: UserRepository = Depends(get_
 @user_router.put("/")
 async def update_user(user: UserUpdate, user_repo: UserRepository = Depends(get_user_repo)):
     service = UserService(user_repo)
-    user_update = service.update_user(user)
+    user_update = await service.update_user(user)
 
-    return (JSONResponse(status_code=200, content={"user_update": user_update}))
+    return (JSONResponse(status_code=200, content={"user_update": jsonable_encoder(user_update)}))
+
+@user_router.post("/avatar")
+async def upload_avatar(
+    file: UploadFile = File(...),
+    user_repo: UserRepository = Depends(get_user_repo)
+):
+    service = UserService(user_repo)
+    avatar_url = await service.upload_avatar(file)
+    return JSONResponse(status_code=200, content={"avatar_url": avatar_url})
 
 @user_router.delete("/")
 async def delete_user(ids: List[str], user_repo: UserRepository = Depends(get_user_repo)):
     service = UserService(user_repo)
     return await service.delete_user(ids)
+

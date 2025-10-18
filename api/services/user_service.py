@@ -1,4 +1,5 @@
 from fastapi.encoders import jsonable_encoder
+from fastapi import UploadFile
 
 from repositories.user_repository import UserRepository
 from datetime import datetime
@@ -8,6 +9,8 @@ from schemas.user_schemas import UserUpdate
 from model.user_model import User
 import asyncio
 import uuid
+import os
+import shutil
 
 class UserService:
     def __init__(self, user_repository: UserRepository):
@@ -26,13 +29,12 @@ class UserService:
     async def update_user(self, user_update: UserUpdate) -> Optional[User]:
         # Chuyển object UserUpdate thành dict và loại bỏ id ra khỏi dữ liệu update
         user_dict: Dict[str, Any] = user_update.dict(exclude_unset=True, exclude={"id"})
-        user_dict['updated_at'] = datetime.now()
-
-        # Gọi repository update theo field id (UUID)
-        updated_user = await self.user_repository.update(
-            entity_id=user_update.id,
-            data=user_dict,
-            id_key="id"  # dùng id thay vì _id
+        # Không cần thêm updated_at vì update_by_id sẽ tự động thêm
+        
+        # Gọi repository update theo _id (ObjectId)
+        updated_user = await self.user_repository.update_by_id(
+            user_id=user_update.id,
+            data=user_dict
         )
 
         return updated_user
@@ -42,3 +44,24 @@ class UserService:
         await asyncio.gather(
             *(self.user_repository.delete(entity_id=id, id_key="id") for id in ids)
         )
+
+    async def upload_avatar(self, file: UploadFile) -> str:
+        """
+        Upload avatar file and return the URL
+        """
+        # Create uploads directory if not exists
+        upload_dir = "uploads/avatars"
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # Generate unique filename
+        file_extension = os.path.splitext(file.filename)[1]
+        unique_filename = f"{uuid.uuid4()}{file_extension}"
+        file_path = os.path.join(upload_dir, unique_filename)
+        
+        # Save file
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        # Return the URL (you can customize this based on your static file serving setup)
+        avatar_url = f"/uploads/avatars/{unique_filename}"
+        return avatar_url
