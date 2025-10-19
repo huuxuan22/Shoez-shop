@@ -68,13 +68,9 @@ class UserService:
         user = await self.user_repository.find_one({"_id": ObjectId(user_id)})
         if not user:
             raise HTTPException(status_code=404, detail="Không tìm thấy người dùng")
-        
         old_avatar_url = user.get("avatar")  # avatar cũ nếu có
         bucket_name = "avatars"
-
         new_avatar_url = await replace_avatar(minio_client, bucket_name, old_avatar_url, file)
-
         await self.user_repository.update_by_id(user_id=user_id, data={"avatar": new_avatar_url})
-
         return new_avatar_url
 
