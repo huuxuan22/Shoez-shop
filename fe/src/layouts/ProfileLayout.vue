@@ -210,19 +210,20 @@ const handleChangePassword = async (passwordData) => {
 const handleAvatarChange = async (file) => {
     isUploading.value = true;
     try {
-        // Upload avatar to server
-        const response = await UserService.uploadAvatar(file);
-
-        // Update avatar in auth store
+        const response = await UserService.uploadAvatar(file, authUser.value.id);
         if (authUser.value && response.avatar_url) {
             authUser.value.avatar = response.avatar_url;
-            // Update localStorage
             localStorage.setItem("user", JSON.stringify(authUser.value));
         }
 
-        console.log('✅ Cập nhật ảnh đại diện thành công!');
     } catch (error) {
-        console.error('❌ Có lỗi xảy ra khi tải lên ảnh:', error);
+        if (error?.status === 400) {
+            showToast(error?.data?.detail, 'error');
+        } else if (error?.status === 404) {
+            showToast(error?.data?.detail, 'error');
+        } else {
+            showToast('Lỗi khi cập nhật ảnh', 'error');
+        }
         throw error;
     } finally {
         isUploading.value = false;
