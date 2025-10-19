@@ -1,5 +1,5 @@
 from functools import wraps
-from fastapi import Request, HTTPException, status
+from fastapi import  HTTPException, status
 from config.context import current_user
 
 def require_roles(*roles):

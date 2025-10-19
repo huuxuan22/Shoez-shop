@@ -163,6 +163,11 @@ const validateForm = () => {
         errors.newPassword = 'Mật khẩu phải có ít nhất 8 ký tự';
         isValid = false;
     }
+    // 🔹 Kiểm tra trùng với mật khẩu hiện tại
+    else if (formData.newPassword === formData.currentPassword) {
+        errors.newPassword = 'Mật khẩu mới không được trùng với mật khẩu hiện tại';
+        isValid = false;
+    }
 
     // Confirm password validation
     if (!formData.confirmPassword) {
@@ -175,6 +180,7 @@ const validateForm = () => {
 
     return isValid;
 };
+
 
 const handleSubmit = async () => {
     if (!validateForm()) return;

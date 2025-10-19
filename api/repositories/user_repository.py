@@ -4,6 +4,7 @@ from repositories.base_repository import BaseRepository
 from typing import List, Dict, Any, Optional
 from pymongo import ReturnDocument
 from pymongo.errors import PyMongoError
+from bson import ObjectId
 
 class UserRepository(BaseRepository[User]):
     def __init__(self, db):
@@ -66,7 +67,7 @@ class UserRepository(BaseRepository[User]):
             
             # Update by id field
             updated_doc = await self.collection.find_one_and_update(
-                {"id": user_id},
+                {"_id": ObjectId(user_id)},  # dùng ObjectId thay vì string
                 {"$set": data},
                 return_document=ReturnDocument.AFTER
             )

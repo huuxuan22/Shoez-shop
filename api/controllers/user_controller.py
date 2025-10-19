@@ -1,10 +1,10 @@
 from typing import List
-from fastapi import Query, UploadFile, File
+from fastapi import HTTPException, Query, UploadFile, File
 from fastapi.encoders import jsonable_encoder
 from starlette.responses import JSONResponse
 
 from dependences.permissions import require_roles
-from schemas.user_schemas import UserCreate, UserUpdate
+from schemas.user_schemas import ResetPasswordRequest, UserCreate, UserUpdate
 from fastapi import APIRouter, Depends
 from repositories.user_repository import UserRepository
 from services.user_service import UserService
@@ -35,6 +35,44 @@ async def update_user(user: UserUpdate, user_repo: UserRepository = Depends(get_
     user_update = await service.update_user(user)
 
     return (JSONResponse(status_code=200, content={"user_update": jsonable_encoder(user_update)}))
+
+
+@user_router.put("/reset-password", summary="Đổi mật khẩu người dùng")
+async def reset_password(
+    payload: ResetPasswordRequest,
+    user_repo: UserRepository = Depends(get_user_repo)
+):
+    """
+    API đổi mật khẩu người dùng.
+    - Nhận vào: id, current_password, new_password
+    - Kiểm tra mật khẩu hiện tại
+    - Hash mật khẩu mới và cập nhật vào DB
+    """
+    service = UserService(user_repo)
+
+    try:
+        result = await service.reset_password(
+            user_id=payload.id,
+            current_pw=payload.current_password,
+            new_pw=payload.new_password
+        )
+        return JSONResponse(
+            status_code=200,
+            content={
+                "message": "Đổi mật khẩu thành công.",
+                "data": result
+            }
+        )
+
+    except HTTPException as e:
+        raise e
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Lỗi máy chủ, vui lòng thử lại sau.")
+
 
 @user_router.post("/avatar")
 async def upload_avatar(

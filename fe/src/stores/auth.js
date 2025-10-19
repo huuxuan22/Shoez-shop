@@ -35,7 +35,6 @@ export const useAuthStore = defineStore("auth", {
                 try {
                     this.user = JSON.parse(userStr);
                 } catch (error) {
-                    console.error("❌ Failed to parse user from localStorage:", error);
                     this.user = null;
                 }
             }

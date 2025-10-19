@@ -34,7 +34,10 @@ class UserUpdate(BaseModel):
     gender: Optional[str] = None  # Values: male, female, other
     avatar: Optional[str] = None
     
-
+class ResetPasswordRequest(BaseModel):
+    id: str
+    current_password: str
+    new_password: str
 
 class UserResponse(UserBase):
     id: PyObjectId = Field(alias="_id")

@@ -1,6 +1,7 @@
 from fastapi.encoders import jsonable_encoder
 from fastapi import UploadFile
 
+from utils.utils import hash_password, verify_password
 from repositories.user_repository import UserRepository
 from datetime import datetime
 from typing import Dict, Any, Optional,List
@@ -11,6 +12,9 @@ import asyncio
 import uuid
 import os
 import shutil
+from bson import ObjectId
+from fastapi import HTTPException
+from passlib.context import CryptContext
 
 class UserService:
     def __init__(self, user_repository: UserRepository):
@@ -38,6 +42,29 @@ class UserService:
         )
 
         return updated_user
+
+    async def reset_password(self, user_id: str, current_pw: str, new_pw: str):
+        try:
+            user_oid = ObjectId(user_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="ID không hợp lệ")
+
+        # Lấy user từ DB
+        user = await self.user_repository.find_one({"_id": user_oid})
+        if not user:
+            raise HTTPException(status_code=404, detail="Không tìm thấy người dùng")
+
+        # Kiểm tra mật khẩu cũ
+        if not verify_password(current_pw, user["password"]):
+            raise HTTPException(status_code=400, detail="Mật khẩu hiện tại không đúng")
+
+        # Hash mật khẩu mới
+        hashed_password = hash_password(new_pw)
+
+        # Cập nhật vào DB
+        await self.user_repository.update_by_id(user_id=user_id, data={"password": hashed_password})
+
+        return {"message": "Cập nhật mật khẩu thành công!"}
 
     async def delete_user(self, ids: List[str]) -> None:
         # Xóa theo trường 'id' trong document

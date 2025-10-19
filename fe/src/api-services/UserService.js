@@ -7,7 +7,6 @@ const UserService = {
             const response = await BaseAxios.put("/users/", userData);
             return response;
         } catch (error) {
-            console.error("❌ Update profile failed:", error);
             throw error;
         }
     },
@@ -18,7 +17,6 @@ const UserService = {
             const response = await BaseAxios.get(`/users/${userId}`);
             return response.data;
         } catch (error) {
-            console.error("❌ Get profile failed:", error);
             throw error;
         }
     },
@@ -26,10 +24,9 @@ const UserService = {
     // Change password
     async changePassword(passwordData) {
         try {
-            const response = await BaseAxios.put("/users/password", passwordData);
+            const response = await BaseAxios.put("/users/reset-password", passwordData);
             return response.data;
         } catch (error) {
-            console.error("❌ Change password failed:", error);
             throw error;
         }
     },
@@ -47,7 +44,6 @@ const UserService = {
             });
             return response.data;
         } catch (error) {
-            console.error("❌ Upload avatar failed:", error);
             throw error;
         }
     },
