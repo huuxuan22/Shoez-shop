@@ -32,18 +32,19 @@ const UserService = {
     },
 
     // Upload avatar
-    async uploadAvatar(file) {
+    async uploadAvatar(file, userId) {
         try {
             const formData = new FormData();
+            formData.append("user_id", userId);
             formData.append("avatar", file);
-
             const response = await BaseAxios.post("/users/avatar", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             });
-            return response.data;
+            return response;
         } catch (error) {
+            console.error("Upload avatar failed", error);
             throw error;
         }
     },

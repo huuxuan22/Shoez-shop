@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import HTTPException, Query, UploadFile, File
+from fastapi import Form, HTTPException, Query, UploadFile, File
 from fastapi.encoders import jsonable_encoder
 from starlette.responses import JSONResponse
 
@@ -76,11 +76,12 @@ async def reset_password(
 
 @user_router.post("/avatar")
 async def upload_avatar(
-    file: UploadFile = File(...),
+    user_id: str = Form(...),  
+    file: UploadFile = File(..., alias="avatar"),
     user_repo: UserRepository = Depends(get_user_repo)
 ):
     service = UserService(user_repo)
-    avatar_url = await service.upload_avatar(file)
+    avatar_url = await service.upload_avatar(user_id=user_id, file=file)
     return JSONResponse(status_code=200, content={"avatar_url": avatar_url})
 
 @user_router.delete("/")
