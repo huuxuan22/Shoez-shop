@@ -27,6 +27,7 @@ class UserPrincipal(BaseModel):
     age: Optional[int] = None
     avatar: Optional[str] = None
     is_active: bool = True
+    role: Optional[str] = None
     address: Optional[str] = None
     birthday: Optional[str] = None  # Format: YYYY-MM-DD
     gender: Optional[str] = None  # Values: male, female, other
