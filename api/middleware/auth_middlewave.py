@@ -8,7 +8,6 @@ from repositories.user_repository import UserRepository
 from utils.auth import validate_token
 from exceptions.exception import AuthTokenMissingException,AuthException
 from config.logging_conf import logger
-from response.response import response_fail
 from i18n.translator import _
 from fastapi.responses import JSONResponse
 from config.context import current_user
@@ -48,8 +47,6 @@ class AuthMiddlewave(BaseHTTPMiddleware):
         "/auth/login",
         "/auth/register",
         "auth/logout",
-        "auth/logout-user",
-        "auth/login-user",
         "auth/register-user",
         "/info",
         "/user/reset-password",
@@ -60,7 +57,7 @@ class AuthMiddlewave(BaseHTTPMiddleware):
         "/auth/google/callback",
         "/auth/facebook/login",
         "/auth/facebook/callback",
-        "pwd",
+        "/auth/pwd",
         "/test",
         "/users/",
         "/products/",
@@ -121,13 +118,21 @@ class AuthMiddlewave(BaseHTTPMiddleware):
             return response
 
         except (AuthException, AuthTokenMissingException) as e:
-            return response_fail(_(e.message))
+            return JSONResponse(
+                status_code=401,  # Unauthorized
+                content={"success": False, "message": str(e)}
+            )
         except AppException as e:
-            return response_fail(_(e.message))
+            return JSONResponse(
+                status_code=400,  # Bad Request
+                content={"success": False, "message": str(e)}
+            )
         except SystemException as e:
             logger.exception(f"Unexpected error in auth middleware: {e}")
-            return response_fail(_(e.message))
+            return JSONResponse(
+                status_code=500,  # Internal Server Error
+                content={"success": False, "message": "Internal server error"}
+            )
         finally:
             logger.info(">>>>>> End auth")
-
 

@@ -2,7 +2,7 @@
 from fastapi import Request
 from config.context import lang_var
 from fastapi import Depends
-
+from passlib.context import CryptContext
 from repositories.cart_repository import CartRepository
 from repositories.image_repository import ImageRepository
 from repositories.order_repository import OrderRepository
@@ -19,6 +19,8 @@ async def set_language_dependency(request: Request):
         lang = "en"
     lang_var.set(lang)
     return lang
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 async def get_user_repo():
     async with UserRepository(get_database()) as repo:

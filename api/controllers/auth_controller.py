@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Body, Depends
 from starlette import status
 from starlette.responses import JSONResponse
 
@@ -45,6 +45,14 @@ async def login(
 
     return result
 
+@auth_router.post("/pwd")
+async def hash_password(password: str = Body(..., embed=True)):
+    """
+    Nhận password string, trả về hash
+    Body JSON ví dụ: { "password": "123" }
+    """
+    hashed = auth.pwd_context.hash(password)
+    return hashed
 
 @auth_router.get("/google/login")
 async def facebook(request: Request):
