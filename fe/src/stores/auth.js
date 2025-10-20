@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { loginApi, registerApi } from "@/api-services/AuthService";
+import { loginApi, logoutApi, registerApi } from "@/api-services/AuthService";
 
 export const useAuthStore = defineStore("auth", {
     state: () => ({
@@ -86,7 +86,8 @@ export const useAuthStore = defineStore("auth", {
             }
         },
 
-        logout() {
+        async logout() {
+            const res = await logoutApi();
             this.user = null;
             this.accessToken = null;
             this.refreshToken = null;

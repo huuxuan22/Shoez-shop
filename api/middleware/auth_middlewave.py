@@ -5,7 +5,7 @@ from config.enum import MessageKey
 from dependences.dependencies import set_language_dependency, get_user_repo
 from exceptions.exception import AuthTokenMissingException, SystemException, AppException,UnauthorizedException
 from repositories.user_repository import UserRepository
-from utils.auth import validate_token
+from utils.auth import is_blacklisted, validate_token
 from exceptions.exception import AuthTokenMissingException,AuthException
 from config.logging_conf import logger
 from i18n.translator import _
@@ -16,8 +16,8 @@ settings = get_settings()
 
 async def _authenticate_user(self, request: Request):
     token = request.cookies.get("token_access")
-    if not token:
-        raise AuthTokenMissingException(MessageKey.TOKEN_INVALID)
+    if not token or is_blacklisted(token):
+        raise AuthTokenMissingException("Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.")
 
     decoded_token = validate_token(token)
     email = decoded_token["email"]
@@ -60,7 +60,6 @@ class AuthMiddlewave(BaseHTTPMiddleware):
         "/auth/pwd",
         "/test",
         "/users/",
-        "/products/",
     ]
 
     __prefix_paths = [
