@@ -1,13 +1,11 @@
 import uuid
 from datetime import datetime, timedelta
 from typing import Optional, Any
-
+import redis
 from jose import jwt, JWTError
 from passlib.context import CryptContext
-
 from config.config import get_settings
 from pydantic import BaseModel
-
 from config.enum import MessageKey
 from exceptions.exception import AuthTokenMissingException, AuthException
 
@@ -110,6 +108,14 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a password against a hash"""
     return pwd_context.verify(plain_password, hashed_password)
+
+r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+
+def add_to_blacklist(token: str, expire_seconds: int):
+    r.set(token, "blacklisted", ex=expire_seconds)
+
+def is_blacklisted(token: str) -> bool:
+    return r.exists(token) == 1
 
 
 

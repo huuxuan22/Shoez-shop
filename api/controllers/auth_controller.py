@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Body, Depends
 from starlette import status
 from starlette.responses import JSONResponse
-
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dependences.dependencies import get_user_repo
 from exceptions import UserNotFoundException
 from repositories.user_repository import UserRepository
@@ -11,6 +11,7 @@ from utils import auth
 from fastapi import Request, Response
 from schemas.auth_schemas import UserCreate, LoginRequest, TokenResponse
 
+security = HTTPBearer()
 auth_router = APIRouter(tags=["Auth"], prefix="/auth")
 
 @auth_router.post("/register", response_model=TokenResponse)
@@ -53,6 +54,13 @@ async def hash_password(password: str = Body(..., embed=True)):
     """
     hashed = auth.pwd_context.hash(password)
     return hashed
+
+@auth_router.post("/logout")
+def logout(token: HTTPAuthorizationCredentials = Depends(security)):
+    jwt_token = token.credentials
+    expire_seconds = 3600  
+    auth.add_to_blacklist(jwt_token, expire_seconds)
+    return JSONResponse({"success": True, "message": "Logged out successfully"})
 
 @auth_router.get("/google/login")
 async def facebook(request: Request):

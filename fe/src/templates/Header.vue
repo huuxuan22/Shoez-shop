@@ -145,8 +145,9 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import home from "@/assets/icons/home.png"
+import { useAuthStore } from '@/stores/auth';
 const router = useRouter();
-
+const authStore = useAuthStore();
 // Reactive data
 const showUserMenu = ref(false);
 const showMobileMenu = ref(false);
@@ -189,9 +190,8 @@ const closeMenus = () => {
   showMobileMenu.value = false;
 };
 
-const handleLogout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
+const handleLogout = async () => {
+  await authStore.logout()
   closeMenus();
   router.push('/login');
 };

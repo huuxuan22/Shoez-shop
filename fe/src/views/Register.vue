@@ -235,7 +235,7 @@ const onSubmit = async (values) => {
     });
 
     showToast('Đăng ký thành công!', 'success');
-
+    await authStore.logout();
     // Delay chuyển trang 1.5 giây để user thấy toast
     setTimeout(() => {
       router.push('/');

@@ -12,7 +12,7 @@ request_id: ContextVar[uuid.UUID] = ContextVar(
 current_email: ContextVar[Optional[str]] = ContextVar("current_email", default=None)
 current_user: ContextVar[Optional[Dict[str, Any]]] = ContextVar("current_user", default=None)
 lang_var: ContextVar[str] = ContextVar("lang", default="en")
-
+token_user: ContextVar[dict] = ContextVar("token_user", default=None)
 def get_current_lang() -> str:
     return lang_var.get()
 
