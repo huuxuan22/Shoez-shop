@@ -13,4 +13,7 @@ app.use(pinia).use(i18n).use(router);
 // Tắt auto-login từ localStorage
 // const authStore = useAuthStore();
 // authStore.initializeAuth();
+// 🟢 Khôi phục dữ liệu từ localStorage
+const authStore = useAuthStore();
+authStore.initializeAuth();
 app.mount("#app");

@@ -19,7 +19,7 @@ export const useAuthStore = defineStore("auth", {
     },
 
     actions: {
-        // Tự động khôi phục session từ localStorage khi app khởi động
+        // Initialize auth from localStorage
         initializeAuth() {
             const token = localStorage.getItem("token");
             const refreshToken = localStorage.getItem("refresh_token");
@@ -42,17 +42,22 @@ export const useAuthStore = defineStore("auth", {
 
         async updateUser(updatedData) {
             this.user = { ...this.user, ...updatedData };
-            // Không lưu localStorage - chỉ cập nhật memory
+            localStorage.setItem("user", JSON.stringify(this.user));
         },
 
         async login(credentials) {
             try {
                 const res = await loginApi(credentials);
 
-                // Chỉ lưu state vào memory (Pinia), không lưu localStorage
+                // Lưu state
                 this.user = res.user_principal;
                 this.accessToken = res.access_token;
                 this.refreshToken = res.refresh_token;
+
+                // Lưu localStorage
+                localStorage.setItem("token", res.access_token);
+                localStorage.setItem("refresh_token", res.refresh_token);
+                localStorage.setItem("user", JSON.stringify(res.user_principal));
 
                 return res;
             } catch (error) {
@@ -65,10 +70,14 @@ export const useAuthStore = defineStore("auth", {
             try {
                 const res = await registerApi(credentials);
 
-                // Chỉ lưu state trong memory
                 this.user = res.user_principal;
                 this.accessToken = res.access_token;
                 this.refreshToken = res.refresh_token;
+
+                // Lưu localStorage
+                localStorage.setItem("token", res.access_token);
+                localStorage.setItem("refresh_token", res.refresh_token);
+                localStorage.setItem("user", JSON.stringify(res.user_principal));
 
                 return res;
             } catch (error) {
@@ -78,18 +87,11 @@ export const useAuthStore = defineStore("auth", {
         },
 
         async logout() {
-            try {
-                // Gọi API logout (có thể fail nếu token không hợp lệ)
-                await logoutApi();
-            } catch (error) {
-                console.warn("Logout API failed, but clearing local state anyway:", error);
-            } finally {
-                // Luôn clear state dù API có fail
-                this.user = null;
-                this.accessToken = null;
-                this.refreshToken = null;
-                localStorage.clear();
-            }
+            const res = await logoutApi();
+            this.user = null;
+            this.accessToken = null;
+            this.refreshToken = null;
+            localStorage.clear();
         },
     },
 });
