@@ -10,6 +10,7 @@ import { useAuthStore } from "@/stores/auth";
 const pinia = createPinia();
 const app = createApp(App);
 app.use(pinia).use(i18n).use(router);
-const authStore = useAuthStore();
-authStore.initializeAuth();
+// Tắt auto-login từ localStorage
+// const authStore = useAuthStore();
+// authStore.initializeAuth();
 app.mount("#app");

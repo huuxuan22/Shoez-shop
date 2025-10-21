@@ -2,15 +2,12 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Optional, Any
 import redis
+import bcrypt
 from jose import jwt, JWTError
-from passlib.context import CryptContext
 from config.config import get_settings
 from pydantic import BaseModel
 from config.enum import MessageKey
 from exceptions.exception import AuthTokenMissingException, AuthException
-
-# Password hashing context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class TokenData(BaseModel):
@@ -102,20 +99,44 @@ def validate_token(token: str) -> dict[str,Any]:
 # Hash password
 def hash_password(password: str) -> str:
     """Hash a password using bcrypt"""
-    return pwd_context.hash(password)
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed.decode('utf-8')
 
 # Verify password
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a password against a hash"""
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
+    except Exception:
+        return False
 
-r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+# Try to connect to Redis, but don't fail if not available
+try:
+    r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True, socket_connect_timeout=1)
+    r.ping()
+    REDIS_AVAILABLE = True
+except Exception:
+    r = None
+    REDIS_AVAILABLE = False
+    print("Warning: Redis not available. Token blacklist will be disabled.")
 
 def add_to_blacklist(token: str, expire_seconds: int):
-    r.set(token, "blacklisted", ex=expire_seconds)
+    """Add token to blacklist. Does nothing if Redis is not available."""
+    if REDIS_AVAILABLE and r:
+        try:
+            r.set(token, "blacklisted", ex=expire_seconds)
+        except Exception as e:
+            print(f"Warning: Could not add token to blacklist: {e}")
 
 def is_blacklisted(token: str) -> bool:
-    return r.exists(token) == 1
+    """Check if token is blacklisted. Returns False if Redis is not available."""
+    if not REDIS_AVAILABLE or not r:
+        return False
+    try:
+        return r.exists(token) == 1
+    except Exception:
+        return False
 
 
 

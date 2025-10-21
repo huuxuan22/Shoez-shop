@@ -10,6 +10,8 @@ from services.user_service import UserService
 from utils import auth
 from fastapi import Request, Response
 from schemas.auth_schemas import UserCreate, LoginRequest, TokenResponse
+from i18n.translator import translate
+from config.enum import MessageKey
 
 security = HTTPBearer()
 auth_router = APIRouter(tags=["Auth"], prefix="/auth")
@@ -56,11 +58,31 @@ async def hash_password(password: str = Body(..., embed=True)):
     return hashed
 
 @auth_router.post("/logout")
-def logout(token: HTTPAuthorizationCredentials = Depends(security)):
-    jwt_token = token.credentials
-    expire_seconds = 3600  
-    auth.add_to_blacklist(jwt_token, expire_seconds)
-    return JSONResponse({"success": True, "message": "Logged out successfully"})
+async def logout(request: Request, response: Response):
+    """
+    Logout user by clearing cookies and optionally blacklisting token
+    """
+    # Get token from cookie
+    token = request.cookies.get("token_access")
+    
+    # Try to blacklist token if Redis is available
+    if token:
+        try:
+            expire_seconds = 3600
+            auth.add_to_blacklist(token, expire_seconds)
+        except Exception as e:
+            # Redis might not be available, just log and continue
+            print(f"Warning: Could not blacklist token: {e}")
+    
+    # Clear all auth cookies
+    response.delete_cookie(key="token_access")
+    response.delete_cookie(key="token_refresh")
+    response.delete_cookie(key="current_user")
+    
+    return JSONResponse({
+        "success": True, 
+        "message": translate(MessageKey.LOGOUT_SUCCESS)
+    })
 
 @auth_router.get("/google/login")
 async def facebook(request: Request):

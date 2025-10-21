@@ -1,4 +1,3 @@
-from openai import responses
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from dependences.dependencies import set_language_dependency
