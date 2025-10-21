@@ -7,6 +7,7 @@ import { MultiLanguage } from "@/common/enum";
 const lang = localStorage.getItem("language") || MultiLanguage.VI;
 
 const i18n = createI18n({
+  legacy: false, // Tắt legacy mode warning
   locale: lang,
   fallbackLocale: MultiLanguage.VI,
   messages: {

@@ -1,5 +1,5 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 
 // Views
 import Home from "@/views/Home.vue";
@@ -228,11 +228,12 @@ router.beforeEach((to, from, next) => {
     document.title = to.meta.title;
   }
 
-  const isAuthenticated = localStorage.getItem('token');
-  const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
-  const isAdmin = user?.role?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'administrator';
-
-  // Check auth requirements
+  // Lấy auth store để check state
+  const authStore = useAuthStore();
+  
+  const isAuthenticated = authStore.isAuthenticated;
+  const user = authStore.user;
+  const isAdmin = authStore.isAdmin;  // Check auth requirements
   if (to.meta.requiresAuth) {
     if (!isAuthenticated) {
       next({ name: 'Login' });

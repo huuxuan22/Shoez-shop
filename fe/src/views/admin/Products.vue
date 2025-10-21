@@ -6,7 +6,9 @@
         <h1 class="text-3xl font-bold text-gray-900">Quản lý sản phẩm</h1>
         <p class="text-gray-600 mt-2">Danh sách tất cả sản phẩm</p>
       </div>
-      <button class="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2">
+      <button 
+        @click="showAddProductModal = true"
+        class="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
@@ -180,18 +182,211 @@
         </div>
       </div>
     </div>
+
+    <!-- Add Product Modal -->
+    <div v-if="showAddProductModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Thêm sản phẩm mới</h2>
+          <button @click="closeModal" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <form @submit.prevent="createProduct" class="space-y-4">
+          <!-- Tên sản phẩm -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Tên sản phẩm *</label>
+            <input
+              v-model="newProduct.name"
+              type="text"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              placeholder="VD: Nike Air Max 2024"
+            />
+          </div>
+
+          <!-- Giá -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Giá (VNĐ) *</label>
+            <input
+              v-model.number="newProduct.price"
+              type="number"
+              required
+              min="0"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              placeholder="3500000"
+            />
+          </div>
+
+          <!-- Mô tả -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Mô tả *</label>
+            <textarea
+              v-model="newProduct.description"
+              required
+              rows="3"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              placeholder="Mô tả chi tiết sản phẩm..."
+            ></textarea>
+          </div>
+
+          <!-- Danh mục & Thương hiệu -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Danh mục *</label>
+              <select
+                v-model="newProduct.category"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              >
+                <option value="">Chọn danh mục</option>
+                <option value="running">Giày chạy</option>
+                <option value="basketball">Giày bóng rổ</option>
+                <option value="lifestyle">Giày thường</option>
+                <option value="football">Giày bóng đá</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Thương hiệu *</label>
+              <input
+                v-model="newProduct.brand"
+                type="text"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                placeholder="Nike, Adidas..."
+              />
+            </div>
+          </div>
+
+          <!-- Tồn kho -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Tồn kho *</label>
+            <input
+              v-model.number="newProduct.stock"
+              type="number"
+              required
+              min="0"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              placeholder="50"
+            />
+          </div>
+
+          <!-- Size (array) -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Sizes (phân cách bằng dấu phẩy) *</label>
+            <input
+              v-model="newProduct.sizesInput"
+              type="text"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              placeholder="38, 39, 40, 41, 42, 43"
+            />
+          </div>
+
+          <!-- Colors (array) -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Màu sắc (phân cách bằng dấu phẩy) *</label>
+            <input
+              v-model="newProduct.colorsInput"
+              type="text"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              placeholder="black, white, red"
+            />
+          </div>
+
+          <!-- Images Upload -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Hình ảnh sản phẩm *</label>
+            <input
+              type="file"
+              @change="handleImageUpload"
+              accept="image/*"
+              multiple
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+            />
+            <p class="text-xs text-gray-500 mt-1">Có thể chọn nhiều ảnh. Ảnh đầu tiên sẽ là ảnh chính.</p>
+            
+            <!-- Preview images -->
+            <div v-if="imagePreview.length > 0" class="mt-3 grid grid-cols-4 gap-2">
+              <div v-for="(preview, index) in imagePreview" :key="index" class="relative">
+                <img :src="preview" class="w-full h-24 object-cover rounded-lg border border-gray-200" />
+                <button
+                  type="button"
+                  @click="removeImage(index)"
+                  class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Error message -->
+          <div v-if="errorMessage" class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+            {{ errorMessage }}
+          </div>
+
+          <!-- Success message -->
+          <div v-if="successMessage" class="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg">
+            {{ successMessage }}
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center justify-end space-x-3 pt-4">
+            <button
+              type="button"
+              @click="closeModal"
+              class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              :disabled="isSubmitting"
+              class="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50"
+            >
+              {{ isSubmitting ? 'Đang tạo...' : 'Tạo sản phẩm' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </AdminLayout>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import AdminLayout from '@/layouts/admin/AdminLayout.vue';
+import axios from 'axios';
 
 const filters = ref({
   search: '',
   category: '',
   brand: '',
   status: ''
+});
+
+const showAddProductModal = ref(false);
+const isSubmitting = ref(false);
+const errorMessage = ref('');
+const successMessage = ref('');
+const imageFiles = ref([]);
+const imagePreview = ref([]);
+
+const newProduct = ref({
+  name: '',
+  price: 0,
+  description: '',
+  category: '',
+  brand: '',
+  stock: 0,
+  sizesInput: '',
+  colorsInput: '',
+  images: []
 });
 
 const products = ref([
@@ -212,6 +407,141 @@ const getStatusText = (status) => {
     'out-of-stock': 'Hết hàng'
   };
   return statusMap[status] || status;
+};
+
+const closeModal = () => {
+  showAddProductModal.value = false;
+  errorMessage.value = '';
+  successMessage.value = '';
+  imageFiles.value = [];
+  imagePreview.value = [];
+  // Reset form
+  newProduct.value = {
+    name: '',
+    price: 0,
+    description: '',
+    category: '',
+    brand: '',
+    stock: 0,
+    sizesInput: '',
+    colorsInput: '',
+    images: []
+  };
+};
+
+const handleImageUpload = (event) => {
+  const files = Array.from(event.target.files);
+  imageFiles.value = files;
+  
+  // Create preview URLs
+  imagePreview.value = [];
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      imagePreview.value.push(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  });
+};
+
+const removeImage = (index) => {
+  imageFiles.value.splice(index, 1);
+  imagePreview.value.splice(index, 1);
+};
+
+const createProduct = async () => {
+  try {
+    isSubmitting.value = true;
+    errorMessage.value = '';
+    successMessage.value = '';
+
+    // Validate có ít nhất 1 ảnh
+    if (imageFiles.value.length === 0) {
+      errorMessage.value = 'Vui lòng chọn ít nhất 1 ảnh sản phẩm';
+      isSubmitting.value = false;
+      return;
+    }
+
+    // Parse sizes và tạo SizeItem objects
+    const sizesArray = newProduct.value.sizesInput.split(',').map(s => parseInt(s.trim())).filter(s => !isNaN(s));
+    const sizes = sizesArray.map(size => ({
+      size: size,
+      stock: Math.floor(newProduct.value.stock / sizesArray.length) // Chia đều stock cho mỗi size
+    }));
+
+    // Parse colors
+    const colors = newProduct.value.colorsInput.split(',').map(c => c.trim()).filter(c => c);
+
+    // Bước 1: Tạo sản phẩm trước
+    const productData = {
+      name: newProduct.value.name,
+      price: newProduct.value.price,
+      description: newProduct.value.description,
+      category: newProduct.value.category,
+      brand: newProduct.value.brand,
+      stock: newProduct.value.stock,
+      sizes: sizes, // Format: [{size: 39, stock: 10}, {size: 40, stock: 15}]
+      colors: colors,
+      images: ['placeholder.jpg'], // Tạm thời dùng placeholder
+      discount: 0
+    };
+
+    const response = await axios.post('http://localhost:8000/api/products/create', productData, {
+      withCredentials: true
+    });
+
+    const productId = response.data.id;
+
+    // Bước 2: Upload hình ảnh
+    if (imageFiles.value.length > 0) {
+      const formData = new FormData();
+      imageFiles.value.forEach(file => {
+        formData.append('files', file);
+      });
+
+      try {
+        const uploadResponse = await axios.post(
+          `http://localhost:8000/api/products/${productId}/upload-images`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            },
+            withCredentials: true
+          }
+        );
+
+        successMessage.value = 'Tạo sản phẩm và upload hình ảnh thành công!';
+      } catch (uploadError) {
+        console.error('Upload images error:', uploadError);
+        successMessage.value = 'Tạo sản phẩm thành công nhưng upload hình ảnh thất bại!';
+      }
+    } else {
+      successMessage.value = 'Tạo sản phẩm thành công!';
+    }
+    
+    // Thêm vào danh sách
+    products.value.unshift({
+      id: productId,
+      name: productData.name,
+      brand: productData.brand,
+      sku: `SKU-${Date.now()}`,
+      category: productData.category,
+      price: productData.price,
+      stock: productData.stock,
+      status: 'active'
+    });
+
+    setTimeout(() => {
+      closeModal();
+    }, 1500);
+
+  } catch (error) {
+    console.error('Create product error:', error);
+    errorMessage.value = error.response?.data?.detail || 'Có lỗi xảy ra khi tạo sản phẩm';
+  } finally {
+    isSubmitting.value = false;
+  }
 };
 </script>
 

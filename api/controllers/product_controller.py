@@ -12,6 +12,18 @@ from services.product_service import ProductService
 product_router = APIRouter(prefix="/products", tags=["Products"])
 
 
+@product_router.post("/create", response_model=ProductResponse, status_code=201)
+async def create_product(
+    product_data: ProductCreate,
+    product_repo: ProductRepository = Depends(get_product_repo)
+):
+    """
+    Tạo sản phẩm mới
+    """
+    service = ProductService(None, product_repo)
+    return await service.create_product(product_data)
+
+
 @product_router.post("/{product_id}/upload-images")
 async def upload_product_images(
     product_id: str,
