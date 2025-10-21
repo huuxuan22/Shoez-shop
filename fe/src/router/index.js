@@ -213,7 +213,6 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    // Always scroll to top when navigating to a new route
     if (savedPosition) {
       return savedPosition;
     }
@@ -223,14 +222,11 @@ const router = createRouter({
 
 // Navigation guards
 router.beforeEach((to, from, next) => {
-  // Set page title
   if (to.meta.title) {
     document.title = to.meta.title;
   }
-
-  // Lấy auth store để check state
   const authStore = useAuthStore();
-  
+
   const isAuthenticated = authStore.isAuthenticated;
   const user = authStore.user;
   const isAdmin = authStore.isAdmin;  // Check auth requirements
@@ -253,20 +249,16 @@ router.beforeEach((to, from, next) => {
     }
   }
 
-  // Check guest requirements (redirect logged in users away from login/register)
   if (to.meta.requiresGuest) {
     if (isAuthenticated) {
-      // If trying to access admin login but already logged in as admin
       if (to.name === 'AdminLogin' && isAdmin) {
         next({ name: 'AdminDashboard' });
         return;
       }
-      // Regular user trying to access login
       next({ name: 'Home' });
       return;
     }
   }
-
   next();
 });
 

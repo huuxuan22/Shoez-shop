@@ -197,32 +197,26 @@ const handleLogin = async () => {
     showToast('Vui lòng nhập đầy đủ thông tin', 'error');
     return;
   }
-
   isLoading.value = true;
-
   try {
     // Call API login
+    debugger;
     const response = await authStore.login({
       email: loginForm.email,
       password: loginForm.password
     });
-    debugger;
     console.log(response);
 
     // Check if user is admin
-    if (response.user_principal.role !== 'admin' && response.user_principal.role !== 'ADMIN') {
+    if (response.user_principal.role !== 'ADMIN') {
+      debugger;
       showToast('Bạn không có quyền truy cập vào khu vực quản trị', 'error');
-      authStore.logout();
+      await authStore.logout();
       isLoading.value = false;
       return;
     }
 
     showToast('Đăng nhập thành công! Đang chuyển hướng...', 'success');
-
-    // Save remember me preference
-    if (loginForm.rememberMe) {
-      localStorage.setItem('adminRememberMe', 'true');
-    }
 
     // Redirect to admin dashboard
     setTimeout(() => {

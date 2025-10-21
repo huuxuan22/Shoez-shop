@@ -51,13 +51,14 @@ BaseAxios.interceptors.response.use(
         localStorage.removeItem("token");
         localStorage.removeItem("user");
 
-        if (!window.location.pathname.includes('/login')) {
+        if (!window.location.pathname.includes('/403')) {
           console.warn("🔐 Session expired, redirecting to login...");
-          window.location.href = '/login';
+          window.location.href = '/403';
         }
       } else if (status === 403) {
         // Xử lý Forbidden
         console.error("🚫 Access forbidden - insufficient permissions");
+        window.location.href = '/403';
       }
 
       // Nếu không phải 401/403, reject bình thường để phía gọi xử lý
