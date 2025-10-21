@@ -54,7 +54,7 @@ async def hash_password(password: str = Body(..., embed=True)):
     Nhận password string, trả về hash
     Body JSON ví dụ: { "password": "123" }
     """
-    hashed = auth.pwd_context.hash(password)
+    hashed = auth.hash_password(password)
     return hashed
 
 @auth_router.post("/logout")
