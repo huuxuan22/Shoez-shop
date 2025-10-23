@@ -27,10 +27,8 @@ async def get_cart(user_id: str, cart_repo: CartRepository = Depends(get_cart_re
     if not cart:
         raise HTTPException(status_code=404, detail="Cart not found")
 
-    # Trả về JSONResponse với status_code=200
     return JSONResponse(content=jsonable_encoder(cart), status_code=200)
-#
-# # Thêm item vào cart
+    
 @cart_router.delete("/delete-multiple")
 async def delete_multiple_carts(payload: CartDeleteManySchema, cart_repo: CartRepository = Depends(get_cart_repo)):
     service = CartService(cart_repo)

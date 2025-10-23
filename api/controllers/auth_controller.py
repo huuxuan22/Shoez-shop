@@ -40,8 +40,6 @@ async def login(
 ):
     service = AuthService(user_repo)
     result: TokenResponse = await service.login(login.email, login.password)
-
-    # ✅ Set cookies
     response.set_cookie(key="token_access", value=result.access_token, httponly=True)
     response.set_cookie(key="token_refresh", value=result.refresh_token, httponly=True)
     response.set_cookie(key="current_user", value=result.user_principal.email, httponly=False)
@@ -60,21 +58,17 @@ async def hash_password(password: str = Body(..., embed=True)):
 @auth_router.post("/logout")
 async def logout(request: Request, response: Response):
     """
-    Logout user by clearing cookies and optionally blacklisting token
+    đăng xuất thêm token vào danh sách đen redis
     """
-    # Get token from cookie
     token = request.cookies.get("token_access")
     
-    # Try to blacklist token if Redis is available
     if token:
         try:
             expire_seconds = 3600
             auth.add_to_blacklist(token, expire_seconds)
         except Exception as e:
-            # Redis might not be available, just log and continue
             print(f"Warning: Could not blacklist token: {e}")
     
-    # Clear all auth cookies
     response.delete_cookie(key="token_access")
     response.delete_cookie(key="token_refresh")
     response.delete_cookie(key="current_user")

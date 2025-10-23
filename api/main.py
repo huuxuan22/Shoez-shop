@@ -19,41 +19,34 @@ from middleware.auth_middlewave import  AuthMiddlewave
 from middleware.locale_middlewave import LocaleMiddlewave
 from config.database import connect_to_mongo, close_mongo_connection, get_database
 
-# Load environment variables
 load_dotenv()
 PRE_FIX = os.getenv("api_prefix")
 # Create FastAPI app
 # app = FastAPI(title="SHOEZ", version="1.0.0", dependencies=[Depends(set_language_dependency)])
 app = FastAPI(
     title="My Shop API",
-    docs_url="/docs",    # đường dẫn Swagger UI
-    redoc_url="/redoc"   # đường dẫn ReDoc
+    docs_url="/docs",    
+    redoc_url="/redoc"   
 )
 settings = get_settings()
-# Tạo bucket nếu chưa tồn tại
 if not minio_client.bucket_exists(settings.minio_bucket):
     minio_client.make_bucket(settings.minio_bucket)
 
 register_all_handlers(app)
-# Include routers
 app.include_router(auth_router, prefix=PRE_FIX)
 app.include_router(product_router, prefix=PRE_FIX)
 app.include_router(order_router, prefix=PRE_FIX)
 app.include_router(cart_router, prefix=PRE_FIX)
-
 app.include_router(user_router, prefix=PRE_FIX)
-setting = get_settings()
-
 @app.on_event("startup")
 async def startup_db_client():
     await connect_to_mongo()
 
 @app.on_event("shutdown")
 async def shutdown_db_client():    await close_mongo_connection()
-
 app.add_middleware(AuthMiddlewave)
 app.add_middleware(LocaleMiddlewave)
-app.add_middleware(SessionMiddleware, secret_key=setting.secret_key)
+app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
 
 @app.middleware("http")
 async def db_session_middleware(request: Request, call_next):
