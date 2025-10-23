@@ -32,7 +32,7 @@ def convert_uuid_to_str(data):
 async def replace_avatar(
     minio_client: Minio,
     bucket_name: str,
-    old_avatar_url: str,  # URL avatar cũ, nếu có
+    old_avatar_url: str,  
     new_file: UploadFile
 ) -> str:
     """

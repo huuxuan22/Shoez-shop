@@ -86,12 +86,10 @@ class OrderService(IOrderService):
         """
         Cập nhật trạng thái đơn hàng
         """
-        # Lấy order hiện tại
         order = await self.order_repo.get_by_id(order_id)
         if not order:
             return None
 
-        # Kiểm tra chuyển trạng thái hợp lệ
         current_status = order.get("status")
         if current_status == "pending" and status.lower() == "complete":
             updated_order = await self.order_repo.update(order_id, {"status": "complete"})
