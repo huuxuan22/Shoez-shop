@@ -28,10 +28,29 @@ class BaseRepository(Generic[ModelType]):
 
     def _convert_id(self, document: Dict[str, Any]) -> Dict[str, Any]:
         """Convert _id to string for JSON serialization"""
-        if document and '_id' in document:
+        if not document:
+            return document
+            
+        # Convert _id to id
+        if '_id' in document:
             document['id'] = str(document['_id'])
             del document['_id']
+        
+        # Convert all ObjectId fields to string recursively
+        self._convert_objectids(document)
         return document
+    
+    def _convert_objectids(self, obj: Any) -> Any:
+        """Recursively convert ObjectId to string in nested structures"""
+        if isinstance(obj, ObjectId):
+            return str(obj)
+        elif isinstance(obj, dict):
+            for key, value in obj.items():
+                obj[key] = self._convert_objectids(value)
+        elif isinstance(obj, list):
+            for i, item in enumerate(obj):
+                obj[i] = self._convert_objectids(item)
+        return obj
 
     async def delete_many_and_return(self, ids: List[str], id_key: str = "_id") -> List[ModelType]:
         """
