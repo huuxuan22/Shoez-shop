@@ -1,14 +1,26 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
 from starlette.responses import JSONResponse
-from typing import Optional, Dict, Any,List
+from typing import Optional, Dict, Any, List
+from datetime import datetime
 from dependences.dependencies import get_order_repo
 from repositories.order_repository import OrderRepository
 from schemas.order_schemas import OrderResponseSchema, OrderCreateSchema, OrderUpdateStatusSchema
 from services.order_service import OrderService
+from services.order_filter_service import OrderFilterService
 from config.database import get_database
 
 order_router = APIRouter(prefix="/orders", tags=["Orders"])
+
+
+def get_order_filter_service() -> OrderFilterService:
+    """
+    Dependency injection cho OrderFilterService
+    Tuân thủ Dependency Inversion Principle
+    """
+    order_repo = OrderRepository(get_database())
+    order_service = OrderService(order_repo)
+    return OrderFilterService(order_service)
 
 @order_router.post("/", response_model=OrderResponseSchema)
 async def create_order(order_data: OrderCreateSchema, order_repo: OrderRepository = Depends(lambda: OrderRepository(get_database()))):
@@ -29,28 +41,100 @@ async def get_orders(id: str = Query(..., description="User ID"), order_repo=Dep
 async def get_all_orders_admin(
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(20, ge=1, le=100, description="Items per page"),
-    order_repo: OrderRepository = Depends(lambda: OrderRepository(get_database()))
+    starttime: Optional[str] = Query(None, description="Start time filter (ISO format)"),
+    endtime: Optional[str] = Query(None, description="End time filter (ISO format)"),
+    valueSearch: Optional[str] = Query(None, description="Search value for order ID, user ID, or status"),
+    filter_service: OrderFilterService = Depends(get_order_filter_service)
 ):
     """
-    Lấy tất cả đơn hàng gần nhất theo phân trang cho admin
-    Trả về danh sách orders và tổng số trang
+    Lấy tất cả đơn hàng gần nhất theo phân trang cho admin với filter
+    Tuân thủ Single Responsibility Principle và Dependency Inversion Principle
     """
-    service = OrderService(order_repo)
-    total_orders = await service.count_orders()
-    total_pages = (total_orders + limit - 1) // limit  # ceil(total_orders / limit)
+    try:
+        result = await filter_service.get_filtered_orders(
+            page=page,
+            limit=limit,
+            start_time=starttime,
+            end_time=endtime,
+            search_value=valueSearch
+        )
+        
+        return JSONResponse(
+            content=jsonable_encoder(result),
+            status_code=200
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid parameter: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
-    # Lấy danh sách order theo page, limit
-    orders = await service.get_orders_paginated(skip=(page - 1) * limit, limit=limit)
 
-    return JSONResponse(
-        content=jsonable_encoder({
-            "total_pages": total_pages,
-            "current_page": page,
-            "total_orders": total_orders,
-            "orders": orders
-        }),
-        status_code=200
-    )
+@order_router.get("/admin/search", response_model=Dict[str, Any])
+async def search_orders_admin(
+    q: str = Query(..., description="Search query"),
+    page: int = Query(1, ge=1, description="Page number"),
+    limit: int = Query(20, ge=1, le=100, description="Items per page"),
+    filter_service: OrderFilterService = Depends(get_order_filter_service)
+):
+    """
+    Tìm kiếm orders theo từ khóa
+    """
+    try:
+        result = await filter_service.search_orders(
+            search_term=q,
+            page=page,
+            limit=limit
+        )
+        return JSONResponse(content=jsonable_encoder(result), status_code=200)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Search error: {str(e)}")
+
+
+@order_router.get("/admin/by-status", response_model=Dict[str, Any])
+async def get_orders_by_status_admin(
+    status: str = Query(..., description="Order status"),
+    page: int = Query(1, ge=1, description="Page number"),
+    limit: int = Query(20, ge=1, le=100, description="Items per page"),
+    filter_service: OrderFilterService = Depends(get_order_filter_service)
+):
+    """
+    Lấy orders theo status
+    """
+    try:
+        result = await filter_service.get_orders_by_status(
+            status=status,
+            page=page,
+            limit=limit
+        )
+        return JSONResponse(content=jsonable_encoder(result), status_code=200)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Filter error: {str(e)}")
+
+
+@order_router.get("/admin/by-date-range", response_model=Dict[str, Any])
+async def get_orders_by_date_range_admin(
+    start_date: str = Query(..., description="Start date (ISO format)"),
+    end_date: str = Query(..., description="End date (ISO format)"),
+    page: int = Query(1, ge=1, description="Page number"),
+    limit: int = Query(20, ge=1, le=100, description="Items per page"),
+    filter_service: OrderFilterService = Depends(get_order_filter_service)
+):
+    """
+    Lấy orders trong khoảng thời gian
+    """
+    try:
+        result = await filter_service.get_orders_by_date_range(
+            start_date=start_date,
+            end_date=end_date,
+            page=page,
+            limit=limit
+        )
+        return JSONResponse(content=jsonable_encoder(result), status_code=200)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid date format: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Date range error: {str(e)}")
+
 
 @order_router.get("/admin/all", response_model=List[OrderResponseSchema])
 async def get_all_orders(order_repo: OrderRepository = Depends(lambda: OrderRepository(get_database()))):

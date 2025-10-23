@@ -1,13 +1,30 @@
 from typing import List, Dict, Any, Optional
 from fastapi.encoders import jsonable_encoder
 from datetime import datetime
+from bson import ObjectId
 from repositories.order_repository import OrderRepository
 from schemas.order_schemas import OrderCreateSchema, OrderResponseSchema
+from interfaces.order_service_interface import IOrderService
 
 
-class OrderService:
+class OrderService(IOrderService):
     def __init__(self, order_repo: OrderRepository):
         self.order_repo = order_repo
+
+    def _serialize_for_json(self, data: Any) -> Any:
+        """
+        Convert ObjectId và datetime để có thể serialize thành JSON
+        """
+        if isinstance(data, ObjectId):
+            return str(data)
+        elif isinstance(data, datetime):
+            return data.isoformat()
+        elif isinstance(data, dict):
+            return {key: self._serialize_for_json(value) for key, value in data.items()}
+        elif isinstance(data, list):
+            return [self._serialize_for_json(item) for item in data]
+        else:
+            return data
 
     async def create_order(self, order_data: OrderCreateSchema) -> Dict[str, Any]:
         """
@@ -23,13 +40,7 @@ class OrderService:
         Lấy tất cả đơn hàng theo user
         """
         orders = await self.order_repo.get_by_user(user_id)
-
-        # chuyển datetime sang isoformat
-        for o in orders:
-            o["created_at"] = o["created_at"].isoformat() if isinstance(o["created_at"], datetime) else o["created_at"]
-            o["updated_at"] = o["updated_at"].isoformat() if isinstance(o["updated_at"], datetime) else o["updated_at"]
-
-        return orders
+        return self._serialize_for_json(orders)
 
     async def delete_multiple_orders(self, ids: List[str]) -> List[Dict]:
         """
@@ -51,7 +62,25 @@ class OrderService:
         )
         # Sắp xếp gần nhất trước
         orders.sort(key=lambda x: x.get("created_at", ""), reverse=True)
-        return orders
+        return self._serialize_for_json(orders)
+
+    async def count_orders_with_filter(self, filter_query: Dict[str, Any]) -> int:
+        """Đếm tổng số đơn hàng với filter"""
+        return await self.order_repo.count(filter_query)
+
+    async def get_orders_paginated_with_filter(self, skip: int = 0, limit: int = 20, filter_query: Dict[str, Any] = None):
+        """Lấy danh sách orders theo phân trang với filter, sắp xếp theo created_at DESC"""
+        if filter_query is None:
+            filter_query = {}
+            
+        orders = await self.order_repo.get_all(
+            skip=skip,
+            limit=limit,
+            filter_query=filter_query,
+        )
+        # Sắp xếp gần nhất trước
+        orders.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        return self._serialize_for_json(orders)
 
     async def update_order_status(self, order_id: str, status: str) -> Optional[Dict[str, Any]]:
         """
