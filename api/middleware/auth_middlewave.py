@@ -15,9 +15,13 @@ settings = get_settings()
 
 
 async def _authenticate_user(self, request: Request):
-    token = request.cookies.get("token_access")
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise AuthTokenMissingException("Thiếu hoặc sai định dạng token")
+
+    token = auth_header.split(" ")[1]
     if not token or is_blacklisted(token):
-        raise AuthTokenMissingException("Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.")
+        raise AuthTokenMissingException("Phiên đăng nhập không hợp lệ hoặc đã hết hạn.")
 
     decoded_token = validate_token(token)
     email = decoded_token["email"]
@@ -48,9 +52,6 @@ class AuthMiddlewave(BaseHTTPMiddleware):
         "/auth/register",
         "auth/logout",
         "auth/register-user",
-        "/info",
-        "/user/reset-password",
-        "/user/forgot-password",
         "/auth/verify-otp",
         "/auth/resend-otp",
         "/auth/google/login",

@@ -61,14 +61,14 @@ class ProductService:
         return ProductResponse(**created_doc)
 
     async def list_products(
-            self,
-            skip: int = 0,
-            limit: int = 10,
-            name: Optional[str] = None,
-            brand: Optional[str] = None,
-            category: Optional[str] = None
+        self,
+        skip: int = 0,
+        limit: int = 10,
+        name: Optional[str] = None,
+        brand: Optional[str] = None,
+        category: Optional[str] = None
     ) -> List[ProductResponse]:
-
+        # --- 1️⃣ Tạo bộ lọc ---
         filters = {}
         if name:
             filters["name"] = {"$regex": name, "$options": "i"}  # i = ignore case
@@ -77,8 +77,20 @@ class ProductService:
         if category:
             filters["category"] = {"$regex": category, "$options": "i"}
 
-        products = await self.product_repo.get_products(filters=filters, skip=skip, limit=limit)
-        return [ProductResponse(**p) for p in products]
+        products = await self.product_repo.get_products(
+            filters=filters, skip=skip, limit=limit
+        )
+
+        converted_products = []
+        for p in products:
+            p_dict = dict(p)
+            if "_id" in p_dict:
+                p_dict["id"] = str(p_dict["_id"])
+                del p_dict["_id"]
+            converted_products.append(p_dict)
+
+        return [ProductResponse(**p) for p in converted_products]
+
 
     async def get_top_rated_products(self, limit: int = 8) -> List[ProductResponse]:
         products = await self.product_repo.get_products(
