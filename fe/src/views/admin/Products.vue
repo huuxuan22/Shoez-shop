@@ -198,16 +198,30 @@
       </div>
     </div>
 
-    <!-- Add Product Modal (giữ nguyên) -->
-    <!-- ... -->
+    <!-- Add Product Modal -->
+    <transition name="fade">
+      <div v-if="showAddProductModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] p-6 relative overflow-y-auto" style="scroll-behavior: smooth;">
+          <button @click="closeModal" class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
+          <AddProduct @created="onProductCreated" />
+        </div>
+      </div>
+    </transition>
   </AdminLayout>
 </template>
+
 
 <script setup>
 import { watch, onMounted, ref, computed } from 'vue';
 import AdminLayout from '@/layouts/admin/AdminLayout.vue';
+import AddProduct from './AddProduct.vue';
 import axios from 'axios';
 import ProductService from "@/api-services/ProductService";
+// Khi thêm sản phẩm thành công từ modal
+const onProductCreated = () => {
+  fetchProducts();
+  closeModal();
+};
 
 const filters = ref({
   search: '',
