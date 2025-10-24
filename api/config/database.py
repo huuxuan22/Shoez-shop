@@ -11,7 +11,6 @@ db = Database()
 settings = get_settings()
 
 async def connect_to_mongo():
-    # 1. Tạo client MongoDB (không truyền codec_options ở đây)
     db.client = AsyncIOMotorClient(settings.mongodb_url)
 
     # 2. Định nghĩa codec_options (áp dụng ở cấp database)

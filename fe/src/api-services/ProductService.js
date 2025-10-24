@@ -4,7 +4,6 @@ import BaseAxios from "./BaseAxios";
 const PREFIX_PRODUCT = "products";
 
 const ProductService = {
-    // 🧾 Lấy danh sách tất cả sản phẩm (kèm bộ lọc)
     async getAll(data) {
         try {
             debugger;
