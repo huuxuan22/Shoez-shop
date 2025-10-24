@@ -184,8 +184,6 @@ const goToProduct = (productId) => {
 
 // Quick view
 const quickView = (productId) => {
-  // TODO: Open modal with product details
-  console.log('Quick view:', productId);
 };
 
 // Add to cart

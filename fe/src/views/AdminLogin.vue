@@ -199,32 +199,23 @@ const handleLogin = async () => {
   }
   isLoading.value = true;
   try {
-    // Call API login
-    debugger;
     const response = await authStore.login({
       email: loginForm.email,
       password: loginForm.password
     });
-    console.log(response);
 
-    // Check if user is admin
     if (response.user_principal.role !== 'ADMIN') {
-      debugger;
       showToast('Bạn không có quyền truy cập vào khu vực quản trị', 'error');
       await authStore.logout();
       isLoading.value = false;
       return;
     }
-
     showToast('Đăng nhập thành công! Đang chuyển hướng...', 'success');
-
-    // Redirect to admin dashboard
     setTimeout(() => {
       router.push('/admin');
     }, 1000);
 
   } catch (error) {
-    console.error('Login error:', error);
     const errorMessage = error.response?.data?.detail || 'Email hoặc mật khẩu không đúng';
     showToast(errorMessage, 'error');
   } finally {
@@ -234,7 +225,6 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-/* Toast Animation */
 .toast-enter-active,
 .toast-leave-active {
   transition: all 0.3s ease;
@@ -250,7 +240,6 @@ const handleLogin = async () => {
   transform: translateX(100px);
 }
 
-/* Blob Animation */
 @keyframes blob {
   0% {
     transform: translate(0px, 0px) scale(1);
@@ -281,7 +270,6 @@ const handleLogin = async () => {
   animation-delay: 4s;
 }
 
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }

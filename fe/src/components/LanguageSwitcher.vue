@@ -38,9 +38,6 @@ watchEffect(() => {
 const changeLanguage = (lang) => {
   locale.value = lang;
   localStorage.setItem("language", lang);
-
-  // Có thể thêm animation/feedback tại đây
-  console.log(`Ngôn ngữ đã chuyển sang: ${lang}`);
 };
 </script>
 

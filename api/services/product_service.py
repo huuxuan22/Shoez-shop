@@ -49,16 +49,15 @@ class ProductService:
 
         return {"product_id": product_id, "images": all_images}
 
-    async def create_product(self, product_create: ProductCreate) -> ProductResponse:
+    async def create_product(self, product_create: ProductCreate) -> Dict:
         product_dict = product_create.model_dump()
-        # Set default fields
         product_dict["rating"] = 0.0
-        product_dict["total_reviews"] = 0
+        product_dict["totalReviews"] = 0  
         product_dict["is_active"] = True
 
         created_doc = await self.product_repo.create(product_dict)
-        # Chuyển về schema response
-        return ProductResponse(**created_doc)
+        # Trả về dữ liệu thô từ database
+        return created_doc
 
     async def list_products(
         self,
@@ -66,21 +65,42 @@ class ProductService:
         limit: int = 10,
         name: Optional[str] = None,
         brand: Optional[str] = None,
-        category: Optional[str] = None
-    ) -> List[ProductResponse]:
-        # --- 1️⃣ Tạo bộ lọc ---
+        category: Optional[str] = None,
+        min_rating: Optional[float] = None,
+        max_rating: Optional[float] = None,
+        sort_by: str = "created_at",
+        sort_order: str = "desc"
+    ) -> Dict:
         filters = {}
         if name:
-            filters["name"] = {"$regex": name, "$options": "i"}  # i = ignore case
+            filters["name"] = {"$regex": name, "$options": "i"}  
         if brand:
             filters["brand"] = {"$regex": brand, "$options": "i"}
         if category:
             filters["category"] = {"$regex": category, "$options": "i"}
+        
+        # Filter theo rating
+        if min_rating is not None or max_rating is not None:
+            rating_filter = {}
+            if min_rating is not None:
+                rating_filter["$gte"] = min_rating
+            if max_rating is not None:
+                rating_filter["$lte"] = max_rating
+            filters["rating"] = rating_filter
 
+        # Lấy tổng số sản phẩm
+        total = await self.product_repo.count(filters)
+        
+        # Tạo sort criteria
+        sort_direction = -1 if sort_order == "desc" else 1
+        sort_criteria = [(sort_by, sort_direction)]
+        
+        # Lấy danh sách sản phẩm với sort
         products = await self.product_repo.get_products(
-            filters=filters, skip=skip, limit=limit
+            filters=filters, skip=skip, limit=limit, sort=sort_criteria
         )
 
+        # Trả về dữ liệu thô từ database
         converted_products = []
         for p in products:
             p_dict = dict(p)
@@ -89,7 +109,16 @@ class ProductService:
                 del p_dict["_id"]
             converted_products.append(p_dict)
 
-        return [ProductResponse(**p) for p in converted_products]
+        # Tính toán phân trang
+        total_pages = (total + limit - 1) // limit  # Ceiling division
+
+        return {
+            "products": converted_products,
+            "total": total,
+            "page": (skip // limit) + 1,
+            "limit": limit,
+            "total_pages": total_pages
+        }
 
 
     async def get_top_rated_products(self, limit: int = 8) -> List[ProductResponse]:
