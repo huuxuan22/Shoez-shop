@@ -10,7 +10,7 @@ const getApiUrl = () => {
 
     // Development environment
     if (host.includes('localhost') || host.includes('127.0.0.1')) {
-        return "http://localhost:8000/api";
+        return "http://localhost:8000/api/v1";
     }
 
     // Production environment - adjust as needed

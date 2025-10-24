@@ -477,11 +477,18 @@
   </AdminLayout>
 </template>
 
+
 <script setup>
 import { watch, onMounted, ref, computed } from 'vue';
 import AdminLayout from '@/layouts/admin/AdminLayout.vue';
+import AddProduct from './AddProduct.vue';
 import axios from 'axios';
 import ProductService from "@/api-services/ProductService";
+// Khi thêm sản phẩm thành công từ modal
+const onProductCreated = () => {
+  fetchProducts();
+  closeModal();
+};
 
 const filters = ref({
   search: '',
