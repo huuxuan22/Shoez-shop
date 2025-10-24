@@ -12,7 +12,7 @@ from services.product_service import ProductService
 product_router = APIRouter(prefix="/products", tags=["Products"])
 
 
-@product_router.post("/create", response_model=ProductResponse, status_code=201)
+@product_router.post("/create", status_code=201)
 async def create_product(
     product_data: ProductCreate,
     product_repo: ProductRepository = Depends(get_product_repo)
@@ -35,13 +35,17 @@ async def upload_product_images(
     result = await service.upload_product_images(product_id, files)
     return result
 
-@product_router.get("/get-all", response_model=List[ProductResponse])
+@product_router.get("/get-all")
 async def list_products(
     name: Annotated[Optional[str], Query(description="Tên sản phẩm để search")] = None,
     brand: Annotated[Optional[str], Query()] = None,
     category: Annotated[Optional[str], Query()] = None,
+    min_rating: Annotated[Optional[float], Query(ge=0, le=5)] = None,
+    max_rating: Annotated[Optional[float], Query(ge=0, le=5)] = None,
     skip: Annotated[int, Query(ge=0)] = 0,
     limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    sort_by: Annotated[Optional[str], Query()] = "created_at",
+    sort_order: Annotated[Optional[str], Query()] = "desc",
     product_repo: ProductRepository = Depends(get_product_repo),
 ):
     service = ProductService(None, product_repo)
@@ -50,7 +54,11 @@ async def list_products(
         limit=limit,
         name=name,
         brand=brand,
-        category=category
+        category=category,
+        min_rating=min_rating,
+        max_rating=max_rating,
+        sort_by=sort_by,
+        sort_order=sort_order
     )
 
 @product_router.get("/top-rated", response_model=List[ProductResponse])

@@ -4,11 +4,9 @@
     <header class="bg-white shadow-md sticky top-0 z-50">
       <nav class="container mx-auto px-4 py-4">
         <div class="flex items-center justify-between">
-          <!-- Logo -->
           <router-link to="/" class="text-2xl font-bold text-blue-600 hover:text-blue-700">
             Shoez Shop
           </router-link>
-
           <!-- Navigation Menu -->
           <div class="hidden md:flex items-center space-x-6">
             <router-link to="/" class="text-gray-700 hover:text-blue-600 transition-colors"

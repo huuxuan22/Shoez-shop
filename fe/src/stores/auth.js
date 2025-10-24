@@ -61,7 +61,6 @@ export const useAuthStore = defineStore("auth", {
 
                 return res;
             } catch (error) {
-                console.error("❌ Login failed:", error.message || error);
                 throw error;
             }
         },
@@ -81,7 +80,6 @@ export const useAuthStore = defineStore("auth", {
 
                 return res;
             } catch (error) {
-                console.error("❌ Registration failed:", error.message || error);
                 throw error;
             }
         },

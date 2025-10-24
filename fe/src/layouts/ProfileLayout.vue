@@ -144,11 +144,9 @@ const tabs = [
     }
 ];
 
-// Methods
 const handleUpdateProfile = async (profileData) => {
     isLoading.value = true;
     try {
-        // Prepare data for API (map to API format)
         const apiData = {
             id: authUser.value.id,
             full_name: profileData.fullName,
@@ -157,13 +155,8 @@ const handleUpdateProfile = async (profileData) => {
             birthday: profileData.birthday,
             gender: profileData.gender
         };
-        debugger;
-        // Call API
         const response = await UserService.updateProfile(apiData);
-        // Update user data in auth store
-        debugger;
         if (response.user_update) {
-            // Dùng action trong store để cập nhật
             await authStore.updateUser(response.user_update);
         }
         showToast('Cập nhật thành công!', 'success');
@@ -179,21 +172,17 @@ const handleChangePassword = async (passwordData) => {
     isLoading.value = true;
     try {
         const payload = {
-            id: authUser.value.id, // id người dùng hiện tại
+            id: authUser.value.id,
             current_password: passwordData.currentPassword,
             new_password: passwordData.newPassword,
         };
-        debugger;
-        console.log(payload);
 
-        // Simulate API call    
         const response = await UserService.changePassword(payload)
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         showToast('Thay đổi mật khẩu thành công!', 'success');
         return true;
     } catch (error) {
-        console.log(error);
         if (error?.status === 400) {
             showToast(error?.data?.detail, 'error');
         } else if (error?.status === 404) {

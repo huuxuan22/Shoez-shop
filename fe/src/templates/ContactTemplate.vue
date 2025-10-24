@@ -211,7 +211,6 @@ const form = ref({
 
 const submitForm = () => {
     // Xử lý gửi form ở đây
-    console.log('Form submitted:', form.value)
     alert('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất có thể.')
 
     // Reset form

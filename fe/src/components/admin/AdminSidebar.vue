@@ -138,7 +138,6 @@ const handleLogout = async () => {
     showConfirm.value = false; // Đóng modal sau khi đăng xuất thành công
     router.push('/admin/login');
   } catch (error) {
-    console.error('Lỗi đăng xuất:', error);
     showConfirm.value = false;
   }
 };

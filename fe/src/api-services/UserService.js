@@ -44,7 +44,6 @@ const UserService = {
             });
             return response;
         } catch (error) {
-            console.error("Upload avatar failed", error);
             throw error;
         }
     },

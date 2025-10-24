@@ -363,12 +363,8 @@ const handleProductClick = (product) => {
 };
 
 const handleAddToCart = (product) => {
-  console.log('Add to cart:', product);
-  // TODO: Implement add to cart logic
 };
 
 const handleBuyNow = (product) => {
-  console.log('Buy now:', product);
-  // TODO: Implement buy now logic
 };
 </script>

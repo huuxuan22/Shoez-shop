@@ -300,7 +300,6 @@ const onSubmit = async () => {
 };
 
 const loginWithGoogle = () => {
-  console.log("vafo dday roi nah");
   AuthService.loginWithGoogle();
 }
 const loginWithFacebook = () => {

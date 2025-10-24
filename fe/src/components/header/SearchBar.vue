@@ -21,7 +21,5 @@
   const searchQuery = ref('')
   
   const handleSearch = () => {
-    // Xử lý tìm kiếm
-    console.log('Search:', searchQuery.value)
   }
   </script>

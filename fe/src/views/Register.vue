@@ -225,7 +225,6 @@ onBeforeUnmount(() => {
 // Submit handler - VeeValidate sẽ tự động validate trước khi gọi hàm này
 const onSubmit = async (values) => {
   try {
-    console.log('Register form data:', values);
 
     const response = await authStore.register({
       full_name: values.full_name,
@@ -241,7 +240,6 @@ const onSubmit = async (values) => {
       router.push('/');
     }, 1500);
   } catch (error) {
-    console.error('Register error:', error);
     const errorMessage = error.data?.detail || error.message || 'Đăng ký thất bại!';
     showToast(errorMessage, 'error');
   }

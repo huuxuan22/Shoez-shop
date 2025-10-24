@@ -202,7 +202,7 @@
                                                     class="flex items-center space-x-1 bg-red-50 px-3 py-2 rounded-full border border-red-100">
                                                     <span class="text-red-500 text-sm">❤️</span>
                                                     <span class="text-xs font-bold text-gray-700">{{ design.likes
-                                                        }}</span>
+                                                    }}</span>
                                                 </div>
                                             </div>
 
@@ -546,7 +546,6 @@ const saveDesign = () => {
         material: currentMaterial.value,
         timestamp: new Date().toISOString()
     }
-    console.log('Design saved:', design)
     alert('🎉 Thiết kế đã được lưu! Bạn có thể xem trong mục "Thiết kế của tôi"')
 }
 
