@@ -50,16 +50,16 @@ export const useAuthStore = defineStore("auth", {
                 const res = await loginApi(credentials);
 
                 // Lưu state
-                this.user = res.user_principal;
-                this.accessToken = res.access_token;
-                this.refreshToken = res.refresh_token;
+                this.user = res.data.user_principal;
+                this.accessToken = res.data.access_token;
+                this.refreshToken = res.data.refresh_token;
 
                 // Lưu localStorage
-                localStorage.setItem("token", res.access_token);
-                localStorage.setItem("refresh_token", res.refresh_token);
-                localStorage.setItem("user", JSON.stringify(res.user_principal));
+                localStorage.setItem("token", res.data.access_token);
+                localStorage.setItem("refresh_token", res.data.refresh_token);
+                localStorage.setItem("user", JSON.stringify(res.data.user_principal));
 
-                return res;
+                return res.data;
             } catch (error) {
                 throw error;
             }

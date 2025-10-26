@@ -1,0 +1,30 @@
+<template>
+    <div class="flex items-center space-x-1">
+        <span v-for="star in 5" :key="star" class="text-yellow-400" :class="[sizeClass]">
+            {{ star <= rating ? '★' : '☆' }} </span>
+    </div>
+</template>
+
+<script setup>
+const props = defineProps({
+    rating: {
+        type: Number,
+        required: true,
+        validator: value => value >= 0 && value <= 5
+    },
+    size: {
+        type: Number,
+        default: 20
+    }
+})
+
+const sizeClass = computed(() => {
+    const sizes = {
+        16: 'text-base',
+        20: 'text-lg',
+        24: 'text-xl',
+        28: 'text-2xl'
+    }
+    return sizes[props.size] || 'text-lg'
+})
+</script>
