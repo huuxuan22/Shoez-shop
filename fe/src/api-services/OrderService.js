@@ -20,7 +20,8 @@ const OrderService = {
                 },
                 withCredentials: true,
             });
-            return response;
+
+            return response.data;
         } catch (error) {
             throw error;
         }

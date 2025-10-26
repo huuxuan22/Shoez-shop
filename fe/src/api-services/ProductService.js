@@ -45,7 +45,7 @@ const ProductService = {
 
     async getById(productId) {
         try {
-            const response = await BaseAxios.get(`${PREFIX_PRODUCT}/${productId}`);
+            const response = await BaseAxios.get(`/${PREFIX_PRODUCT}/detail/${productId}`);
             return response.data;
         } catch (error) {
             throw error;
@@ -59,6 +59,29 @@ const ProductService = {
                     'Content-Type': 'multipart/form-data'
                 }
             });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+    async getTopBrand(brand) {
+        try {
+            const response = await BaseAxios.get(`${PREFIX_PRODUCT}/top-rated-by-brand`, {
+                params: { brand: brand },  // Truyền brand qua query params
+                withCredentials: true
+            });
+            debugger;
+            console.log(response);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+    async getTopRate() {
+        try {
+            const response = await BaseAxios.get(`${PREFIX_PRODUCT}/top-rated`);
+            debugger;
+            console.log(response);
             return response.data;
         } catch (error) {
             throw error;

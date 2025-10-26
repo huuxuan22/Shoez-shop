@@ -165,8 +165,10 @@
               </td>
               <td class="px-6 py-4">
                 <div class="flex items-center space-x-3">
-                  <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
-                    <span class="text-xs text-gray-500">Ảnh</span>
+                  <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center overflow-hidden">
+                    <img v-if="product.images && product.images.length > 0" :src="product.images[0]" :alt="product.name"
+                      class="w-full h-full object-cover" />
+                    <span v-else class="text-xs text-gray-500">Ảnh</span>
                   </div>
                   <div>
                     <p class="font-medium text-gray-900">{{ product.name }}</p>
@@ -216,7 +218,8 @@
               </td>
               <td class="px-6 py-4 text-sm">
                 <div class="flex items-center space-x-2">
-                  <button class="text-blue-600 hover:text-blue-900 cursor-pointer" title="Xem chi tiết">
+                  <button @click="showProductDetail(product._id)"
+                    class="text-blue-600 hover:text-blue-900 cursor-pointer" title="Xem chi tiết">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -224,13 +227,15 @@
                         d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                   </button>
-                  <button class="text-gray-600 hover:text-gray-900 cursor-pointer" title="Chỉnh sửa">
+                  <button @click="editProduct(product)" class="text-gray-600 hover:text-gray-900 cursor-pointer"
+                    title="Chỉnh sửa">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                   </button>
-                  <button class="text-red-600 hover:text-red-900 cursor-pointer" title="Xóa">
+                  <button @click="showDeleteConfirmModal(product)"
+                    class="text-red-600 hover:text-red-900 cursor-pointer" title="Xóa">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -249,8 +254,10 @@
           <div v-for="product in products" :key="product.id" class="border border-gray-200 rounded-lg p-4">
             <div class="flex items-start justify-between mb-3">
               <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
-                  <span class="text-xs text-gray-500">Ảnh</span>
+                <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center overflow-hidden">
+                  <img v-if="product.images && product.images.length > 0" :src="product.images[0]" :alt="product.name"
+                    class="w-full h-full object-cover" />
+                  <span v-else class="text-xs text-gray-500">Ảnh</span>
                 </div>
                 <div>
                   <h3 class="font-medium text-gray-900">{{ product.name }}</h3>
@@ -285,7 +292,8 @@
             <div class="flex items-center justify-between">
               <span class="text-xs text-gray-500">{{ formatDate(product.created_at) }}</span>
               <div class="flex items-center space-x-2">
-                <button class="text-blue-600 hover:text-blue-900 cursor-pointer p-1" title="Xem chi tiết">
+                <button @click="showProductDetail(product._id)"
+                  class="text-blue-600 hover:text-blue-900 cursor-pointer p-1" title="Xem chi tiết">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -293,13 +301,15 @@
                       d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 </button>
-                <button class="text-gray-600 hover:text-gray-900 cursor-pointer p-1" title="Chỉnh sửa">
+                <button @click="editProduct(product)" class="text-gray-600 hover:text-gray-900 cursor-pointer p-1"
+                  title="Chỉnh sửa">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
                 </button>
-                <button class="text-red-600 hover:text-red-900 cursor-pointer p-1" title="Xóa">
+                <button @click="showDeleteConfirmModal(product)"
+                  class="text-red-600 hover:text-red-900 cursor-pointer p-1" title="Xóa">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -357,123 +367,23 @@
       </div>
     </div>
 
-    <!-- Add Product Modal -->
-    <div v-if="showAddProductModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
-      <div class="bg-white rounded-lg w-full max-w-4xl max-h-[95vh] overflow-y-auto">
-        <div class="p-6 border-b border-gray-200">
-          <h2 class="text-2xl font-bold text-gray-900">Thêm sản phẩm mới</h2>
-        </div>
+    <transition name="fade">
+      <Notification v-if="showNotificationError" :message="messageError" :type="typeNotification"
+        @close="closeNotification" />
+    </transition>
 
-        <form @submit.prevent="createProduct" class="p-4 sm:p-6 space-y-6">
-          <!-- Thông báo lỗi và thành công -->
-          <div v-if="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            {{ errorMessage }}
-          </div>
-          <div v-if="successMessage" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-            {{ successMessage }}
-          </div>
 
-          <!-- Thông tin cơ bản -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Tên sản phẩm *</label>
-              <input v-model="newProduct.name" type="text" required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Giá *</label>
-              <input v-model.number="newProduct.price" type="number" min="0" required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" />
-            </div>
-          </div>
+    <!-- Product Form Modal -->
+    <ProductFormModal :is-visible="showAddProductModal" :is-edit-mode="isEditMode" :editing-product="editingProduct"
+      @close="closeModal" @success="handleProductSuccess" @error="handleProductError" />
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Danh mục *</label>
-              <select v-model="newProduct.category" required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
-                <option value="">Chọn danh mục</option>
-                <option value="Sneaker">Sneaker</option>
-                <option value="Running">Running</option>
-                <option value="Basketball">Basketball</option>
-                <option value="Lifestyle">Lifestyle</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Thương hiệu *</label>
-              <select v-model="newProduct.brand" required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
-                <option value="">Chọn thương hiệu</option>
-                <option value="Nike">Nike</option>
-                <option value="Adidas">Adidas</option>
-                <option value="Puma">Puma</option>
-              </select>
-            </div>
-          </div>
+    <!-- Product Detail Modal -->
+    <ProductDetailModal :product="selectedProduct" :is-visible="showProductDetailModal" @close="closeProductDetailModal"
+      @edit="editProductFromDetail" @delete="deleteProductFromDetail" />
 
-          <!-- Mô tả -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Mô tả sản phẩm</label>
-            <textarea v-model="newProduct.description" rows="3"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"></textarea>
-          </div>
-
-          <!-- Kích thước và màu sắc -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Kích thước (phân cách bằng dấu phẩy)
-                *</label>
-              <input v-model="newProduct.sizesInput" type="text" placeholder="Ví dụ: 39, 40, 41, 42" required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Màu sắc (phân cách bằng dấu phẩy) *</label>
-              <input v-model="newProduct.colorsInput" type="text" placeholder="Ví dụ: Đen, Trắng, Xanh" required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" />
-            </div>
-          </div>
-
-          <!-- Tồn kho -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Số lượng tồn kho *</label>
-            <input v-model.number="newProduct.stock" type="number" min="0" required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" />
-          </div>
-
-          <!-- Upload hình ảnh -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Hình ảnh sản phẩm *</label>
-            <input type="file" multiple accept="image/*" @change="handleImageUpload"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" />
-
-            <!-- Preview images -->
-            <div v-if="imagePreview.length" class="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              <div v-for="(preview, index) in imagePreview" :key="index" class="relative">
-                <img :src="preview" :alt="`Preview ${index + 1}`" class="w-full h-32 object-cover rounded-lg" />
-                <button type="button" @click="removeImage(index)"
-                  class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs cursor-pointer">
-                  ×
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Actions -->
-          <div
-            class="flex flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-4 pt-6 border-t border-gray-200">
-            <button type="button" @click="closeModal"
-              class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-              Hủy
-            </button>
-            <button type="submit" :disabled="isSubmitting"
-              class="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
-              {{ isSubmitting ? 'Đang tạo...' : 'Tạo sản phẩm' }}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <!-- Delete Confirm Modal -->
+    <ConfirmModal :show="showDeleteConfirm" :message="deleteConfirmMessage" @confirm="confirmDeleteProduct"
+      @cancel="cancelDeleteProduct" />
   </AdminLayout>
 </template>
 
@@ -481,9 +391,11 @@
 <script setup>
 import { watch, onMounted, ref, computed } from 'vue';
 import AdminLayout from '@/layouts/admin/AdminLayout.vue';
-import AddProduct from './AddProduct.vue';
-import axios from 'axios';
+import ProductDetailModal from '@/components/admin/ProductDetailModal.vue';
+import ProductFormModal from '@/components/admin/ProductFormModal.vue';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import ProductService from "@/api-services/ProductService";
+import ToastNotification from '@/components/ToastNotification.vue';
 // Khi thêm sản phẩm thành công từ modal
 const onProductCreated = () => {
   fetchProducts();
@@ -503,28 +415,45 @@ const sortBy = ref('created_at');
 const sortOrder = ref('desc');
 
 const showAddProductModal = ref(false);
-const isSubmitting = ref(false);
-const errorMessage = ref('');
-const successMessage = ref('');
-const imageFiles = ref([]);
-const imagePreview = ref([]);
+const showNotificationError = ref(false);
+const messageError = ref("");
+const typeNotification = ref("")
+const isEditMode = ref(false);
+const editingProduct = ref(null);
 const products = ref([]);
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
 const totalProducts = ref(0);
 const totalPages = ref(0);
 
-const newProduct = ref({
-  name: '',
-  price: 0,
-  description: '',
-  category: '',
-  brand: '',
-  stock: 0,
-  sizesInput: '',
-  colorsInput: '',
-  images: []
+// Product Detail Modal
+const showProductDetailModal = ref(false);
+const selectedProduct = ref(null);
+
+// close notification error 
+const closeNotificationError = () => {
+  showNotificationError.value = false;
+}
+
+// Delete Confirm Modal
+const showDeleteConfirm = ref(false);
+const productToDelete = ref(null);
+
+// Computed property for delete confirm message
+const deleteConfirmMessage = computed(() => {
+  if (!productToDelete.value) return 'Bạn có chắc chắn muốn xóa sản phẩm này?';
+  return `Bạn có chắc chắn muốn xóa sản phẩm "${productToDelete.value.name}"? Hành động này không thể hoàn tác.`;
 });
+
+const handleProductSuccess = (data) => {
+  fetchProducts();
+};
+
+const handleProductError = (error) => {
+  showNotificationError.value = true;
+  messageError.value = error.detail;
+  typeNotification.value = "error"
+};
 
 // Format price to VND
 const formatPrice = (price) => {
@@ -599,7 +528,7 @@ const fetchProducts = async () => {
     totalProducts.value = response.total;
     totalPages.value = response.total_pages;
   } catch (error) {
-    console.error('Error fetching products:', error);
+
   }
 };
 
@@ -664,116 +593,100 @@ onMounted(() => {
 
 const closeModal = () => {
   showAddProductModal.value = false;
-  errorMessage.value = '';
-  successMessage.value = '';
-  imageFiles.value = [];
-  imagePreview.value = [];
-  // Reset form
-  newProduct.value = {
-    name: '',
-    price: 0,
-    description: '',
-    category: '',
-    brand: '',
-    stock: 0,
-    sizesInput: '',
-    colorsInput: '',
-    images: []
-  };
+  isEditMode.value = false;
+  editingProduct.value = null;
 };
 
-const handleImageUpload = (event) => {
-  const files = Array.from(event.target.files);
-  imageFiles.value = files;
-
-  // Create preview URLs
-  imagePreview.value = [];
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      imagePreview.value.push(e.target.result);
-    };
-    reader.readAsDataURL(file);
-  });
+const showProductDetail = (productId) => {
+  // Tìm sản phẩm từ danh sách đã có
+  const product = products.value.find(p => p._id === productId);
+  if (product) {
+    selectedProduct.value = product;
+    showProductDetailModal.value = true;
+  }
 };
 
-const removeImage = (index) => {
-  imageFiles.value.splice(index, 1);
-  imagePreview.value.splice(index, 1);
+const closeProductDetailModal = () => {
+  showProductDetailModal.value = false;
+  selectedProduct.value = null;
 };
 
-const createProduct = async () => {
+const editProduct = (product) => {
+  // Set edit mode
+  isEditMode.value = true;
+  editingProduct.value = product;
+
+  // Show modal
+  showAddProductModal.value = true;
+};
+
+const editProductFromDetail = (product) => {
+  // Set edit mode
+  isEditMode.value = true;
+  editingProduct.value = product;
+
+  // Show modal
+  showAddProductModal.value = true;
+
+  // Close detail modal
+  closeProductDetailModal();
+};
+
+// Delete Product Functions
+const showDeleteConfirmModal = (product) => {
+  productToDelete.value = product;
+  showDeleteConfirm.value = true;
+};
+
+const cancelDeleteProduct = () => {
+  showDeleteConfirm.value = false;
+  productToDelete.value = null;
+};
+
+const confirmDeleteProduct = async () => {
+  if (!productToDelete.value) return;
+
   try {
-    isSubmitting.value = true;
-    errorMessage.value = '';
-    successMessage.value = '';
+    await ProductService.delete(productToDelete.value._id || productToDelete.value.id);
 
-    // Validate có ít nhất 1 ảnh
-    if (imageFiles.value.length === 0) {
-      errorMessage.value = 'Vui lòng chọn ít nhất 1 ảnh sản phẩm';
-      isSubmitting.value = false;
-      return;
-    }
+    // Refresh products list to get updated data from server
+    await fetchProducts();
 
-    // Parse sizes và tạo SizeItem objects
-    const sizesArray = newProduct.value.sizesInput.split(',').map(s => parseInt(s.trim())).filter(s => !isNaN(s));
-    const sizes = sizesArray.map(size => ({
-      size: size,
-      stock: Math.floor(newProduct.value.stock / sizesArray.length) // Chia đều stock cho mỗi size
-    }));
+    // Close modals
+    showDeleteConfirm.value = false;
+    productToDelete.value = null;
 
-    // Parse colors
-    const colors = newProduct.value.colorsInput.split(',').map(c => c.trim()).filter(c => c);
-
-    // Bước 1: Tạo sản phẩm trước
-    const productData = {
-      name: newProduct.value.name,
-      price: newProduct.value.price,
-      description: newProduct.value.description,
-      category: newProduct.value.category,
-      brand: newProduct.value.brand,
-      stock: newProduct.value.stock,
-      sizes: sizes, // Format: [{size: 39, stock: 10}, {size: 40, stock: 15}]
-      colors: colors,
-      images: ['placeholder.jpg'], // Tạm thời dùng placeholder
-      discount: 0
-    };
-
-    const response = await ProductService.create(productData);
-    const productId = response.id;
-
-    // Bước 2: Upload hình ảnh
-    if (imageFiles.value.length > 0) {
-      const formData = new FormData();
-      imageFiles.value.forEach(file => {
-        formData.append('files', file);
-      });
-
-      try {
-        const uploadResponse = await ProductService.uploadImages(productId, formData);
-
-        // Cập nhật images trong response
-        response.images = uploadResponse.images;
-
-        successMessage.value = 'Tạo sản phẩm và upload hình ảnh thành công!';
-      } catch (uploadError) {
-        successMessage.value = 'Tạo sản phẩm thành công nhưng upload hình ảnh thất bại!';
-      }
-    } else {
-      successMessage.value = 'Tạo sản phẩm thành công!';
-    }
-
-    // Thêm sản phẩm mới vào đầu danh sách thay vì refresh
-    products.value.unshift(response);
-
+    // Show success message
+    successMessage.value = 'Xóa sản phẩm thành công!';
     setTimeout(() => {
-      closeModal();
-    }, 1500);
-
+      successMessage.value = '';
+    }, 3000);
   } catch (error) {
-    errorMessage.value = error.response?.data?.detail || 'Có lỗi xảy ra khi tạo sản phẩm';
-  } finally {
-    isSubmitting.value = false;
+    errorMessage.value = error.response?.data?.detail || 'Có lỗi xảy ra khi xóa sản phẩm';
+    setTimeout(() => {
+      errorMessage.value = '';
+    }, 3000);
+  }
+};
+
+const deleteProductFromDetail = async (product) => {
+  try {
+    await ProductService.delete(product.id);
+
+    // Refresh products list to get updated data from server
+    await fetchProducts();
+
+    closeProductDetailModal();
+    // Show success message
+    successMessage.value = 'Xóa sản phẩm thành công!';
+    setTimeout(() => {
+      successMessage.value = '';
+    }, 3000);
+  } catch (error) {
+    errorMessage.value = error.response?.data?.detail || 'Có lỗi xảy ra khi xóa sản phẩm';
+    setTimeout(() => {
+      errorMessage.value = '';
+    }, 3000);
   }
 };
 </script>
