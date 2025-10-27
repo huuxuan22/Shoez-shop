@@ -61,10 +61,26 @@
         <div>
           <h4 class="text-lg font-semibold mb-4">Hỗ trợ khách hàng</h4>
           <ul class="space-y-2">
-            <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Chính sách đổi trả</a></li>
-            <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Hướng dẫn mua hàng</a></li>
-            <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Bảo hành sản phẩm</a></li>
-            <li><a href="#" class="text-gray-300 hover:text-white transition-colors">FAQ</a></li>
+            <li>
+              <router-link to="/policy/returns" class="text-gray-300 hover:text-white transition-colors" @click="scrollToTop">
+                Chính sách đổi trả
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/guide/purchase" class="text-gray-300 hover:text-white transition-colors" @click="scrollToTop">
+                Hướng dẫn mua hàng
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/policy/warranty" class="text-gray-300 hover:text-white transition-colors" @click="scrollToTop">
+                Bảo hành sản phẩm
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/faq" class="text-gray-300 hover:text-white transition-colors" @click="scrollToTop">
+                FAQ
+              </router-link>
+            </li>
           </ul>
         </div>
 
