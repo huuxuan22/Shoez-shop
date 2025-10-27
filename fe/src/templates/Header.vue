@@ -87,11 +87,9 @@
             <button @click="toggleUserMenu"
               class="flex items-center space-x-3 text-gray-800 hover:text-black transition-colors font-medium p-2">
               <!-- User Avatar -->
-              <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
+              <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                 <img v-if="userAvatar" :src="userAvatar" :alt="userName" class="w-full h-full object-cover">
-                <span v-else class="text-sm font-semibold text-gray-600">
-                  {{ getUserInitials(userName) }}
-                </span>
+                <img v-else src="@/assets/icons/user_icon.png" :alt="userName" class="w-6 h-6 object-cover">
               </div>
 
               <div class="text-left">
@@ -255,10 +253,6 @@ const orderCount = computed(() => {
 });
 
 // Methods
-const getUserInitials = (name) => {
-  return name.split(' ').map(n => n[0]).join('').toUpperCase();
-};
-
 const toggleUserMenu = () => {
   showUserMenu.value = !showUserMenu.value;
   showMobileMenu.value = false;
