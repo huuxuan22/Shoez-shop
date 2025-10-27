@@ -38,7 +38,8 @@
                 <!-- Product Info -->
                 <ProductInfo :product="product" :selected-color="selectedColor" :selected-size="selectedSize"
                     :quantity="quantity" @update:selected-color="selectedColor = $event"
-                    @update:selected-size="selectedSize = $event" @update:quantity="quantity = $event" />
+                    @update:selected-size="selectedSize = $event" @update:quantity="quantity = $event"
+                    @add-to-cart="handleAddToCart" @buy-now="handleBuyNow" />
             </div>
 
             <!-- Product Description Tabs -->
@@ -163,6 +164,54 @@ const productImages = computed(() => {
 // Methods
 const handleProductClick = (productId) => {
     router.push(`/products/${productId}`)
+}
+
+const handleAddToCart = () => {
+    // TODO: Implement add to cart functionality
+    console.log('Add to cart:', {
+        product: product.value,
+        selectedColor: selectedColor.value,
+        selectedSize: selectedSize.value,
+        quantity: quantity.value
+    })
+}
+
+const handleBuyNow = () => {
+    // Validate required fields
+    if (!selectedSize.value) {
+        alert('Vui lòng chọn size')
+        return
+    }
+
+    if (!selectedColor.value) {
+        alert('Vui lòng chọn màu sắc')
+        return
+    }
+
+    if (!product.value) {
+        return
+    }
+
+    // Create order item data
+    const orderItem = {
+        id: Date.now(), // Generate unique ID
+        productId: product.value.id,
+        name: product.value.name,
+        image: productImages.value[0] || product.value.images?.[0],
+        price: product.value.price,
+        discount: product.value.discount || 0,
+        original_price: product.value.originalPrice || product.value.price,
+        color: selectedColor.value,
+        size: selectedSize.value,
+        quantity: quantity.value
+    }
+
+    // Save to localStorage temporarily for checkout
+    const tempOrderItems = JSON.stringify([orderItem])
+    localStorage.setItem('checkout_orderItems', tempOrderItems)
+
+    // Navigate to checkout
+    router.push('/checkout')
 }
 
 // Initialize

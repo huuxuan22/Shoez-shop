@@ -227,7 +227,7 @@
                                     </div>
                                     <div class="text-right">
                                         <p class="font-semibold text-black">{{ formatPrice(item.price * item.quantity)
-                                            }}</p>
+                                        }}</p>
                                         <p class="text-sm text-gray-600">Số lượng: {{ item.quantity }}</p>
                                     </div>
                                 </div>
@@ -265,7 +265,7 @@
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-600">Phí vận chuyển</span>
                                 <span class="text-black">{{ shippingFee > 0 ? formatPrice(shippingFee) : 'Miễn phí'
-                                    }}</span>
+                                }}</span>
                             </div>
 
                             <div class="flex justify-between text-lg font-bold border-t border-gray-200 pt-3 mt-2">
@@ -324,13 +324,13 @@
                             <h2 class="text-2xl font-bold text-black mb-4">Đặt hàng thành công!</h2>
                             <p class="text-gray-600 mb-2">Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đã được xác nhận.</p>
                             <p class="text-gray-600 mb-6">Mã đơn hàng: <strong class="text-black">{{ orderResult?.id
-                                    }}</strong></p>
+                            }}</strong></p>
 
                             <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="text-gray-600">Tổng thanh toán:</span>
                                     <span class="text-xl font-bold text-black">{{ formatPrice(orderResult?.total || 0)
-                                        }}</span>
+                                    }}</span>
                                 </div>
                                 <div class="flex justify-between items-center text-sm">
                                     <span class="text-gray-600">Dự kiến giao hàng:</span>
@@ -388,8 +388,8 @@ const cardInfo = ref({
     cvv: ''
 });
 
-// Cart data
-const cartItems = ref([
+// Cart data - default sample data
+const defaultCartItems = [
     {
         id: 1,
         productId: 1,
@@ -412,7 +412,9 @@ const cartItems = ref([
         color: 'Đen',
         quantity: 2
     }
-]);
+];
+
+const cartItems = ref([]);
 
 // UI state
 const showSuccessModal = ref(false);
@@ -539,6 +541,7 @@ const placeOrder = async () => {
         // Simulate API call
         const orderData = {
             id: 'ORD' + Date.now(),
+            status: 'pending',
             shipping: shippingForm.value,
             payment: paymentMethod.value,
             items: cartItems.value,
@@ -549,6 +552,11 @@ const placeOrder = async () => {
 
         // Here would be your API call
         // const result = await api.placeOrder(orderData);
+
+        // Save order to localStorage
+        const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+        existingOrders.push(orderData);
+        localStorage.setItem('orders', JSON.stringify(existingOrders));
 
         orderResult.value = orderData;
         showSuccessModal.value = true;
@@ -598,6 +606,34 @@ const getPaymentMethodDescription = (method) => {
 
 // Lifecycle
 onMounted(() => {
+    // Check if data was passed from buy-now (in localStorage)
+    const checkoutItems = localStorage.getItem('checkout_orderItems')
+
+    if (checkoutItems) {
+        try {
+            cartItems.value = JSON.parse(checkoutItems)
+            // Clear temporary data after reading
+            localStorage.removeItem('checkout_orderItems')
+            console.log('Received order items from buy-now:', cartItems.value)
+        } catch (e) {
+            console.error('Error parsing checkout items:', e)
+            cartItems.value = defaultCartItems
+        }
+    } else {
+        // Try to get from localStorage cart
+        const savedCart = localStorage.getItem('cart')
+        if (savedCart) {
+            try {
+                cartItems.value = JSON.parse(savedCart)
+            } catch (e) {
+                cartItems.value = defaultCartItems
+            }
+        } else {
+            cartItems.value = defaultCartItems
+        }
+    }
+
+    // Redirect if no items
     if (cartItems.value.length === 0) {
         router.push('/cart');
     }

@@ -246,6 +246,15 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/orders/:id',
+    name: 'OrderDetail',
+    component: () => import('@/views/OrderDetail.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Chi tiết đơn hàng - Shoez Shop'
+    }
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
     component: () => import("@/views/NotFound.vue"),
