@@ -15,6 +15,38 @@ import ProductListLayout from "@/layouts/ProductListLayout.vue";
 
 const routes = [
   {
+    path: "/policy/returns",
+    name: "ReturnPolicy",
+    component: () => import("@/views/ReturnPolicy.vue"),
+    meta: {
+      title: "Chính sách đổi trả - Shoez Shop"
+    }
+  },
+  {
+    path: "/guide/purchase",
+    name: "PurchaseGuide",
+    component: () => import("@/views/PurchaseGuide.vue"),
+    meta: {
+      title: "Hướng dẫn mua hàng - Shoez Shop"
+    }
+  },
+  {
+    path: "/policy/warranty",
+    name: "Warranty",
+    component: () => import("@/views/Warranty.vue"),
+    meta: {
+      title: "Bảo hành sản phẩm - Shoez Shop"
+    }
+  },
+  {
+    path: "/faq",
+    name: "FAQ",
+    component: () => import("@/views/FAQ.vue"),
+    meta: {
+      title: "FAQ - Hỏi đáp - Shoez Shop"
+    }
+  },
+  {
     path: "/",
     name: "Home",
     component: Home,
