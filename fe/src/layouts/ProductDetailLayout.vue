@@ -1,7 +1,31 @@
 <template>
     <div class="min-h-screen bg-gray-50">
         <Header />
-        <div v-if="product" class="container mx-auto px-4 py-8">
+
+        <!-- Loading State -->
+        <div v-if="loading" class="container mx-auto px-4 py-16 text-center">
+            <div class="flex justify-center items-center min-h-[400px]">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-gray-900"></div>
+            </div>
+            <p class="mt-4 text-gray-600">Đang tải thông tin sản phẩm...</p>
+        </div>
+
+        <!-- Error State -->
+        <div v-else-if="error" class="container mx-auto px-4 py-16 text-center">
+            <svg class="w-24 h-24 mx-auto text-red-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h2 class="text-2xl font-bold text-gray-700 mb-2">Không thể tải dữ liệu</h2>
+            <p class="text-gray-600 mb-4">{{ error }}</p>
+            <button @click="loadProduct"
+                class="bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+                Thử lại
+            </button>
+        </div>
+
+        <!-- Product Content -->
+        <div v-else-if="product" class="container mx-auto px-4 py-8">
             <!-- Breadcrumb -->
             <ProductBreadcrumb :product-name="product.name" />
 
@@ -22,10 +46,13 @@
 
             <!-- Related Products -->
             <RelatedProducts :related-products="relatedProducts" @product-click="handleProductClick" />
+
+            <!-- Product Reviews -->
+            <ProductReviews :product="product" :reviews="productReviews" :can-review="false" />
         </div>
 
         <!-- Product Not Found -->
-        <div v-else class="container mx-auto px-4 py-16 text-center">
+        <div v-else-if="!loading && !error && !product" class="container mx-auto px-4 py-16 text-center">
             <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -43,191 +70,94 @@ import ProductGallery from '@/components/product/ProductGallery.vue'
 import ProductInfo from '@/components/product/ProductInfo.vue'
 import ProductTabs from '@/components/product/ProductTabs.vue'
 import RelatedProducts from '@/components/product/RelatedProducts.vue'
+import ProductReviews from '@/components/product/ProductReviews.vue'
 import Footer from '@/templates/Footer.vue'
 import Header from '@/templates/Header.vue'
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import ProductService from '@/api-services/ProductService'
 
 const route = useRoute()
 const router = useRouter()
-const productId = parseInt(route.params.id)
+const productId = route.params.id // Lấy string từ route params thay vì parseInt
 
 // Reactive data
+const product = ref(null)
+const loading = ref(true)
+const error = ref(null)
 const selectedImage = ref('')
 const selectedColor = ref('')
 const selectedSize = ref(null)
 const quantity = ref(1)
 
-// Sample products data với nhiều sản phẩm hơn
-const allProducts = [
-    {
-        id: 1,
-        name: 'Nike Air Force 1',
-        brand: 'Nike',
-        price: 2200000,
-        originalPrice: 2500000,
-        discount: 12,
-        image: 'https://tamanh.net/wp-content/uploads/2016/12/giay-luoi-nam-da-bo-cao-cap-gnta5501-d..jpg',
-        category: 'Sneakers',
-        colors: ['Trắng', 'Đen', 'Xám'],
-        sizes: [38, 39, 40, 41, 42, 43],
-        stock: 25
-    },
-    {
-        id: 2,
-        name: 'Adidas Ultraboost 22',
-        brand: 'Adidas',
-        price: 4500000,
-        originalPrice: 5000000,
-        discount: 10,
-        image: 'https://tamanh.net/wp-content/uploads/2016/12/giay-luoi-nam-da-bo-cao-cap-gnta5501-d..jpg',
-        category: 'Running',
-        colors: ['Đen', 'Trắng', 'Xám'],
-        sizes: [39, 40, 41, 42, 43, 44],
-        stock: 18
-    },
-    {
-        id: 3,
-        name: 'Converse Chuck Taylor All Star',
-        brand: 'Converse',
-        price: 1500000,
-        image: 'https://tamanh.net/wp-content/uploads/2016/12/giay-luoi-nam-da-bo-cao-cap-gnta5501-d..jpg',
-        category: 'Casual',
-        colors: ['Đen', 'Trắng', 'Đỏ', 'Xanh Navy'],
-        sizes: [36, 37, 38, 39, 40, 41, 42],
-        stock: 35
-    },
-    {
-        id: 4,
-        name: 'Puma RS-X',
-        brand: 'Puma',
-        price: 2800000,
-        originalPrice: 3200000,
-        discount: 12,
-        image: 'https://tamanh.net/wp-content/uploads/2016/12/giay-luoi-nam-da-bo-cao-cap-gnta5501-d..jpg',
-        category: 'Lifestyle',
-        colors: ['Trắng', 'Đen', 'Xám'],
-        sizes: [39, 40, 41, 42, 43],
-        stock: 22
-    },
-    {
-        id: 5,
-        name: 'Nike Air Max 270',
-        brand: 'Nike',
-        price: 3200000,
-        image: 'https://tamanh.net/wp-content/uploads/2016/12/giay-luoi-nam-da-bo-cao-cap-gnta5501-d..jpg',
-        category: 'Lifestyle',
-        colors: ['Xanh', 'Hồng', 'Trắng'],
-        sizes: [35, 36, 37, 38, 39, 40],
-        stock: 15
-    },
-    {
-        id: 6,
-        name: 'Vans Old Skool',
-        brand: 'Vans',
-        price: 1200000,
-        image: 'https://tamanh.net/wp-content/uploads/2016/12/giay-luoi-nam-da-bo-cao-cap-gnta5501-d..jpg',
-        category: 'Skate',
-        colors: ['Đen Trắng', 'Xanh Navy', 'Đỏ'],
-        sizes: [36, 37, 38, 39, 40, 41, 42],
-        stock: 40
-    },
-    {
-        id: 7,
-        name: 'New Balance 574',
-        brand: 'New Balance',
-        price: 1800000,
-        originalPrice: 2000000,
-        discount: 10,
-        image: 'https://tamanh.net/wp-content/uploads/2016/12/giay-luoi-nam-da-bo-cao-cap-gnta5501-d..jpg',
-        category: 'Lifestyle',
-        colors: ['Xám', 'Xanh Navy', 'Be'],
-        sizes: [38, 39, 40, 41, 42, 43],
-        stock: 28
-    },
-    {
-        id: 8,
-        name: 'Adidas Stan Smith',
-        brand: 'Adidas',
-        price: 1600000,
-        image: 'https://tamanh.net/wp-content/uploads/2016/12/giay-luoi-nam-da-bo-cao-cap-gnta5501-d..jpg',
-        category: 'Casual',
-        colors: ['Trắng Xanh', 'Trắng Đỏ', 'Trắng'],
-        sizes: [37, 38, 39, 40, 41, 42],
-        stock: 32
-    },
-    {
-        id: 9,
-        name: 'Nike Air Jordan 1',
-        brand: 'Nike',
-        price: 3600000,
-        originalPrice: 5000000,
-        discount: 28,
-        image: 'https://tamanh.net/wp-content/uploads/2016/12/giay-luoi-nam-da-bo-cao-cap-gnta5501-d..jpg',
-        category: 'Basketball',
-        colors: ['Đỏ Đen', 'Xanh Đen'],
-        sizes: [39, 40, 41, 42, 43],
-        stock: 12
-    },
-    {
-        id: 10,
-        name: 'Reebok Classic Leather',
-        brand: 'Reebok',
-        price: 1400000,
-        image: 'https://tamanh.net/wp-content/uploads/2016/12/giay-luoi-nam-da-bo-cao-cap-gnta5501-d..jpg',
-        category: 'Casual',
-        colors: ['Trắng', 'Đen', 'Xám'],
-        sizes: [38, 39, 40, 41, 42],
-        stock: 20
-    },
-    {
-        id: 11,
-        name: 'Asics Gel-Kayano 28',
-        brand: 'Asics',
-        price: 3800000,
-        originalPrice: 4200000,
-        discount: 9,
-        image: 'https://tamanh.net/wp-content/uploads/2016/12/giay-luoi-nam-da-bo-cao-cap-gnta5501-d..jpg',
-        category: 'Running',
-        colors: ['Xanh', 'Đen', 'Xám'],
-        sizes: [39, 40, 41, 42, 43, 44],
-        stock: 16
-    },
-    {
-        id: 12,
-        name: 'Skechers Go Walk',
-        brand: 'Skechers',
-        price: 1100000,
-        image: '/images/shoes/skechers-go-walk.jpg',
-        category: 'Comfort',
-        colors: ['Đen', 'Xám', 'Xanh Navy'],
-        sizes: [36, 37, 38, 39, 40, 41],
-        stock: 45
-    }
-]
+// Related products và reviews
+const relatedProducts = ref([])
+const productReviews = ref([])
 
-// Computed properties
-const product = computed(() => {
-    return allProducts.find(p => p.id === productId)
-})
+// Load product from API
+const loadProduct = async () => {
+    try {
+        loading.value = true
+        error.value = null
+
+        // Call API with include comments
+        const data = await ProductService.getById(productId, true)
+
+        // Transform sizes from array of objects to array of numbers
+        if (data.sizes && Array.isArray(data.sizes)) {
+            data.sizes = data.sizes.map(item => {
+                if (typeof item === 'object' && item.size !== undefined) {
+                    return item.size
+                }
+                return item
+            })
+        }
+
+        product.value = data
+
+        // Set default values
+        if (data.images && data.images.length > 0) {
+            selectedImage.value = data.images[0]
+        }
+        if (data.colors && data.colors.length > 0) {
+            selectedColor.value = data.colors[0]
+        }
+
+        // Load reviews if available
+        if (data.comments) {
+            // Transform comments to match ProductReviews component format
+            productReviews.value = data.comments.map(comment => ({
+                id: comment.id,
+                user: {
+                    name: comment.user_name || 'User',
+                    avatar: comment.user_avatar || null
+                },
+                rating: comment.rating,
+                comment: comment.comment,
+                images: comment.images || [],
+                createdAt: new Date(comment.created_at),
+                verified: comment.verified
+            }))
+        }
+
+        // Load related products (same brand)
+        if (data.brand) {
+            // TODO: Call API to get related products
+            relatedProducts.value = [] // Will be populated when API is ready
+        }
+
+    } catch (err) {
+        error.value = err.message || 'Không thể tải dữ liệu sản phẩm'
+    } finally {
+        loading.value = false
+    }
+}
+
+// TODO: Load related products from API when backend is ready
 
 const productImages = computed(() => {
-    if (!product.value) return []
-    // Trong thực tế, mỗi sản phẩm sẽ có nhiều ảnh từ API
-    // Ở đây tạm dùng cùng 1 ảnh cho demo
-    return [
-        product.value.image,
-        product.value.image,
-        product.value.image,
-        product.value.image
-    ]
-})
-
-const relatedProducts = computed(() => {
-    if (!product.value) return []
-    return allProducts
-        .filter(p => p.brand === product.value.brand && p.id !== product.value.id)
-        .slice(0, 4)
+    if (!product.value || !product.value.images) return []
+    return product.value.images
 })
 
 // Methods
@@ -237,9 +167,6 @@ const handleProductClick = (productId) => {
 
 // Initialize
 onMounted(() => {
-    if (product.value) {
-        selectedImage.value = product.value.image
-        selectedColor.value = product.value.colors[0]
-    }
+    loadProduct()
 })
 </script>

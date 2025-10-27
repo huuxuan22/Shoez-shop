@@ -43,9 +43,13 @@ const ProductService = {
         }
     },
 
-    async getById(productId) {
+    async getById(productId, includeComments = false) {
         try {
-            const response = await BaseAxios.get(`/${PREFIX_PRODUCT}/detail/${productId}`);
+            const response = await BaseAxios.get(`/${PREFIX_PRODUCT}/detail/${productId}`, {
+                params: {
+                    include_comments: includeComments
+                }
+            });
             return response.data;
         } catch (error) {
             throw error;
@@ -70,8 +74,6 @@ const ProductService = {
                 params: { brand: brand },  // Truyền brand qua query params
                 withCredentials: true
             });
-            debugger;
-            console.log(response);
             return response.data;
         } catch (error) {
             throw error;
@@ -80,8 +82,6 @@ const ProductService = {
     async getTopRate() {
         try {
             const response = await BaseAxios.get(`${PREFIX_PRODUCT}/top-rated`);
-            debugger;
-            console.log(response);
             return response.data;
         } catch (error) {
             throw error;

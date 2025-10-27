@@ -3,7 +3,7 @@ from fastapi import APIRouter, UploadFile, File,Path,Body
 from typing import List, Optional, Annotated, Any
 from fastapi.params import Depends
 
-from dependences.dependencies import get_product_repo, get_image_repo
+from dependences.dependencies import get_product_repo, get_image_repo, get_comment_repo
 from repositories.image_repository import ImageRepository
 from repositories.product_repository import ProductRepository
 from schemas.product_schemas import ProductResponse, ProductCreate, ProductUpdate
@@ -98,12 +98,14 @@ async def delete_product(
 @product_router.get("/detail/{product_id}")
 async def get_product_detail(
     product_id: str,
-    product_repo: ProductRepository = Depends(get_product_repo)
+    include_comments: bool = False,
+    product_repo: ProductRepository = Depends(get_product_repo),
+    comment_repo = Depends(get_comment_repo)
 ) -> Any:
-    service = ProductService(None, product_repo)
-    product = await service.get_product_detail(product_id)
+    service = ProductService(None, product_repo, comment_repo)
+    product = await service.get_product_detail(product_id, include_comments=include_comments)
     if not product:
-        raise HTTPException(404, "Product not found")  # <-- sửa như này
+        raise HTTPException(404, "Product not found")
     return product
 
 @product_router.put("/update/{product_id}", response_model=ProductResponse)

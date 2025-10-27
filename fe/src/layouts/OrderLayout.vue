@@ -144,7 +144,6 @@ const fetchOrders = async () => {
         await new Promise(resolve => setTimeout(resolve, 1000))
         orders.value = mockOrders
     } catch (error) {
-        console.error('Error fetching orders:', error)
     } finally {
         loading.value = false
     }
@@ -171,15 +170,11 @@ const viewOrderDetail = (orderId) => {
 const cancelOrder = async (orderId) => {
     if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
         try {
-            // Call API to cancel order
-            console.log('Cancelling order:', orderId)
-            // Update local state
             const order = orders.value.find(o => o.id === orderId)
             if (order) {
                 order.status = 'cancelled'
             }
         } catch (error) {
-            console.error('Error cancelling order:', error)
         }
     }
 }
@@ -188,7 +183,6 @@ const handleReorder = (orderId) => {
     const order = orders.value.find(o => o.id === orderId)
     if (order) {
         // Add items to cart
-        console.log('Reordering:', order.items)
         alert('Sản phẩm đã được thêm vào giỏ hàng!')
     }
 }

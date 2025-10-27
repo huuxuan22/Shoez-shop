@@ -8,6 +8,7 @@ from repositories.image_repository import ImageRepository
 from repositories.order_repository import OrderRepository
 from repositories.product_repository import ProductRepository
 from repositories.user_repository import UserRepository
+from repositories.comment_repository import CommentRepository
 from config.database import get_database
 
 async def set_language_dependency(request: Request):
@@ -40,5 +41,9 @@ async def get_order_repo():
 
 async def get_image_repo():
     yield ImageRepository()
+
+async def get_comment_repo():
+    async with CommentRepository(get_database()) as repo:
+        yield repo
 
 

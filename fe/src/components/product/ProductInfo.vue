@@ -61,13 +61,14 @@
                 <button class="text-black text-sm hover:underline">Hướng dẫn chọn size</button>
             </div>
             <div class="grid grid-cols-6 gap-2">
-                <button v-for="size in product.sizes" :key="size" @click="$emit('update:selectedSize', size)" :class="[
-                    'py-3 rounded-lg border-2 font-semibold transition-all',
-                    selectedSize === size
-                        ? 'border-black bg-black text-white shadow-md'
-                        : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                ]">
-                    {{ size }}
+                <button v-for="size in product.sizes" :key="size"
+                    @click="$emit('update:selectedSize', getSizeValue(size))" :class="[
+                        'py-3 rounded-lg border-2 font-semibold transition-all',
+                        selectedSize === getSizeValue(size)
+                            ? 'border-black bg-black text-white shadow-md'
+                            : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                    ]">
+                    {{ getSizeValue(size) }}
                 </button>
             </div>
         </div>
@@ -222,5 +223,13 @@ const getColorClasses = (colorName) => {
         dot: 'bg-gray-400',
         active: 'border-black bg-black text-white shadow-md transform scale-105'
     };
+};
+
+const getSizeValue = (size) => {
+    // Handle both number and object format
+    if (typeof size === 'object' && size.size !== undefined) {
+        return size.size
+    }
+    return size
 };
 </script>

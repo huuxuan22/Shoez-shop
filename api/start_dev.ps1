@@ -10,5 +10,7 @@ $minioStatus = docker ps --filter "name=minio_server" --format "table {{.Status}
 Write-Host "MinIO Status: $minioStatus" -ForegroundColor Yellow
 
 # Start FastAPI
-Write-Host "Starting FastAPI..." -ForegroundColor Green
-uvicorn main:app --reload
+Write-Host ""
+Write-Host "🚀 Starting SHOEZ API Server..." -ForegroundColor Cyan
+Write-Host ""
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
