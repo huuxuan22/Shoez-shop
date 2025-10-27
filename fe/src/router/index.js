@@ -15,6 +15,14 @@ import ProductListLayout from "@/layouts/ProductListLayout.vue";
 
 const routes = [
   {
+    path: "/news/:id",
+    name: "NewsDetail",
+    component: () => import("@/views/NewsDetail.vue"),
+    meta: {
+      title: "Chi tiết bài báo - Shoez Shop"
+    }
+  },
+  {
     path: "/policy/returns",
     name: "ReturnPolicy",
     component: () => import("@/views/ReturnPolicy.vue"),
