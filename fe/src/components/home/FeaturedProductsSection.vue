@@ -132,7 +132,6 @@ const fetchProducts = async () => {
 
     } catch (err) {
         error.value = 'Có lỗi xảy ra khi tải dữ liệu sản phẩm'
-        console.error('Lỗi khi fetch products:', err)
     } finally {
         loading.value = false
     }

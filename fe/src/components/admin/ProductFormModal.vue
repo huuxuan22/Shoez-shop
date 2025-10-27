@@ -302,7 +302,6 @@ const submitProduct = async () => {
                     const uploadResponse = await ProductService.uploadImages(editingProductId.value, formData)
                     response.images = uploadResponse.images
                 } catch (uploadError) {
-                    console.error('Upload images failed:', uploadError)
                 }
             }
 

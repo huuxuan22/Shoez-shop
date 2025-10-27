@@ -18,6 +18,8 @@ from dependences.dependencies import set_language_dependency
 from middleware.auth_middlewave import  AuthMiddlewave
 from middleware.locale_middlewave import LocaleMiddlewave
 from config.database import connect_to_mongo, close_mongo_connection, get_database
+from utils.logger import logger
+import uvicorn
 
 load_dotenv()
 PRE_FIX = os.getenv("api_prefix")
@@ -39,11 +41,35 @@ app.include_router(order_router, prefix=PRE_FIX)
 app.include_router(cart_router, prefix=PRE_FIX)
 app.include_router(user_router, prefix=PRE_FIX)
 @app.on_event("startup")
-async def startup_db_client():
+async def startup_event():
+    """Startup event handler"""
+    # Show SHOEZ banner
+    logger.show_banner()
+    
+    # Connect to database
+    logger.info("🔌 Connecting to database...")
     await connect_to_mongo()
+    logger.success("Database connected successfully!")
+    
+    # Check MinIO connection
+    try:
+        logger.minio_connected(f"MinIO at {settings.minio_bucket}")
+    except Exception as e:
+        logger.minio_error(str(e))
+    
+    # Show API documentation URLs
+    print("\n" + "="*70)
+    print("📚 API Documentation:")
+    print(f"   Swagger UI: http://127.0.0.1:8000/docs")
+    print(f"   ReDoc:     http://127.0.0.1:8000/redoc")
+    print("="*70 + "\n")
 
 @app.on_event("shutdown")
-async def shutdown_db_client():    await close_mongo_connection()
+async def shutdown_event():
+    """Shutdown event handler"""
+    logger.info("🛑 Shutting down server...")
+    await close_mongo_connection()
+    logger.success("Server stopped gracefully!")
 app.add_middleware(AuthMiddlewave)
 app.add_middleware(LocaleMiddlewave)
 app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
@@ -62,8 +88,3 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.on_event("startup")
-async def startup_event():
-    print("Swagger UI: http://127.0.0.1:8000/docs")
-    print("ReDoc: http://127.0.0.1:8000/redoc")

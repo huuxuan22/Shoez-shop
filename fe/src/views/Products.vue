@@ -233,7 +233,6 @@ const loadProducts = async (page = 1) => {
       };
     }
   } catch (error) {
-    console.error('Error loading products:', error);
     products.value = [];
   } finally {
     loading.value = false;

@@ -13,9 +13,10 @@ from schemas.product_schemas import ProductCreate, ProductResponse, ProductUpdat
 
 
 class ProductService:
-    def __init__(self, image_repo: ImageRepository = None, product_repo: ProductRepository = None):
+    def __init__(self, image_repo: ImageRepository = None, product_repo: ProductRepository = None, comment_repo=None):
         self.image_repo = image_repo
         self.product_repo = product_repo
+        self.comment_repo = comment_repo
 
     async def upload_product_images(self, product_id: str, files: List):
         product = await self.product_repo.get_by_id(product_id)
@@ -172,8 +173,33 @@ class ProductService:
     async def delete_product(self, product_id: str) -> bool:
         return await self.product_repo.delete_product(product_id)
 
-    async def get_product_detail(self, product_id: str):
-        return await self.product_repo.get_by_id(product_id)
+    async def get_product_detail(self, product_id: str, include_comments: bool = False):
+        """
+        Lấy chi tiết sản phẩm
+        
+        Args:
+            product_id: ID của sản phẩm
+            include_comments: Có bao gồm comments với user info không
+        """
+        product = await self.product_repo.get_by_id(product_id)
+        
+        if include_comments and self.comment_repo:
+            # Lấy comments với user info
+            comments = await self.comment_repo.get_comments_with_users_by_product(
+                product_id=product_id,
+                skip=0,
+                limit=50
+            )
+            
+            # Tính rating trung bình
+            rating_info = await self.comment_repo.get_average_rating(product_id)
+            
+            # Thêm comments và rating vào product
+            if product:
+                product['comments'] = comments
+                product['rating_info'] = rating_info
+        
+        return product
 
     async def update_product(self, product_id: str, data: dict):
         try:

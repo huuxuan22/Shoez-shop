@@ -96,7 +96,5 @@ const toggleHelpful = () => {
 }
 
 const openImageGallery = (image) => {
-    // Mở gallery xem ảnh
-    console.log('Open image gallery:', image)
 }
 </script>

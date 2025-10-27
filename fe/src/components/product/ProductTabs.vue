@@ -48,7 +48,7 @@
                         </tr>
                         <tr>
                             <td class="py-3 font-semibold text-gray-700">Size</td>
-                            <td class="py-3 text-gray-600">{{ product.sizes.join(', ') }}</td>
+                            <td class="py-3 text-gray-600">{{ formatSizes(product.sizes) }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -108,4 +108,14 @@ const tabs = [
     { id: 'specifications', label: 'Thông số kỹ thuật' },
     { id: 'reviews', label: 'Đánh giá' }
 ]
+
+const formatSizes = (sizes) => {
+    if (!sizes || !Array.isArray(sizes)) return ''
+    return sizes.map(size => {
+        if (typeof size === 'object' && size.size !== undefined) {
+            return size.size
+        }
+        return size
+    }).join(', ')
+}
 </script>
