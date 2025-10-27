@@ -100,7 +100,7 @@
 
         <!-- Action Buttons -->
         <div class="flex gap-4 mb-8">
-            <button
+            <button @click="$emit('add-to-cart')"
                 class="flex-1 bg-white border-2 border-black text-black px-8 py-4 rounded-lg font-semibold hover:bg-black hover:text-white transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -108,7 +108,7 @@
                 </svg>
                 Thêm vào giỏ
             </button>
-            <button
+            <button @click="$emit('buy-now')"
                 class="flex-1 bg-black text-white px-8 py-4 rounded-lg font-semibold hover:bg-gray-800 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -179,7 +179,7 @@ defineProps({
     }
 })
 
-defineEmits(['update:selectedColor', 'update:selectedSize', 'update:quantity'])
+defineEmits(['update:selectedColor', 'update:selectedSize', 'update:quantity', 'add-to-cart', 'buy-now'])
 
 const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);

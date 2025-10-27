@@ -116,7 +116,22 @@ const OrderService = {
                 params: { id: userId },
                 withCredentials: true,
             });
-            return response;
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    /**
+     * Lấy chi tiết một đơn hàng theo ID
+     * @param {string} orderId - ID của đơn hàng
+     */
+    async getById(orderId) {
+        try {
+            const response = await BaseAxios.get(`/${PREFIX_ORDER}/${orderId}`, {
+                withCredentials: true,
+            });
+            return response.data;
         } catch (error) {
             throw error;
         }
