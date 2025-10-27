@@ -5,6 +5,7 @@
     <FullwithHero />
     <ShoeCustomizer />
     <BrandSection />
+    <NewsSection />
     <TestimonialsSection />
     <NewsletterSection />
     <Footer />
@@ -20,5 +21,7 @@ import ShoeCustomizer from '@/components/home/ShoeCustomizer.vue';
 import TestimonialsSection from '@/components/home/TestimonialsSection.vue';
 import Footer from '@/templates/Footer.vue';
 import Header from '@/templates/Header.vue';
+
+import NewsSection from '@/components/home/NewsSection.vue';
 
 </script>
