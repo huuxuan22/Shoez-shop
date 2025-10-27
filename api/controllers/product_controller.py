@@ -42,6 +42,10 @@ async def list_products(
     category: Annotated[Optional[str], Query()] = None,
     min_rating: Annotated[Optional[float], Query(ge=0, le=5)] = None,
     max_rating: Annotated[Optional[float], Query(ge=0, le=5)] = None,
+    min_price: Annotated[Optional[float], Query(ge=0, description="Giá tối thiểu")] = None,
+    max_price: Annotated[Optional[float], Query(ge=0, description="Giá tối đa")] = None,
+    color: Annotated[Optional[str], Query(description="Màu sắc")] = None,
+    size: Annotated[Optional[int], Query(description="Kích cỡ")] = None,
     skip: Annotated[int, Query(ge=0)] = 0,
     limit: Annotated[int, Query(ge=1, le=100)] = 10,
     sort_by: Annotated[Optional[str], Query()] = "created_at",
@@ -57,6 +61,10 @@ async def list_products(
         category=category,
         min_rating=min_rating,
         max_rating=max_rating,
+        min_price=min_price,
+        max_price=max_price,
+        color=color,
+        size=size,
         sort_by=sort_by,
         sort_order=sort_order
     )

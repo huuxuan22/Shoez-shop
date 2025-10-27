@@ -68,6 +68,10 @@ class ProductService:
         category: Optional[str] = None,
         min_rating: Optional[float] = None,
         max_rating: Optional[float] = None,
+        min_price: Optional[float] = None,
+        max_price: Optional[float] = None,
+        color: Optional[str] = None,
+        size: Optional[int] = None,
         sort_by: str = "created_at",
         sort_order: str = "desc"
     ) -> Dict:
@@ -87,6 +91,23 @@ class ProductService:
             if max_rating is not None:
                 rating_filter["$lte"] = max_rating
             filters["rating"] = rating_filter
+        
+        # Filter theo giá
+        if min_price is not None or max_price is not None:
+            price_filter = {}
+            if min_price is not None:
+                price_filter["$gte"] = min_price
+            if max_price is not None:
+                price_filter["$lte"] = max_price
+            filters["price"] = price_filter
+        
+        # Filter theo màu sắc
+        if color:
+            filters["colors"] = {"$regex": color, "$options": "i"}
+        
+        # Filter theo size - vì sizes là array of objects {size: int, stock: int}
+        if size is not None:
+            filters["sizes.size"] = size
 
         # Lấy tổng số sản phẩm
         total = await self.product_repo.count(filters)
