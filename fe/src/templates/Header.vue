@@ -1,10 +1,10 @@
 <template>
   <header class="bg-white shadow-md sticky top-0 z-50">
     <nav class="container mx-auto px-4 py-4">
-      <div class="flex items-center justify-between ">
+      <div class="flex items-center justify-between flex-wrap">
         <!-- Logo -->
         <router-link to="/"
-          class="text-2xl font-bold text-black hover:text-gray-700 transition-colors font-alasassy cursor-pointer">
+          class="text-xl md:text-2xl font-bold text-black hover:text-gray-700 transition-colors font-alasassy cursor-pointer">
           EzShopping
         </router-link>
 
@@ -72,7 +72,9 @@
           </router-link>
 
           <!-- Notification Bell -->
-          <NotificationBell />
+          <div class="hidden sm:block">
+            <NotificationBell />
+          </div>
 
           <!-- Auth Links -->
           <div v-if="!isAuthenticated" class="flex items-center space-x-2">
@@ -157,52 +159,49 @@
 
       <!-- Mobile Menu -->
       <div v-if="showMobileMenu" class="md:hidden mt-4 pb-4 border-t border-gray-200">
-        <!-- Mobile Menu -->
-        <div v-if="showMobileMenu" class="md:hidden mt-4 pb-4 border-t border-gray-200">
-          <div class="flex flex-col space-y-4 pt-4">
-            <router-link to="/"
-              class="flex items-center space-x-2 text-gray-800 hover:text-black transition-colors font-medium"
-              @click="closeMenus" :class="{ 'text-black font-bold': $route.name === 'Home' }">
-              <img :src="home" alt="Trang chủ" class="w-5 h-5">
-              <span>Trang chủ</span>
-            </router-link>
-            <router-link to="/products"
-              class="flex items-center space-x-2 text-gray-800 hover:text-black transition-colors font-medium"
-              @click="closeMenus" :class="{ 'text-black font-bold': $route.name === 'Products' }">
-              <img :src="home" alt="Sản phẩm" class="w-5 h-5">
-              <span>Sản phẩm</span>
-            </router-link>
-            <router-link to="/about"
-              class="flex items-center space-x-2 text-gray-800 hover:text-black transition-colors font-medium"
-              @click="closeMenus" :class="{ 'text-black font-bold': $route.name === 'About' }">
-              <img :src="home" alt="Về chúng tôi" class="w-5 h-5">
-              <span>Về chúng tôi</span>
-            </router-link>
-            <router-link to="/contact"
-              class="flex items-center space-x-2 text-gray-800 hover:text-black transition-colors font-medium"
-              @click="closeMenus" :class="{ 'text-black font-bold': $route.name === 'Contact' }">
-              <img :src="home" alt="Liên hệ" class="w-5 h-5">
-              <span>Liên hệ</span>
-            </router-link>
-            <router-link :to="{ name: 'NewsDetail', params: { id: 1 } }"
-              class="flex items-center space-x-2 text-gray-800 hover:text-black transition-colors font-medium"
-              @click="closeMenus" :class="{ 'text-black font-bold': $route.name === 'NewsDetail' }">
-              <img :src="blogIcon" alt="Tin tức" class="w-5 h-5">
-              <span>Tin tức</span>
-            </router-link>
+        <div class="flex flex-col space-y-4 pt-4">
+          <router-link to="/"
+            class="flex items-center space-x-2 text-gray-800 hover:text-black transition-colors font-medium"
+            @click="closeMenus" :class="{ 'text-black font-bold': $route.name === 'Home' }">
+            <img :src="home" alt="Trang chủ" class="w-5 h-5">
+            <span>Trang chủ</span>
+          </router-link>
+          <router-link to="/products"
+            class="flex items-center space-x-2 text-gray-800 hover:text-black transition-colors font-medium"
+            @click="closeMenus" :class="{ 'text-black font-bold': $route.name === 'Products' }">
+            <img :src="home" alt="Sản phẩm" class="w-5 h-5">
+            <span>Sản phẩm</span>
+          </router-link>
+          <router-link to="/about"
+            class="flex items-center space-x-2 text-gray-800 hover:text-black transition-colors font-medium"
+            @click="closeMenus" :class="{ 'text-black font-bold': $route.name === 'About' }">
+            <img :src="home" alt="Về chúng tôi" class="w-5 h-5">
+            <span>Về chúng tôi</span>
+          </router-link>
+          <router-link to="/contact"
+            class="flex items-center space-x-2 text-gray-800 hover:text-black transition-colors font-medium"
+            @click="closeMenus" :class="{ 'text-black font-bold': $route.name === 'Contact' }">
+            <img :src="home" alt="Liên hệ" class="w-5 h-5">
+            <span>Liên hệ</span>
+          </router-link>
+          <router-link :to="{ name: 'NewsDetail', params: { id: 1 } }"
+            class="flex items-center space-x-2 text-gray-800 hover:text-black transition-colors font-medium"
+            @click="closeMenus" :class="{ 'text-black font-bold': $route.name === 'NewsDetail' }">
+            <img :src="blogIcon" alt="Tin tức" class="w-5 h-5">
+            <span>Tin tức</span>
+          </router-link>
 
-            <!-- Mobile Auth Links -->
-            <div v-if="!isAuthenticated" class="flex flex-col space-y-2 pt-4 border-t border-gray-200">
-              <router-link to="/login" class="text-gray-800 hover:text-black transition-colors font-medium"
-                @click="closeMenus">
-                Đăng nhập
-              </router-link>
-              <router-link to="/register"
-                class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors font-medium text-center"
-                @click="closeMenus">
-                Đăng ký
-              </router-link>
-            </div>
+          <!-- Mobile Auth Links -->
+          <div v-if="!isAuthenticated" class="flex flex-col space-y-2 pt-4 border-t border-gray-200">
+            <router-link to="/login" class="text-gray-800 hover:text-black transition-colors font-medium"
+              @click="closeMenus">
+              Đăng nhập
+            </router-link>
+            <router-link to="/register"
+              class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors font-medium text-center"
+              @click="closeMenus">
+              Đăng ký
+            </router-link>
           </div>
         </div>
       </div>
