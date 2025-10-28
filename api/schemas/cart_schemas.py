@@ -47,5 +47,7 @@ class CartResponseSchema(BaseModel):
         allow_population_by_field_name = True
         extra = "allow"
 
-class CartDeleteManySchema(BaseModel):
-    ids: List[str]
+class CartRemoveItemSchema(BaseModel):
+    product_id: str
+    size: Union[str, int]
+    color: str

@@ -44,7 +44,9 @@ class CartService:
             return None
         return cart
 
-    async def delete_multiple_carts(self, ids: List[str]) -> List[dict]:
-        # Trả về danh sách cart đã xóa
-        deleted_carts = await self.cart_repository.delete_many_and_return(ids)
-        return deleted_carts
+    async def remove_item(self, user_id: str, product_id: str, size: Any, color: str) -> CartResponseSchema:
+        """
+        Xoá 1 item khỏi cart và trả về cart đã cập nhật
+        """
+        updated_cart = await self.cart_repository.remove_item_from_cart(user_id, product_id, size, color)
+        return updated_cart

@@ -126,3 +126,51 @@ class CartRepository(BaseRepository[Cart]):
 
         # Đảm bảo _id được convert sang id (str) cho toàn bộ document
         return self._convert_id(updated_cart)
+
+    async def remove_item_from_cart(self, user_id: str, product_id: str, size: Any, color: str) -> Dict:
+        """
+        Xoá 1 item (product/size/color) khỏi cart của user và tính lại totalPrice
+        """
+        # Tìm cart theo user
+        cart = await self.collection.find_one({"$or": [{"user_id": user_id}, {"userId": user_id}]})
+        if not cart:
+            return None
+
+        items = cart.get("items", [])
+        new_items: List[Dict[str, Any]] = []
+
+        def product_matches(item: Dict[str, Any]) -> bool:
+            prod = item.get("product") or {}
+            pid = prod.get("id") or prod.get("_id")
+            return pid == product_id and item.get("size") == size and item.get("color") == color
+
+        removed = False
+        for i in items:
+            if product_matches(i):
+                removed = True
+                continue
+            new_items.append(i)
+
+        if not removed:
+            return self._convert_id(cart)
+
+        def item_total(i: Dict[str, Any]) -> float:
+            prod = i.get("product") or {}
+            price = prod.get("price", 0)
+            discount = prod.get("discount", 0)
+            q = i.get("quality") or i.get("quantity") or 0
+            try:
+                q = int(q)
+            except Exception:
+                q = 0
+            return (price - discount) * q
+
+        total = sum(item_total(i) for i in new_items)
+
+        updated_cart = await self.collection.find_one_and_update(
+            {"_id": cart["_id"]},
+            {"$set": {"items": new_items, "totalPrice": total, "updatedAt": self._get_current_timestamp()}},
+            return_document=ReturnDocument.AFTER
+        )
+
+        return self._convert_id(updated_cart)
