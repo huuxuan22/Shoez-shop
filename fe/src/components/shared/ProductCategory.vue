@@ -75,7 +75,7 @@
                             </svg>
                             <span>Yêu thích</span>
                         </button>
-                        <button @click.stop
+                        <button @click.stop="goToProduct(product)"
                             class="flex-1 bg-black text-white px-3 py-2 rounded-lg hover:bg-gray-800 transition-all text-sm font-semibold flex items-center justify-center gap-1">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -91,6 +91,8 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
+
 const props = defineProps({
     products: {
         type: Array,
@@ -106,6 +108,8 @@ const props = defineProps({
         default: ''
     }
 })
+
+const router = useRouter()
 
 const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -133,6 +137,11 @@ const addToFavorites = (product) => {
 
     // Save back to localStorage
     localStorage.setItem('favorites', JSON.stringify(favorites));
+}
+
+function goToProduct(product) {
+    if (!product || !product.id) return;
+    router.push({ name: 'ProductDetail', params: { id: product.id } })
 }
 </script>
 

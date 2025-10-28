@@ -58,7 +58,7 @@
                 <label class="block text-gray-700 font-semibold">
                     Size: <span class="text-black">{{ selectedSize || 'Chọn size' }}</span>
                 </label>
-                <button class="text-black text-sm hover:underline">Hướng dẫn chọn size</button>
+                <!-- <button class="text-black text-sm hover:underline">Hướng dẫn chọn size</button> -->
             </div>
             <div class="grid grid-cols-6 gap-2">
                 <button v-for="size in product.sizes" :key="size"

@@ -1,9 +1,10 @@
 <template>
   <header class="bg-white shadow-md sticky top-0 z-50">
     <nav class="container mx-auto px-4 py-4">
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between ">
         <!-- Logo -->
-        <router-link to="/" class="text-2xl font-bold text-black hover:text-gray-700 transition-colors font-alasassy">
+        <router-link to="/"
+          class="text-2xl font-bold text-black hover:text-gray-700 transition-colors font-alasassy cursor-pointer">
           EzShopping
         </router-link>
 
@@ -60,13 +61,13 @@
 
           <!-- Cart Icon -->
           <router-link to="/cart" class="relative text-gray-800 hover:text-black transition-colors p-2">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5 6m0 0h9m-9 0h9m0 0l1.5-6M7 13h10" />
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14l.84-2h8.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49a1 1 0 00-.87-1.48H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.45C4.52 14.37 5.48 16 7 16h12v-2H7.42a.5.5 0 01-.26-.69z" />
             </svg>
             <span v-if="cartItemCount > 0"
-              class="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {{ cartItemCount > 9 ? '9+' : cartItemCount }}
+              class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] leading-none rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center">
+              {{ cartItemCount > 99 ? '99+' : cartItemCount }}
             </span>
           </router-link>
 
@@ -215,10 +216,13 @@ import { useRouter } from 'vue-router';
 import home from "@/assets/icons/home.png"
 import blogIcon from "@/assets/icons/blog.svg"
 import { useAuthStore } from '@/stores/auth';
+import { useCartStore } from '@/stores/cart';
+import { watch } from 'vue';
 import NotificationBell from '@/components/shared/NotificationBell.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
+const cartStore = useCartStore();
 
 // Reactive data
 const showUserMenu = ref(false);
@@ -253,11 +257,7 @@ const userAvatar = computed(() => {
   return null;
 });
 
-const cartItemCount = computed(() => {
-  // This would come from a cart store in a real app
-  const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-  return cart.reduce((total, item) => total + item.quantity, 0);
-});
+const cartItemCount = computed(() => cartStore.items.length || 0);
 
 const orderCount = computed(() => {
   // This would come from an order store in a real app
@@ -304,6 +304,18 @@ const handleClickOutside = (e) => {
 // Lifecycle
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
+  // Load cart once when header mounts (nếu có token)
+  if (isAuthenticated.value) {
+    cartStore.loadCart();
+  }
+});
+
+watch(isAuthenticated, (val) => {
+  if (val) {
+    cartStore.loadCart();
+  } else {
+    cartStore.clearCart();
+  }
 });
 
 onUnmounted(() => {

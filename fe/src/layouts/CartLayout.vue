@@ -26,62 +26,49 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import Header from '@/templates/Header.vue';
 import Footer from '@/templates/Footer.vue';
 import CartSummary from '@/components/cart/CartSummary.vue';
 import EmptyCart from '@/components/cart/EmptyCart.vue';
 import CartItem from '@/components/cart/CartItem.vue';
+import { onMounted, ref, computed } from 'vue';
+import { useCartStore } from '@/stores/cart';
 
 const router = useRouter();
 
-// Sample cart data
-const cartItems = ref([
-    {
-        id: 1,
-        productId: 1,
-        name: 'Nike Air Force 1',
-        brand: 'Nike',
-        price: 2200000,
-        originalPrice: 2500000,
-        image: '/images/shoes/nike-air-max-3.jpg',
-        size: 42,
-        color: 'Trắng',
-        quantity: 1,
-        maxQuantity: 10
-    },
-    {
-        id: 2,
-        productId: 2,
-        name: 'Adidas Ultraboost 22',
-        brand: 'Adidas',
-        price: 4500000,
-        image: '/images/shoes/adidas-ultraboost-1.jpg',
-        size: 41,
-        color: 'Đen',
-        quantity: 2,
-        maxQuantity: 8
-    },
-    {
-        id: 3,
-        productId: 3,
-        name: 'Converse Chuck Taylor',
-        brand: 'Converse',
-        price: 1500000,
-        originalPrice: 1800000,
-        image: '/images/shoes/converse-chuck-taylor-1.jpg',
-        size: 40,
-        color: 'Đen',
-        quantity: 1,
-        maxQuantity: 12
-    }
-]);
+const cartStore = useCartStore();
+const cartItems = ref([]);
+
+function mapCartItems(items) {
+    if (!Array.isArray(items)) return [];
+    return items.map((i, idx) => {
+        const p = i.product || {};
+        const images = Array.isArray(p.images) ? p.images : [];
+        return {
+            id: idx + 1,
+            productId: p.id || p._id,
+            name: p.name,
+            brand: p.brand,
+            price: p.price,
+            originalPrice: p.originalPrice || p.price,
+            image: images[0] || '',
+            size: i.size,
+            color: i.color,
+            quantity: i.quality || i.quantity || 1,
+            maxQuantity: p.stock || 99
+        };
+    });
+}
+
+onMounted(async () => {
+    const data = await cartStore.loadCart();
+    const items = data?.items || [];
+    cartItems.value = mapCartItems(items);
+});
 
 // Computed
-const totalItems = computed(() => {
-    return cartItems.value.reduce((total, item) => total + item.quantity, 0);
-});
+const totalItems = computed(() => cartItems.value.reduce((t, i) => t + (i.quantity || 0), 0));
 
 // Methods
 const updateQuantity = (itemId, newQuantity) => {

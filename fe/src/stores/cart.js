@@ -50,18 +50,11 @@ export const useCartStore = defineStore("cart", {
          * Tải giỏ hàng từ server
          */
         async loadCart() {
-            const userId = this.userId;
-
-            if (!userId) {
-                this.error = "User not authenticated";
-                return null;
-            }
-
             this.loading = true;
             this.error = null;
 
             try {
-                const cartData = await CartService.getByUser(userId);
+                const cartData = await CartService.getByUser();
                 this.cart = cartData;
                 this.items = cartData?.items || [];
                 return cartData;
@@ -75,44 +68,67 @@ export const useCartStore = defineStore("cart", {
         },
 
         /**
-         * Thêm sản phẩm vào giỏ hàng
+         * Lấy toàn bộ danh sách items trong giỏ (getAll)
          */
-        async addToCart(productId, quantity, size, color) {
-            const userId = this.userId;
+        async fetchAll() {
+            const data = await this.loadCart();
+            return this.items || [];
+        },
 
-            if (!userId) {
-                this.error = "User not authenticated";
+        /**
+         * Thêm sản phẩm vào giỏ hàng (optimistic UI)
+         * Chỉ nhận 1 đối tượng product:
+         * addToCart({ id, quantity, size, color, name, image, price })
+         */
+        async addToCart(product) {
+            const payload = {
+                product_id: product?.id,
+                quantity: product?.quantity,
+                size: product?.size,
+                color: product?.color
+            };
+            const meta = {
+                name: product?.name,
+                image: product?.image,
+                price: product?.price
+            };
+
+            if (!payload.product_id || !payload.quantity || !payload.size || !payload.color) {
+                this.error = "Thiếu dữ liệu bắt buộc (product.id, size, color, quantity)";
                 return null;
             }
 
             this.loading = true;
             this.error = null;
 
+            const optimisticKey = `${payload.product_id}-${payload.color}-${payload.size}-optimistic-${Date.now()}`;
+            const optimisticItem = {
+                key: optimisticKey,
+                product_id: { id: payload.product_id, name: meta.name, price: meta.price, image: meta.image },
+                price: meta.price,
+                quantity: payload.quantity,
+                size: payload.size,
+                color: payload.color,
+                _optimistic: true
+            };
+            this.items = [...this.items, optimisticItem];
+
             try {
-                const cartData = await CartService.addToCart({
-                    user_id: userId,
-                    product_id: productId,
-                    quantity,
-                    size,
-                    color
-                });
-
-                // Reload cart sau khi thêm
+                const cartData = await CartService.addToCart(payload);
                 await this.loadCart();
-
                 return cartData;
             } catch (error) {
                 console.error("Error adding to cart:", error);
                 this.error = error.response?.data?.detail || error.message || "Failed to add to cart";
+                // Rollback optimistic item
+                this.items = this.items.filter(i => i.key !== optimisticKey);
                 return null;
             } finally {
                 this.loading = false;
             }
         },
 
-        /**
-         * Xóa sản phẩm khỏi giỏ hàng
-         */
+
         async removeFromCart(cartIds) {
             if (!Array.isArray(cartIds)) {
                 cartIds = [cartIds];
@@ -137,16 +153,11 @@ export const useCartStore = defineStore("cart", {
             }
         },
 
-        /**
-         * Clear error
-         */
         clearError() {
             this.error = null;
         },
 
-        /**
-         * Clear cart (logout)
-         */
+
         clearCart() {
             this.cart = null;
             this.items = [];

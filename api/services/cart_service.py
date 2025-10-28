@@ -33,21 +33,16 @@ class CartService:
         updated_cart = await self.cart_repository.add_item_to_cart(user_id, item)
         if not updated_cart:
             return None
-        return CartResponseSchema(**updated_cart)
+        return updated_cart
 
-    async def get_cart_by_user(self, user_id: str) -> CartResponseSchema:
+    async def get_cart_by_user(self, user_id: str):
         """
         Lấy cart theo user_id
         """
         cart = await self.cart_repository.get_by_user(user_id)
         if not cart:
             return None
-
-        cart['created_at'] = cart['created_at'].isoformat() if isinstance(cart['created_at'], datetime) else cart[
-            'created_at']
-        cart['updated_at'] = cart['updated_at'].isoformat() if isinstance(cart['updated_at'], datetime) else cart[
-            'updated_at']
-        return CartResponseSchema(**cart)
+        return cart
 
     async def delete_multiple_carts(self, ids: List[str]) -> List[dict]:
         # Trả về danh sách cart đã xóa
