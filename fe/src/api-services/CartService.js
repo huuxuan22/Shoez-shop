@@ -7,9 +7,9 @@ const CartService = {
      * Lấy giỏ hàng của user
      * @param {string} userId - ID của user
      */
-    async getByUser(userId) {
+    async getByUser() {
         try {
-            const response = await BaseAxios.get(`/${PREFIX_CART}/user/${userId}`, {
+            const response = await BaseAxios.get(`/${PREFIX_CART}/user`, {
                 withCredentials: true
             });
             return response.data;
@@ -24,7 +24,8 @@ const CartService = {
      */
     async addToCart(cartData) {
         try {
-            const response = await BaseAxios.post(`/${PREFIX_CART}/`, cartData, {
+            // Backend now reads user from context; prefer /cart/item with product payload
+            const response = await BaseAxios.post(`/${PREFIX_CART}/item`, cartData, {
                 withCredentials: true
             });
             return response.data;

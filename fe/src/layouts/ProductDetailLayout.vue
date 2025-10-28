@@ -2,6 +2,13 @@
     <div class="min-h-screen bg-gray-50">
         <Header />
 
+        <!-- Toast Notification -->
+        <Transition name="toast">
+            <div v-if="toast.show" class="fixed top-4 right-4 z-[9999]">
+                <ToastNotification :message="toast.message" :type="toast.type" @close="toast.show = false" />
+            </div>
+        </Transition>
+
         <!-- Loading State -->
         <div v-if="loading" class="container mx-auto px-4 py-16 text-center">
             <div class="flex justify-center items-center min-h-[400px]">
@@ -74,12 +81,24 @@ import RelatedProducts from '@/components/product/RelatedProducts.vue'
 import ProductReviews from '@/components/product/ProductReviews.vue'
 import Footer from '@/templates/Footer.vue'
 import Header from '@/templates/Header.vue'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ProductService from '@/api-services/ProductService'
+import ToastNotification from '@/components/ToastNotification.vue'
+import { useCartStore } from '@/stores'
+
+// Toast state
+const toast = reactive({ show: false, message: '', type: 'info' })
+function showToast(message, type = 'error') {
+    toast.message = message
+    toast.type = type
+    toast.show = true
+    setTimeout(() => { toast.show = false }, 2000)
+}
 
 const route = useRoute()
 const router = useRouter()
+const cartStore = useCartStore();
 const productId = route.params.id // Lấy string từ route params thay vì parseInt
 
 // Reactive data
@@ -166,25 +185,38 @@ const handleProductClick = (productId) => {
     router.push(`/products/${productId}`)
 }
 
-const handleAddToCart = () => {
-    // TODO: Implement add to cart functionality
-    console.log('Add to cart:', {
-        product: product.value,
-        selectedColor: selectedColor.value,
-        selectedSize: selectedSize.value,
-        quantity: quantity.value
-    })
-}
+const handleAddToCart = async () => {
+    debugger;
+    if (!selectedSize.value) { showToast('Vui lòng chọn size', 'error'); return; }
+    if (!selectedColor.value) { showToast('Vui lòng chọn màu sắc', 'error'); return; }
+    if (!product.value) return;
+
+    const res = await cartStore.addToCart({
+        id: product.value.id,
+        quantity: quantity.value || 1,
+        size: selectedSize.value,
+        color: selectedColor.value,
+        name: product.value.name,
+        image: product.value.images?.[0] || '',
+        price: product.value.price
+    });
+
+    if (res) {
+        showToast('Đã thêm vào giỏ hàng!', 'success');
+    } else {
+        showToast(cartStore.error || 'Không thể thêm vào giỏ hàng', 'error');
+    }
+};
 
 const handleBuyNow = () => {
     // Validate required fields
     if (!selectedSize.value) {
-        alert('Vui lòng chọn size')
+        showToast('Vui lòng chọn size', 'error')
         return
     }
 
     if (!selectedColor.value) {
-        alert('Vui lòng chọn màu sắc')
+        showToast('Vui lòng chọn màu sắc', 'error')
         return
     }
 
@@ -219,3 +251,21 @@ onMounted(() => {
     loadProduct()
 })
 </script>
+
+<style scoped>
+/* Toast animations */
+.toast-enter-active,
+.toast-leave-active {
+    transition: all 0.25s ease;
+}
+
+.toast-enter-from {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.toast-leave-to {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+</style>
