@@ -35,20 +35,26 @@
               <img src="@/assets/icons/contact.png" alt="Liên hệ" class="w-5 h-5">
               <span>Liên hệ</span>
             </router-link>
+            <router-link :to="{ name: 'NewsDetail', params: { id: 1 } }"
+              class="flex items-center space-x-1 text-gray-800 hover:text-black transition-colors font-medium"
+              :class="{ 'text-black font-bold': $route.name === 'NewsDetail' }">
+              <img src="@/assets/icons/blog.svg" alt="Tin tức" class="w-5 h-5">
+              <span>Tin tức</span>
+            </router-link>
           </div>
         </div>
 
         <!-- User Actions -->
         <div class="flex items-center space-x-4">
-          <!-- My Orders Button -->
-          <router-link to="/orders" class="relative text-gray-800 hover:text-black transition-colors p-2">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          <!-- Favorites Button -->
+          <router-link to="/favorites" class="relative text-gray-800 hover:text-black transition-colors p-2">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
             </svg>
-            <span v-if="orderCount > 0"
-              class="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {{ orderCount > 9 ? '9+' : orderCount }}
+            <span v-if="favoritesCount > 0"
+              class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {{ favoritesCount > 9 ? '9+' : favoritesCount }}
             </span>
           </router-link>
 
@@ -177,6 +183,12 @@
               <img :src="home" alt="Liên hệ" class="w-5 h-5">
               <span>Liên hệ</span>
             </router-link>
+            <router-link :to="{ name: 'NewsDetail', params: { id: 1 } }"
+              class="flex items-center space-x-2 text-gray-800 hover:text-black transition-colors font-medium"
+              @click="closeMenus" :class="{ 'text-black font-bold': $route.name === 'NewsDetail' }">
+              <img :src="blogIcon" alt="Tin tức" class="w-5 h-5">
+              <span>Tin tức</span>
+            </router-link>
 
             <!-- Mobile Auth Links -->
             <div v-if="!isAuthenticated" class="flex flex-col space-y-2 pt-4 border-t border-gray-200">
@@ -201,6 +213,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import home from "@/assets/icons/home.png"
+import blogIcon from "@/assets/icons/blog.svg"
 import { useAuthStore } from '@/stores/auth';
 import NotificationBell from '@/components/shared/NotificationBell.vue';
 
@@ -250,6 +263,11 @@ const orderCount = computed(() => {
   // This would come from an order store in a real app
   const orders = JSON.parse(localStorage.getItem('orders') || '[]');
   return orders.filter(order => order.status === 'pending').length;
+});
+
+const favoritesCount = computed(() => {
+  const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+  return favorites.length;
 });
 
 // Methods

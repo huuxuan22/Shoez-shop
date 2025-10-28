@@ -21,7 +21,9 @@
                 <!-- Product Info -->
                 <div class="p-4">
                     <div class="flex justify-between items-start mb-2">
-                        <h4 class="font-semibold text-lg">{{ product.name }}</h4>
+                        <h4
+                            class="font-semibold text-lg flex-1 min-w-0 whitespace-nowrap overflow-hidden text-ellipsis">
+                            {{ product.name }}</h4>
                         <span class="text-xs bg-gray-100 px-2 py-1 rounded">{{ product.brand }}</span>
                     </div>
 
@@ -65,21 +67,19 @@
 
                     <!-- Action Buttons -->
                     <div class="flex gap-2">
-                        <button 
-                            @click.stop
-                            class="flex-1 bg-white border-2 border-black text-black px-3 py-2 rounded-lg hover:bg-black hover:text-white transition-all text-sm font-semibold flex items-center justify-center gap-1"
-                        >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        <button @click="addToFavorites(product)"
+                            class="flex-1 bg-white border-2 border-red-500 text-red-500 px-3 py-2 rounded-lg hover:bg-red-500 hover:text-white transition-all text-sm font-semibold flex items-center justify-center gap-1">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                             </svg>
-                            <span>Thêm</span>
+                            <span>Yêu thích</span>
                         </button>
-                        <button 
-                            @click.stop
-                            class="flex-1 bg-black text-white px-3 py-2 rounded-lg hover:bg-gray-800 transition-all text-sm font-semibold flex items-center justify-center gap-1"
-                        >
+                        <button @click.stop
+                            class="flex-1 bg-black text-white px-3 py-2 rounded-lg hover:bg-gray-800 transition-all text-sm font-semibold flex items-center justify-center gap-1">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
                             <span>Mua ngay</span>
                         </button>
@@ -112,6 +112,27 @@ const formatPrice = (price) => {
         style: 'currency',
         currency: 'VND'
     }).format(price)
+}
+
+const addToFavorites = (product) => {
+    // Get existing favorites from localStorage
+    let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+
+    // Check if product is already in favorites
+    const index = favorites.findIndex(fav => fav.id === product.id);
+
+    if (index > -1) {
+        // Remove from favorites
+        favorites.splice(index, 1);
+        alert(`${product.name} đã được bỏ khỏi yêu thích`);
+    } else {
+        // Add to favorites
+        favorites.push(product);
+        alert(`${product.name} đã được thêm vào yêu thích`);
+    }
+
+    // Save back to localStorage
+    localStorage.setItem('favorites', JSON.stringify(favorites));
 }
 </script>
 

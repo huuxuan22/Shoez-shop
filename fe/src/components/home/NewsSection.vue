@@ -1,159 +1,150 @@
 <template>
-  <section class="max-w-6xl mx-auto mt-12 px-4">
-    <div class="text-center mb-6">
+  <section class="mt-12 relative">
+    <div class="text-center mb-6 max-w-6xl mx-auto">
       <h2 class="text-2xl font-bold">TIN TỨC SHOEZ.VN</h2>
       <p class="text-sm text-gray-500">#BLOG</p>
       <div class="w-16 h-1 bg-red-500 mx-auto mt-2 rounded"></div>
     </div>
-    <div ref="container" class="overflow-x-auto scroll-smooth snap-x snap-mandatory -mx-4 px-4 py-2 no-scrollbar grab" 
-      @pointerdown="onPointerDown" @pointermove="onPointerMove" @pointerup="onPointerUp" @pointercancel="onPointerUp" @pointerleave="onPointerUp">
-      <div class="flex gap-6 items-stretch">
-        <router-link
-          v-for="(item, idx) in news"
-          :key="idx"
-          :to="{ name: 'NewsDetail', params: { id: getNewsId(idx) } }"
-          class="snap-center flex-none w-[92%] sm:w-1/2 lg:w-1/4 bg-gray-900 text-white rounded-lg overflow-hidden shadow hover:shadow-xl transition-shadow block"
-          style="text-decoration: none; color: inherit;"
-          @click.capture="preventClick"
-        >
-          <div class="relative h-44 bg-gray-100">
+
+    <!-- Navigation Buttons -->
+    <button @click="prevSlide"
+      class="absolute left-8 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-100 transition-colors">
+      <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+    <button @click="nextSlide"
+      class="absolute right-8 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-100 transition-colors">
+      <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+
+    <div ref="container" class="overflow-hidden mx-[100px]">
+      <div class="flex gap-6 items-stretch transition-transform duration-500 ease-in-out"
+        :style="{ transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)` }">
+        <div v-for="(item, idx) in news" :key="idx" @click="handleClick(idx)"
+          class="flex-none w-full sm:w-1/2 lg:w-1/3 bg-gray-900 text-white rounded-lg overflow-hidden shadow hover:shadow-xl transition-shadow block cursor-pointer">
+          <div class="relative h-60 bg-gray-100">
             <img :src="item.image" alt="" class="w-full h-full object-cover bg-gray-100" />
-            <div class="absolute top-3 left-3 bg-blue-600 text-white text-xs px-2 py-1 rounded">{{ item.date }}</div>
+            <div class="absolute top-3 left-3 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">{{ item.date
+            }}</div>
           </div>
-          <div class="p-4 flex flex-col justify-between h-40">
+          <div class="p-4 flex flex-col justify-between h-48">
             <div>
               <h3 class="text-base font-semibold mb-2 line-clamp-2 text-white">{{ item.title }}</h3>
               <p class="text-sm text-gray-200 mb-3 line-clamp-2">{{ item.excerpt }}</p>
             </div>
             <div class="text-xs text-gray-300 mt-auto flex items-center gap-1">
-              <span class="inline-block w-4 h-4"><img :src="logoSrc" alt="logo" class="w-full h-full object-contain" /></span>
+              <span class="inline-block w-4 h-4"><img :src="logoSrc" alt="logo"
+                  class="w-full h-full object-contain" /></span>
               Myshoes.vn
             </div>
           </div>
-        </router-link>
+        </div>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { RouterLink } from 'vue-router';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 
+// Import images from assets
+import blog1 from '@/assets/images/blog/blog1.png';
+import blog2 from '@/assets/images/blog/blog2.png';
+import blog3 from '@/assets/images/blog/blog3.png';
+import blog4 from '@/assets/images/blog/blog4.png';
+import blog5 from '@/assets/images/blog/blog5.png';
+import blog6 from '@/assets/images/blog/blog6.png';
+
+const router = useRouter();
 const container = ref(null);
-const isDragging = ref(false);
-const dragStartX = ref(0);
-const dragStartScroll = ref(0);
-let moved = false;
-const onPointerDown = (e) => {
-  if (!container.value) return;
-  moved = false;
-  isDragging.value = true;
-  dragStartX.value = e.pageX;
-  dragStartScroll.value = container.value.scrollLeft;
-  try { container.value.setPointerCapture && container.value.setPointerCapture(e.pointerId); } catch {}
-  container.value.classList.add('grabbing');
+const currentIndex = ref(0);
+const itemsPerPage = computed(() => {
+  if (window.innerWidth >= 1024) return 3; // lg
+  if (window.innerWidth >= 640) return 2;  // sm
+  return 1; // mobile
+});
+
+let autoSlideInterval = null;
+
+const nextSlide = () => {
+  currentIndex.value = (currentIndex.value + 1) % Math.ceil(news.length / itemsPerPage.value);
 };
-const onPointerMove = (e) => {
-  if (!isDragging.value || !container.value) return;
-  const dx = e.pageX - dragStartX.value;
-  if (Math.abs(dx) > 5) moved = true;
-  container.value.scrollLeft = dragStartScroll.value - dx;
-};
-const onPointerUp = (e) => {
-  if (!container.value) return;
-  setTimeout(() => { moved = false; }, 0);
-  isDragging.value = false;
-  try { container.value.releasePointerCapture && container.value.releasePointerCapture(e.pointerId); } catch {}
-  container.value.classList.remove('grabbing');
-};
-function preventClick(e) {
-  if (moved) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    return false;
+
+const prevSlide = () => {
+  if (currentIndex.value === 0) {
+    currentIndex.value = Math.ceil(news.length / itemsPerPage.value) - 1;
+  } else {
+    currentIndex.value--;
   }
+};
+
+function handleClick(idx) {
+  const item = news[idx];
+  if (!item || !item.id) return;
+  router.push({ name: 'NewsDetail', params: { id: item.id } });
 }
-const logoSrc = '/images/myshoes-logo.png';
+
+// Auto slide
+onMounted(() => {
+  autoSlideInterval = setInterval(() => {
+    nextSlide();
+  }, 5000); // Chuyển slide sau mỗi 5 giây
+});
+
+onUnmounted(() => {
+  if (autoSlideInterval) {
+    clearInterval(autoSlideInterval);
+  }
+});
+
+const logoSrc = '/images/logo-shoez.png';
 const news = [
   {
-    image: '/images/news1.jpg',
+    image: blog1,
     date: '25 Oct',
-    title: 'GIÀY CHẠY BỘ NÀO ĐANG LÀ “CHIẾC VƯƠNG MIỆN” CỦA DÂN RUNNER 2025?',
+    title: 'GIÀY CHẠY BỘ NÀO ĐANG LÀ "CHIẾC VƯƠNG MIỆN" CỦA DÂN RUNNER 2025?',
     excerpt: 'Lời Mở Đầu: Đỉnh Cao Của Công Nghệ Giày Chạy 2025…',
     id: '1',
   },
   {
-    image: '/images/news2.jpg',
+    image: blog2,
     date: '25 Oct',
     title: 'Đừng Hỏi Vì Sao Tôi Chỉ Mang Giày Chính Hãng – Câu Trả Lời Nằm Ở Cảm Giác Khi Xỏ Chân Vào',
-    excerpt: 'Tôi đã từng là một “thợ săn sale” giày fake…',
+    excerpt: 'Tôi đã từng là một "thợ săn sale" giày fake…',
     id: '2',
   },
   {
-    image: '/images/news3.jpg',
+    image: blog3,
     date: '21 Oct',
     title: 'Gợi ý 5 đôi sneaker tiện lợi và êm chân phù hợp cuối năm 2025',
     excerpt: 'Cuối năm luôn là thời điểm lý tưởng để sắm sửa…',
     id: '3',
   },
   {
-    image: '/images/news4.jpg',
+    image: blog4,
     date: '21 Oct',
     title: 'Gió Lạnh Về Rồi, Bạn Đã Có Giày Ấm Chưa?',
     excerpt: 'Mở đầu Khi những cơn gió lạnh đầu mùa bắt đầu len lỏi…',
     id: '4',
   },
-  // Các bài còn lại không có chi tiết, gán id tăng dần để tránh lỗi router-link
   {
-    image: '/images/news1.jpg',
+    image: blog5,
     date: '20 Oct',
     title: 'Top mẫu sneaker đáng sắm mùa thu 2025',
     excerpt: 'BST mới nhất với nhiều màu sắc và công nghệ êm ái…',
     id: '5',
   },
   {
-    image: '/images/news2.jpg',
+    image: blog6,
     date: '18 Oct',
     title: 'Cách chọn size giày online: mẹo từ chuyên gia',
     excerpt: 'Hướng dẫn đo chuẩn, tránh đổi trả phiền phức.',
     id: '6',
   },
-  {
-    image: '/images/news3.jpg',
-    date: '15 Oct',
-    title: 'Bảo quản giày da đúng cách: 7 bước đơn giản',
-    excerpt: 'Giữ giày luôn mới với mẹo bảo quản từ nhà sản xuất.',
-    id: '7',
-  },
-  {
-    image: '/images/news4.jpg',
-    date: '12 Oct',
-    title: 'Khuyến mãi cuối tuần: Mua 1 tặng 1 một số mẫu',
-    excerpt: 'Chương trình giảm giá lớn, số lượng có hạn.',
-    id: '8',
-  },
-  {
-    image: '/images/news1.jpg',
-    date: '10 Oct',
-    title: 'Phong cách phối đồ với sneaker trắng',
-    excerpt: 'Gợi ý outfit casual + tips giữ giày trắng sạch.',
-    id: '9',
-  },
-  {
-    image: '/images/news2.jpg',
-    date: '08 Oct',
-    title: 'Sự khác biệt giữa foam A và foam B trong đế giày',
-    excerpt: 'So sánh cảm giác, độ đàn hồi và độ bền.',
-    id: '10',
-  },
-  {
-    image: '/images/news3.jpg',
-    date: '05 Oct',
-    title: 'Top 10 mẫu running shoes cho người mới bắt đầu',
-    excerpt: 'Chọn giày chạy phù hợp để tránh chấn thương.',
-    id: '11',
-  }
 ];
 
 
@@ -164,19 +155,19 @@ function getNewsId(idx) {
 </script>
 
 <style scoped>
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-clamp: 2;
+}
 
-.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-clamp: 2; }
-.text-white { color: #fff; }
-.bg-gray-900 { background-color: #111827; }
+.text-white {
+  color: #fff;
+}
 
-.snap-center { scroll-snap-align: center; }
-.snap-x { scroll-snap-type: x mandatory; }
-.scroll-smooth { scroll-behavior: smooth; }
-
-.no-scrollbar::-webkit-scrollbar { height: 8px; }
-.no-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 9999px; }
-.no-scrollbar { scrollbar-width: thin; }
-
-.grab { cursor: grab; touch-action: pan-y; }
-.grabbing { cursor: grabbing; touch-action: pan-y; }
+.bg-gray-900 {
+  background-color: #111827;
+}
 </style>
