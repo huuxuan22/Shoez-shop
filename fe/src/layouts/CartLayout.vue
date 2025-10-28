@@ -1,4 +1,13 @@
 <template>
+    <!-- Toast Notification -->
+    <Teleport to="body">
+        <Transition name="toast">
+            <div v-if="toast.show" class="fixed top-4 right-4 z-[9999]">
+                <ToastNotification :message="toast.message" :type="toast.type" @close="toast.show = false" />
+            </div>
+        </Transition>
+    </Teleport>
+
     <div class="min-h-screen bg-white">
         <Header />
         <div class="container mx-auto px-4 py-8">
@@ -27,6 +36,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+import { reactive } from 'vue'
 import Header from '@/templates/Header.vue';
 import Footer from '@/templates/Footer.vue';
 import CartSummary from '@/components/cart/CartSummary.vue';
@@ -34,11 +44,23 @@ import EmptyCart from '@/components/cart/EmptyCart.vue';
 import CartItem from '@/components/cart/CartItem.vue';
 import { onMounted, ref, computed } from 'vue';
 import { useCartStore } from '@/stores/cart';
+import ToastNotification from '@/components/ToastNotification.vue'
 
 const router = useRouter();
 
 const cartStore = useCartStore();
 const cartItems = ref([]);
+
+// Toast state
+let toastTimer = null;
+const toast = reactive({ show: false, message: '', type: 'info' })
+function showToast(message, type = 'info', duration = 2500) {
+    if (toastTimer) clearTimeout(toastTimer)
+    toast.show = true
+    toast.message = message
+    toast.type = type
+    toastTimer = setTimeout(() => { toast.show = false }, duration)
+}
 
 function mapCartItems(items) {
     if (!Array.isArray(items)) return [];
@@ -78,8 +100,20 @@ const updateQuantity = (itemId, newQuantity) => {
     }
 };
 
-const removeItem = (itemId) => {
-    cartItems.value = cartItems.value.filter(item => item.id !== itemId);
+const removeItem = async (itemId) => {
+    const item = cartItems.value.find(i => i.id === itemId);
+    if (!item) return;
+    try {
+        await cartStore.removeItem({
+            productId: item.productId,
+            size: item.size,
+            color: item.color
+        });
+        cartItems.value = mapCartItems(cartStore.items || []);
+        showToast('Đã xoá sản phẩm khỏi giỏ hàng', 'success')
+    } catch (e) {
+        showToast('Xoá sản phẩm thất bại', 'error')
+    }
 };
 
 const continueShopping = () => {

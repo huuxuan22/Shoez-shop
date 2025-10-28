@@ -133,7 +133,7 @@ export const useCartStore = defineStore("cart", {
             if (!Array.isArray(cartIds)) {
                 cartIds = [cartIds];
             }
-
+            debugger;
             this.loading = true;
             this.error = null;
 
@@ -147,6 +147,31 @@ export const useCartStore = defineStore("cart", {
             } catch (error) {
                 console.error("Error removing from cart:", error);
                 this.error = error.response?.data?.detail || error.message || "Failed to remove from cart";
+                return false;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        /**
+         * Xoá 1 item khỏi giỏ theo product/size/color
+         */
+        async removeItem({ productId, size, color }) {
+            if (!productId || size === undefined || color === undefined) {
+                this.error = "Thiếu dữ liệu bắt buộc (productId, size, color)";
+                return false;
+            }
+
+            this.loading = true;
+            this.error = null;
+
+            try {
+                await CartService.deleteItem({ product_id: productId, size, color });
+                await this.loadCart();
+                return true;
+            } catch (error) {
+                console.error("Error removing item:", error);
+                this.error = error.response?.data?.detail || error.message || "Failed to remove item";
                 return false;
             } finally {
                 this.loading = false;

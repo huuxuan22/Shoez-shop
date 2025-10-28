@@ -8,7 +8,7 @@ from dependences.dependencies import get_cart_repo
 from repositories.cart_repository import CartRepository
 from services import cart_service
 from services.cart_service import CartService
-from schemas.cart_schemas import CartCreateSchema, CartResponseSchema, CartDeleteManySchema, AddCartItemSchema
+from schemas.cart_schemas import CartCreateSchema, CartResponseSchema, AddCartItemSchema, CartRemoveItemSchema
 from config.database import get_database
 from config.context import get_current_user
 
@@ -62,9 +62,17 @@ async def add_item_to_cart(payload: AddCartItemSchema,
         raise HTTPException(status_code=400, detail="Could not add item to cart")
     return JSONResponse(content=jsonable_encoder(updated), status_code=200)
     
-@cart_router.delete("/delete-multiple")
-async def delete_multiple_carts(payload: CartDeleteManySchema, cart_repo: CartRepository = Depends(get_cart_repo)):
+@cart_router.delete("/item")
+async def remove_item_from_cart(payload: CartRemoveItemSchema,
+                                cart_repo: CartRepository = Depends(get_cart_repo),
+                                current_user: dict = Depends(get_current_user)):
     service = CartService(cart_repo)
-    count = await service.delete_multiple_carts(payload.ids)
-    return JSONResponse(content="OK", status_code=200)
+    user_id = str(current_user.get("_id") or current_user.get("id"))
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    updated = await service.remove_item(user_id, payload.product_id, payload.size, payload.color)
+    if not updated:
+        raise HTTPException(status_code=400, detail="Could not remove item from cart")
+    return JSONResponse(content=jsonable_encoder(updated), status_code=200)
 

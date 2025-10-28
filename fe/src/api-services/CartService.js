@@ -48,6 +48,21 @@ const CartService = {
         } catch (error) {
             throw error;
         }
+    },
+
+    /**
+     * Xoá 1 item khỏi giỏ hàng theo product/size/color
+     */
+    async deleteItem({ product_id, size, color }) {
+        try {
+            const response = await BaseAxios.delete(`/${PREFIX_CART}/item`, {
+                data: { product_id, size, color },
+                withCredentials: true
+            });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
     }
 };
 
