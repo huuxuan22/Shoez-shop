@@ -1,5 +1,7 @@
 <template>
   <header class="bg-white shadow-md sticky top-0 z-50">
+    <ConfirmModal :show="showConfirm" message="Bạn có chắc chắn muốn đăng xuất?" @confirm="handleLogout"
+      @cancel="showConfirm = false" />
     <nav class="container mx-auto px-4 py-4">
       <div class="flex items-center justify-between flex-wrap">
         <!-- Logo -->
@@ -136,7 +138,7 @@
 
               <div class="border-t border-gray-200 my-2"></div>
 
-              <button @click="handleLogout"
+              <button @click="showConfirm = true"
                 class="flex items-center w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 font-medium">
                 <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -222,6 +224,7 @@ import { useNotificationStore } from '@/stores/notification';
 import { watch } from 'vue';
 import NotificationBell from '@/components/notifications/NotificationBell.vue';
 import ToastNotification from '@/components/notifications/ToastNotification.vue';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -232,6 +235,7 @@ const notificationStore = useNotificationStore();
 // Reactive data
 const showUserMenu = ref(false);
 const showMobileMenu = ref(false);
+const showConfirm = ref(false);
 
 // Computed properties
 const isAuthenticated = computed(() => {

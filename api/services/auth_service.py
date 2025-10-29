@@ -1,10 +1,7 @@
 
 from fastapi import HTTPException
 import httpx
-from alembic.util import status
-from sqlalchemy.orm import Session
-
-from config.config import Settings
+from config.config import get_settings
 from config.enum import ErrorCode, MessageKey
 from exceptions.exception import UserExistException, UserNotFoundException
 from repositories.role_repository import RoleRepository
@@ -17,7 +14,7 @@ from utils import auth
 from fastapi.responses import RedirectResponse
 from model.user_model import User
 from i18n.translator import translate
-settings = Settings()
+settings = get_settings()
 
 oauth = OAuth()
 oauth.register(
@@ -60,9 +57,8 @@ class AuthService:
         user_dict = user_data.dict()
         user_dict['password'] = hashed_password
         user_dict['role'] = "USER"
-        # Don't add id field here, it will be set after creation
+        user_dict['is_login'] = "NORMAL"  
         
-        # Lưu user vào database
         created_user = await self.user_repository.create(user_dict)
         
         # Set id = _id after creation
@@ -122,61 +118,80 @@ class AuthService:
 
     @staticmethod
     async def get_google_redirect_uri(request):
+        # Ensure redirect URI includes API prefix to match mounted router paths
         redirect_uri = f"{settings.backend_url}/auth/google/callback"
         return await oauth.google.authorize_redirect(request, redirect_uri)
 
     @staticmethod
     async def get_facebook_redirect_uri(request):
         # Redirect người dùng tới Facebook OAuth
+        # Scope cần thiết: public_profile (mặc định) và email (cần permission)
         fb_auth_url = (
-            f"https://www.facebook.com/v16.0/dialog/oauth?"
+            f"https://www.facebook.com/v18.0/dialog/oauth?"
             f"client_id={settings.facebook_app_id}&"
             f"redirect_uri={settings.backend_url}/auth/facebook/callback&"
             f"response_type=code&"
-            f"scope=email"  # Đảm bảo scope được truyền đúng
-            f"auth_type=rerequest"
+            f"scope=public_profile,email"  # public_profile là bắt buộc, email cần permission
         )
         return RedirectResponse(fb_auth_url)
 
-    @staticmethod
-    async def handle_google_callback(request):
+    async def handle_google_callback(self, request):
         token = await oauth.google.authorize_access_token(request)
-        user = token.get("userinfo")
+        user_info = token.get("userinfo") or {}
 
-        payload = {"sub": user["email"], "name": user["name"]}
-        jwt_token = auth.generate_token(payload)
+        email = user_info.get("email")
+        name = user_info.get("name")
+        picture = user_info.get("picture")
 
-        access_token = auth.create_access_token(user)
-        refresh_token = auth.create_refresh_token(user)
+        if not email:
+            raise HTTPException(status_code=ErrorCode.BAD_REQUEST, detail="Không lấy được email từ Google")
 
-        redirect_url = f"{settings.frontend_url}/home"
-        response = RedirectResponse(url=redirect_url)
-        response.set_cookie(
-            key="refresh_token",
-            value=refresh_token,
-            httponly=True,  # FE không đọc được
-            secure=True,  # bật khi chạy HTTPS
-            samesite="lax",  # hoặc "strict" nếu cần
-            max_age=7 * 24 * 60 * 60  # 7 ngày
+        # Tìm user theo email, nếu chưa có thì tạo mới
+        existing_user = await self.user_repository.get_by_email(email)
+        if existing_user:
+            db_user = existing_user
+        else:
+            create_data = {
+                "email": email,
+                # Đăng ký qua Google không có password
+                "full_name": name,
+                "avatar": picture,
+                "is_active": True,
+                "role": "USER",
+                "is_login": "GOOGLE"  # Đăng nhập bằng Google
+            }
+            db_user = await self.user_repository.create(create_data)
+
+        # Ensure id exists
+        if db_user and "_id" in db_user:
+            db_user["id"] = str(db_user["_id"])
+
+        user_principal = UserPrincipal(
+            id=db_user.get("id"),
+            email=db_user.get("email"),
+            full_name=db_user.get("full_name"),
+            numberphone=db_user.get("numberphone"),
+            avatar=db_user.get("avatar"),
+            is_active=db_user.get("is_active", True),
+            role=db_user.get("role")
         )
 
-        response.set_cookie(
-            key="access_token",
-            value=access_token,
-            httponly=True,  # FE không đọc được
-            secure=True,  # bật khi chạy HTTPS
-            samesite="lax",  # hoặc "strict" nếu cần
-            max_age=7 * 24 * 60 * 60  # 7 ngày
-        )
-        return response
+        to_encode = convert_uuid_to_str(user_principal.dict())
+        token_access = auth.generate_token(to_encode, exprices_delta=30 * 24 * 3600)
+        token_refresh = auth.generate_token(to_encode, exprices_delta=7 * 24 * 3600)
 
-    @staticmethod
-    async def handle_facebook_callback(request):
+        return TokenResponse(
+            message=translate(MessageKey.LOGIN_SUCCESS),
+            access_token=token_access,
+            refresh_token=token_refresh,
+            user_principal=user_principal
+        )
+
+    async def handle_facebook_callback(self, request):
         code = request.query_params.get("code")
         if not code:
             raise HTTPException(status_code=400, detail="No code provided by Facebook")
 
-        # 1. Đổi code lấy access_token từ Facebook (KHÔNG thêm scope=email)
         token_url = (
             f"https://graph.facebook.com/v16.0/oauth/access_token?"
             f"client_id={settings.facebook_app_id}&"
@@ -194,40 +209,60 @@ class AuthService:
 
             # 2. Lấy user info từ Facebook (id, name, email)
             profile_url = "https://graph.facebook.com/me"
-            params = {"fields": "id,name,email", "access_token": fb_access_token}
+            params = {"fields": "id,name,email,picture", "access_token": fb_access_token}
             profile_res = await client.get(profile_url, params=params)
             user_info = profile_res.json()
 
-        # 3. Tạo payload chuẩn cho JWT
-        payload = {"sub": user_info["id"], "name": user_info.get("name"), "email": user_info.get("email")}
-        access_token = auth.create_access_token(payload)
-        refresh_token = auth.create_refresh_token(payload)
+        email = user_info.get("email")
+        name = user_info.get("name")
+        picture = None
+        pic_data = user_info.get("picture")
+        if isinstance(pic_data, dict):
+            picture = pic_data.get("data", {}).get("url")
 
-        # 4. Redirect về FE + set cookie refresh_token
-        redirect_url = f"{settings.frontend_url}/home"
-        response = RedirectResponse(url=redirect_url)
+        # 3. Tìm user theo name và is_login="FACEBOOK" (không dùng email)
+        existing_user = await self.user_repository.get_by_name_and_login_type(name, "FACEBOOK")
+        if existing_user:
+            db_user = existing_user
+            # Nếu user đã có email từ lần trước và giờ Facebook trả về email, cập nhật
+            if email and not db_user.get("email"):
+                db_user["email"] = email
+                await self.user_repository.update_by_id(db_user.get("id"), {"email": email})
+        else:
+            # Tạo user mới với is_login="FACEBOOK"
+            create_data = {
+                "email": email,  # Có thể None nếu Facebook không trả về email
+                "full_name": name,
+                "avatar": picture,
+                "is_active": True,
+                "role": "USER",
+                "is_login": "FACEBOOK"  # Đăng nhập bằng Facebook
+            }
+            db_user = await self.user_repository.create(create_data)
 
-        # Refresh token -> httponly cookie (BE đọc)
-        response.set_cookie(
-            key="refresh_token",
-            value=refresh_token,
-            httponly=True,
-            secure=True,  # bật khi chạy HTTPS
-            samesite="lax",
-            max_age=7 * 24 * 60 * 60
+        if db_user and "_id" in db_user:
+            db_user["id"] = str(db_user["_id"])
+
+        user_principal = UserPrincipal(
+            id=db_user.get("id"),
+            email=db_user.get("email"),
+            full_name=db_user.get("full_name"),
+            numberphone=db_user.get("numberphone"),
+            avatar=db_user.get("avatar"),
+            is_active=db_user.get("is_active", True),
+            role=db_user.get("role")
         )
 
-        # Access token -> cookie FE có thể đọc (hoặc localStorage)
-        response.set_cookie(
-            key="access_token",
-            value=access_token,
-            httponly=False,  # FE có thể đọc
-            secure=True,
-            samesite="lax",
-            max_age=15 * 60  # ví dụ 15 phút
-        )
+        to_encode = convert_uuid_to_str(user_principal.dict())
+        token_access = auth.generate_token(to_encode, exprices_delta=30 * 24 * 3600)
+        token_refresh = auth.generate_token(to_encode, exprices_delta=7 * 24 * 3600)
 
-        return response
+        return TokenResponse(
+            message=translate(MessageKey.LOGIN_SUCCESS),
+            access_token=token_access,
+            refresh_token=token_refresh,
+            user_principal=user_principal
+        )
 
 
 

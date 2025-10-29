@@ -1,12 +1,11 @@
 <template>
   <div>
-    <button
-      :type="type"
-      @click="onClick"
-      class="w-full px-4 py-3 rounded-lg font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2"
-      :class="variantClass"
-    >
-      {{ label }}
+    <button :type="type" @click="onClick"
+      class="w-full px-4 py-3 rounded-lg font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center justify-center gap-2"
+      :class="[variantClass, isDisabled ? 'opacity-60 cursor-not-allowed' : '']" :disabled="isDisabled">
+      <span v-if="loading"
+        class="inline-block w-4 h-4 border-2 border-white/80 border-t-transparent rounded-full animate-spin"></span>
+      <span v-else>{{ label }}</span>
     </button>
   </div>
 </template>
@@ -27,6 +26,14 @@ const props = defineProps({
     // Sửa lỗi chính tả từ "varriant" -> "variant"
     type: String,
     default: "primary",
+  },
+  loading: {
+    type: Boolean,
+    default: false,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -59,4 +66,6 @@ const variantClass = computed(() => {
       return "bg-blue-600 text-white hover:bg-blue-700";
   }
 });
+
+const isDisabled = computed(() => props.disabled || props.loading);
 </script>

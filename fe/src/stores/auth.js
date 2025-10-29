@@ -40,6 +40,25 @@ export const useAuthStore = defineStore("auth", {
             }
         },
 
+        // Hydrate from cookies after OAuth redirect
+        hydrateFromCookies() {
+            // Read cookies
+            const cookies = document.cookie.split(';').reduce((acc, c) => {
+                const [k, ...v] = c.trim().split('=');
+                acc[k] = decodeURIComponent(v.join('='));
+                return acc;
+            }, {});
+
+            const emailFromCookie = cookies["current_user"];
+            if (emailFromCookie) {
+                // If no user in state, minimally set email; backend endpoints can enrich later
+                if (!this.user) this.user = { email: emailFromCookie };
+                else this.user = { ...this.user, email: emailFromCookie };
+                // Persist minimal user
+                localStorage.setItem("user", JSON.stringify(this.user));
+            }
+        },
+
         async updateUser(updatedData) {
             this.user = { ...this.user, ...updatedData };
             localStorage.setItem("user", JSON.stringify(this.user));

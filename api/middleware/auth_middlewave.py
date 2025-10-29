@@ -24,14 +24,24 @@ async def _authenticate_user(self, request: Request):
         raise AuthTokenMissingException("Phiên đăng nhập không hợp lệ hoặc đã hết hạn.")
 
     decoded_token = validate_token(token)
-    email = decoded_token["email"]
+    email = decoded_token.get("email")
+    user_id = decoded_token.get("id")
 
     db = request.state.db
     user_repo = UserRepository(db)
 
-    user = await user_repo.get_user_principal(email)
+    user = None
+    # Ưu tiên tìm bằng email nếu có (Google/NORMAL login)
+    if email:
+        user = await user_repo.get_user_principal(email)
+    
+    # Nếu không có email hoặc không tìm thấy bằng email, tìm bằng id (Facebook login)
+    if not user and user_id:
+        user = await user_repo.get_by_id_str(str(user_id))
+    
     if not user:
         raise AuthTokenMissingException(MessageKey.USER_NOT_FOUND)
+    
     current_user.set(user)
     request.state.user = user
 
@@ -49,6 +59,7 @@ class AuthMiddlewave(BaseHTTPMiddleware):
 
     __disable_auth_paths = [
         "/auth/login",
+        "/auth/session",
         "/auth/register",
         "auth/logout",
         "auth/register-user",
@@ -73,10 +84,9 @@ class AuthMiddlewave(BaseHTTPMiddleware):
         ("/products/get-all", ["GET"]),
         ("/products/top-rated", ["GET"]),
         ("/products/top-rated-by-brand", ["GET"]),
-        ("/products/detail/", ["GET"]),  # /products/detail/{product_id}  
+        ("/products/detail/", ["GET"]),  
     ]
 
-    # Swagger mặc định của FastAPI
     __swagger_paths = ["/docs", "/redoc", "/openapi.json"]
 
     @staticmethod
