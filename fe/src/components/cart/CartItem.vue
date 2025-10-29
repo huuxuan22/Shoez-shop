@@ -1,8 +1,8 @@
 <template>
-    <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-        <div class="flex gap-4">
+    <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+        <div class="flex gap-5">
             <!-- Product Image -->
-            <div class="w-24 h-24 flex-shrink-0">
+            <div class="w-32 h-32 flex-shrink-0">
                 <img :src="item.image" :alt="item.name" class="w-full h-full object-cover rounded-lg" />
             </div>
 
@@ -22,15 +22,15 @@
                     </button>
                 </div>
 
-                <div class="mt-2 flex items-center gap-4 text-sm">
+                <div class="mt-3 flex items-center gap-6 text-sm">
                     <span class="text-gray-600">Size: <strong class="text-black">{{ item.size }}</strong></span>
                     <span class="text-gray-600">Màu: <strong class="text-black">{{ item.color }}</strong></span>
                 </div>
 
-                <div class="mt-4 flex items-center justify-between">
+                <div class="mt-5 flex items-center justify-between">
                     <!-- Price -->
-                    <div class="flex items-center gap-2">
-                        <span class="text-xl font-bold text-black">{{ formatPrice(item.price * item.quantity) }}</span>
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl font-bold text-black">{{ formatPrice(item.price * item.quantity) }}</span>
                         <span v-if="item.originalPrice" class="text-sm text-gray-400 line-through">
                             {{ formatPrice(item.originalPrice * item.quantity) }}
                         </span>

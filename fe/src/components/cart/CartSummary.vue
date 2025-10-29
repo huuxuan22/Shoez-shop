@@ -26,14 +26,17 @@
             </div>
         </div>
 
-        <Button class="w-full mt-6" variant="primary" @click="$emit('checkout')">
-            Thanh toán
-        </Button>
-
-        <div class="mt-4 text-center">
-            <button class="text-gray-600 hover:text-black transition-colors text-sm">
-                ← Tiếp tục mua sắm
+        <div class="mt-6 space-y-2">
+            <button @click="$emit('checkout-selected')" :disabled="selectedCount === 0"
+                class="w-full bg-black text-white px-4 py-3 rounded-lg disabled:opacity-50">
+                Thanh toán ({{ selectedCount }})
             </button>
+
+            <div class="text-center">
+                <button class="text-gray-600 hover:text-black transition-colors text-sm">
+                    ← Tiếp tục mua sắm
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -44,10 +47,11 @@ import Button from '../Button.vue';
 import Divider from '../Divider.vue';
 
 const props = defineProps({
-    cartItems: Array
+    cartItems: Array,
+    selectedCount: { type: Number, default: 0 }
 });
 
-defineEmits(['checkout']);
+defineEmits(['checkout', 'checkout-selected']);
 
 // Computed
 const subtotal = computed(() => {

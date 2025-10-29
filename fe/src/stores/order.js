@@ -6,53 +6,29 @@ export const useOrderStore = defineStore("order", {
     state: () => ({
         orders: [],
         currentOrder: null,
+        checkoutItems: [],
         loading: false,
         error: null
     }),
 
     getters: {
-        /**
-         * User ID
-         */
-        userId: () => {
-            const authStore = useAuthStore();
-            return authStore.user?.id || authStore.user?._id || null;
-        },
-
-        /**
-         * Số lượng đơn hàng
-         */
         orderCount: (state) => state.orders.length,
 
-        /**
-         * Đơn hàng theo status
-         */
         getOrdersByStatus: (state) => (status) => {
             return state.orders.filter(order => order.status === status);
         }
     },
 
     actions: {
-        /**
-         * Tải tất cả đơn hàng của user
-         */
         async loadOrders() {
-            const userId = this.userId;
-
-            if (!userId) {
-                this.error = "User not authenticated";
-                return null;
-            }
-
             this.loading = true;
             this.error = null;
 
             try {
-                const ordersData = await OrderService.getByUser(userId);
+                const ordersData = await OrderService.getByUser();
                 this.orders = ordersData || [];
                 return this.orders;
             } catch (error) {
-                console.error("Error loading orders:", error);
                 this.error = error.response?.data?.detail || error.message || "Failed to load orders";
                 return null;
             } finally {
@@ -60,9 +36,6 @@ export const useOrderStore = defineStore("order", {
             }
         },
 
-        /**
-         * Tải chi tiết một đơn hàng
-         */
         async loadOrderDetail(orderId) {
             this.loading = true;
             this.error = null;
@@ -70,9 +43,17 @@ export const useOrderStore = defineStore("order", {
             try {
                 const orderData = await OrderService.getById(orderId);
                 this.currentOrder = orderData;
+
+                // Update trong orders array nếu order đã tồn tại để đảm bảo sync
+                const index = this.orders.findIndex(order =>
+                    (order.id || order._id) === (orderData.id || orderData._id)
+                );
+                if (index !== -1) {
+                    this.orders[index] = orderData;
+                }
+
                 return orderData;
             } catch (error) {
-                console.error("Error loading order detail:", error);
                 this.error = error.response?.data?.detail || error.message || "Failed to load order detail";
                 return null;
             } finally {
@@ -80,9 +61,7 @@ export const useOrderStore = defineStore("order", {
             }
         },
 
-        /**
-         * Tạo đơn hàng mới
-         */
+
         async createOrder(orderData) {
             this.loading = true;
             this.error = null;
@@ -90,36 +69,41 @@ export const useOrderStore = defineStore("order", {
             try {
                 const newOrder = await OrderService.create(orderData);
 
-                // Thêm vào danh sách orders
                 if (newOrder) {
                     this.orders.unshift(newOrder);
                 }
 
                 return newOrder;
             } catch (error) {
-                console.error("Error creating order:", error);
                 this.error = error.response?.data?.detail || error.message || "Failed to create order";
-                return null;
+                throw error;
             } finally {
                 this.loading = false;
             }
         },
 
         /**
-         * Cập nhật trạng thái đơn hàng
+         * Thiết lập danh sách items sẽ thanh toán (từ giỏ hàng hoặc trang chi tiết)
          */
+        setCheckoutItems(items) {
+            this.checkoutItems = Array.isArray(items) ? items : [];
+        },
+
         async updateOrderStatus(orderId, status) {
             try {
                 const updatedOrder = await OrderService.updateStatus(orderId, status);
 
-                // Update trong danh sách orders
-                const index = this.orders.findIndex(order => order.id === orderId);
+                const index = this.orders.findIndex(order =>
+                    (order.id || order._id) === orderId ||
+                    (order.id || order._id) === (updatedOrder.id || updatedOrder._id)
+                );
                 if (index !== -1) {
                     this.orders[index] = updatedOrder;
                 }
 
-                // Update currentOrder nếu đang xem
-                if (this.currentOrder && this.currentOrder.id === orderId) {
+                const currentOrderId = this.currentOrder?.id || this.currentOrder?._id;
+                const updatedOrderId = updatedOrder?.id || updatedOrder?._id;
+                if (currentOrderId && currentOrderId === updatedOrderId) {
                     this.currentOrder = updatedOrder;
                 }
 
@@ -131,16 +115,36 @@ export const useOrderStore = defineStore("order", {
             }
         },
 
-        /**
-         * Clear error
-         */
         clearError() {
             this.error = null;
         },
 
         /**
-         * Clear orders (logout)
+         * Thiết lập checkout từ 1 sản phẩm (mua ngay)
          */
+        setCheckoutFromProduct(product) {
+            if (!product) {
+                this.checkoutItems = [];
+                return;
+            }
+
+            // Tạo item từ product với meta info
+            const singleItem = {
+                productId: product.id || product._id,
+                size: product.size,
+                color: product.color,
+                quantity: product.quantity || 1,
+                meta: {
+                    name: product.name,
+                    price: product.price,
+                    image: Array.isArray(product.images) ? product.images[0] : (product.image || ''),
+                    brand: product.brand
+                }
+            };
+
+            this.checkoutItems = [singleItem];
+        },
+
         clearOrders() {
             this.orders = [];
             this.currentOrder = null;

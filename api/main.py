@@ -13,11 +13,13 @@ from controllers.cart_controller import cart_router
 from controllers.order_controller import order_router
 from controllers.product_controller import product_router
 from controllers.user_controller import user_router
+from controllers.notification_controller import notification_router
 from exceptions.register_handlers import register_all_handlers
 from dependences.dependencies import set_language_dependency
 from middleware.auth_middlewave import  AuthMiddlewave
 from middleware.locale_middlewave import LocaleMiddlewave
 from config.database import connect_to_mongo, close_mongo_connection, get_database
+from config.socket import socket_app as socket_io_app
 from utils.logger import logger
 import uvicorn
 
@@ -40,6 +42,7 @@ app.include_router(product_router, prefix=PRE_FIX)
 app.include_router(order_router, prefix=PRE_FIX)
 app.include_router(cart_router, prefix=PRE_FIX)
 app.include_router(user_router, prefix=PRE_FIX)
+app.include_router(notification_router, prefix=PRE_FIX)
 @app.on_event("startup")
 async def startup_event():
     """Startup event handler"""
@@ -80,7 +83,6 @@ async def db_session_middleware(request: Request, call_next):
     response = await call_next(request)
     return response
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins="*",
@@ -88,3 +90,5 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/socket.io", socket_io_app)

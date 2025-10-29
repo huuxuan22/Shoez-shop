@@ -49,8 +49,8 @@ const emptyTitle = computed(() => {
         all: 'Chưa có đơn hàng nào',
         pending: 'Không có đơn hàng chờ xác nhận',
         confirmed: 'Không có đơn hàng đã xác nhận',
-        shipped: 'Không có đơn hàng đang giao',
-        delivered: 'Không có đơn hàng đã giao',
+        shipping: 'Không có đơn hàng đang giao',
+        complete: 'Không có đơn hàng hoàn thành',
         cancelled: 'Không có đơn hàng đã hủy'
     }
     return titles[props.filter] || titles.all
@@ -61,8 +61,8 @@ const emptyDescription = computed(() => {
         all: 'Hãy bắt đầu mua sắm và đơn hàng đầu tiên của bạn sẽ xuất hiện ở đây.',
         pending: 'Tất cả đơn hàng của bạn đã được xử lý hoặc chưa có đơn hàng nào ở trạng thái này.',
         confirmed: 'Không có đơn hàng nào đã được xác nhận.',
-        shipped: 'Không có đơn hàng nào đang được giao.',
-        delivered: 'Bạn chưa có đơn hàng nào đã được giao thành công.',
+        shipping: 'Không có đơn hàng nào đang được giao.',
+        complete: 'Bạn chưa có đơn hàng nào đã hoàn thành.',
         cancelled: 'Bạn chưa hủy đơn hàng nào.'
     }
     return descriptions[props.filter] || descriptions.all

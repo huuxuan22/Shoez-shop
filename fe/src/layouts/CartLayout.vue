@@ -7,31 +7,34 @@
             </div>
         </Transition>
     </Teleport>
+    <Header />
 
-    <div class="min-h-screen bg-white">
-        <Header />
+    <div class="bg-white min-h-[80vh]">
         <div class="container mx-auto px-4 py-8">
             <CartHeader :item-count="cartItems.length" @continue-shopping="continueShopping" />
 
-            <div v-if="cartItems.length > 0" class="flex flex-col lg:flex-row gap-8 mt-6">
+            <div v-if="cartItems.length > 0" class="flex flex-col lg:flex-row gap-6 mt-6">
                 <!-- Cart Items -->
-                <div class="lg:w-2/3">
+                <div class="lg:w-3/4">
                     <div class="space-y-4">
-                        <CartItem v-for="item in cartItems" :key="item.id" :item="item"
-                            @update-quantity="updateQuantity" @remove-item="removeItem" />
+                        <div v-for="item in cartItems" :key="item.id" class="flex items-start gap-3">
+                            <input type="checkbox" v-model="selectedIds" :value="item.id"
+                                class="mt-2 w-5 h-5 rounded border-gray-300 text-black focus:ring-black" />
+                            <CartItem class="flex-1 min-w-0" :item="item" @update-quantity="updateQuantity"
+                                @remove-item="removeItem" />
+                        </div>
                     </div>
                 </div>
-
                 <!-- Order Summary -->
-                <div class="lg:w-1/3">
-                    <CartSummary :cart-items="cartItems" @checkout="handleCheckout" />
+                <div class="lg:w-1/4">
+                    <CartSummary :cart-items="cartItems" :selected-count="selectedIds.length" @checkout="handleCheckout"
+                        @checkout-selected="checkoutSelected" />
                 </div>
             </div>
-
             <EmptyCart v-else @continue-shopping="continueShopping" />
         </div>
-        <Footer />
     </div>
+    <Footer />
 </template>
 
 <script setup>
@@ -44,12 +47,15 @@ import EmptyCart from '@/components/cart/EmptyCart.vue';
 import CartItem from '@/components/cart/CartItem.vue';
 import { onMounted, ref, computed } from 'vue';
 import { useCartStore } from '@/stores/cart';
+import { useOrderStore } from '@/stores/order';
 import ToastNotification from '@/components/ToastNotification.vue'
 
 const router = useRouter();
 
 const cartStore = useCartStore();
+const orderStore = useOrderStore();
 const cartItems = ref([]);
+const selectedIds = ref([]);
 
 // Toast state
 let toastTimer = null;
@@ -121,6 +127,19 @@ const continueShopping = () => {
 };
 
 const handleCheckout = () => {
+    router.push('/checkout');
+};
+
+const checkoutSelected = async () => {
+    const chosen = cartItems.value.filter(i => selectedIds.value.includes(i.id))
+        .map(i => ({
+            productId: i.productId,
+            size: i.size,
+            color: i.color,
+            quantity: i.quantity,
+            meta: { name: i.name, price: i.price, image: i.image }
+        }));
+    orderStore.setCheckoutItems(chosen);
     router.push('/checkout');
 };
 </script>

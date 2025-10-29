@@ -73,7 +73,6 @@ const avatarSrc = computed(() => {
     if (props.user.avatar) {
         return props.user.avatar;
     }
-    // Sử dụng đường dẫn tương đối
     return new URL('../../assets/icons/user_icon.png', import.meta.url).href;
 });
 

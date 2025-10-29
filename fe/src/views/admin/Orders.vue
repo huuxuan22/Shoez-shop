@@ -7,7 +7,7 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+    <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center justify-between">
           <div>
@@ -26,11 +26,26 @@
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-600">Đang xử lý</p>
-            <h3 class="text-2xl font-bold text-blue-600 mt-1">{{ statusCounts.processing }}</h3>
+            <p class="text-sm text-gray-600">Đã xác nhận</p>
+            <h3 class="text-2xl font-bold text-blue-600 mt-1">{{ statusCounts.confirmed }}</h3>
           </div>
           <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-600">Đang giao</p>
+            <h3 class="text-2xl font-bold text-purple-600 mt-1">{{ statusCounts.shipping }}</h3>
+          </div>
+          <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
@@ -83,8 +98,10 @@
           <select v-model="statusFilter"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
             <option value="">Tất cả</option>
-            <option value="pending">Chờ xử lý</option>
-            <option value="processing">Đang xử lý</option>
+            <option value="pending">Chờ xác nhận (Mặc định)</option>
+            <option value="confirmed">Đã xác nhận</option>
+            <option value="shipping">Đang giao</option>
+            <option value="delivered">Đã nhận</option>
             <option value="complete">Hoàn thành</option>
             <option value="cancelled">Đã hủy</option>
           </select>
@@ -176,12 +193,12 @@
               </td>
               <td class="px-6 py-4">
                 <div>
-                  <p class="text-sm font-medium text-gray-900">{{ order.user_id?.full_name || 'N/A' }}</p>
-                  <p class="text-sm text-gray-500">{{ order.user_id?.email || 'N/A' }}</p>
+                  <p class="text-sm font-medium text-gray-900">{{ order?.fullName || 'N/A' }}</p>
+                  <p class="text-sm text-gray-500">{{ order?.email || 'N/A' }}</p>
                 </div>
               </td>
               <td class="px-6 py-4 text-sm text-gray-900">
-                {{ order.user_id?.numberphone || 'N/A' }}
+                {{ order?.phone || 'N/A' }}
               </td>
               <td class="px-6 py-4 text-sm text-gray-900">
                 {{ formatDate(order.created_at) }}
@@ -207,9 +224,10 @@
                   </button>
 
                   <!-- Status Update Buttons -->
+                  <!-- Giải thích: pending -> confirmed (Admin xác nhận) -->
                   <div class="relative inline-block text-left" v-if="order.status === 'pending'">
-                    <button class="text-green-600 hover:text-green-900" @click="markAsProcessing(order)"
-                      title="Chuyển sang đang xử lý">
+                    <button class="text-green-600 hover:text-green-900" @click="markAsConfirmed(order)"
+                      title="Xác nhận đơn hàng">
                       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -217,9 +235,23 @@
                     </button>
                   </div>
 
-                  <div class="relative inline-block text-left" v-if="order.status === 'processing'">
+                  <!-- Giải thích: confirmed -> shipping (Admin bắt đầu giao) -->
+                  <div class="relative inline-block text-left" v-if="order.status === 'confirmed'">
+                    <button class="text-blue-600 hover:text-blue-900" @click="markAsShipping(order)"
+                      title="Bắt đầu giao hàng">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <!-- Admin có thể hoàn thành từ bất kỳ status nào (trừ complete và cancelled) -->
+                  <div class="relative inline-block text-left"
+                    v-if="order.status !== 'complete' && order.status !== 'cancelled'">
                     <button class="text-green-600 hover:text-green-900" @click="markAsComplete(order)"
-                      title="Hoàn thành">
+                      title="Hoàn thành đơn hàng">
                       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                       </svg>
@@ -286,11 +318,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { io } from 'socket.io-client';
 import AdminLayout from '@/layouts/admin/AdminLayout.vue';
 import OrderService from '@/api-services/OrderService';
 import OrderDetailModal from '@/components/admin/OrderDetailModal.vue';
 import OrderStatusUpdateModal from '@/components/admin/OrderStatusUpdateModal.vue';
+import { useToast } from '@/composables/useToast';
+
+// Toast
+const toast = useToast();
 
 const orders = ref([]);
 const loading = ref(true);
@@ -301,14 +338,16 @@ const itemsPerPage = ref(20);
 
 // Filters
 const searchQuery = ref('');
-const statusFilter = ref('');
+const statusFilter = ref('pending'); // Mặc định chỉ load pending orders
 const startDate = ref('');
 const endDate = ref('');
 
 // Status counts for stats cards
 const statusCounts = ref({
   pending: 0,
-  processing: 0,
+  confirmed: 0,
+  shipping: 0,
+  delivered: 0,
   complete: 0,
   cancelled: 0
 });
@@ -318,6 +357,9 @@ const selectedOrder = ref(null);
 const isModalOpen = ref(false);
 const isStatusModalOpen = ref(false);
 const orderToUpdate = ref(null);
+
+// Socket.IO for real-time notifications
+const socket = ref(null);
 
 // Computed properties
 const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage.value);
@@ -338,6 +380,7 @@ const fetchOrders = async (page = 1) => {
     if (searchQuery.value) {
       params.valueSearch = searchQuery.value;
     }
+    // Giải thích: Luôn filter theo status (mặc định là 'pending')
     if (statusFilter.value) {
       params.status = statusFilter.value;
     }
@@ -369,7 +412,9 @@ const fetchOrders = async (page = 1) => {
 const updateStatusCounts = () => {
   const counts = {
     pending: 0,
-    processing: 0,
+    confirmed: 0,
+    shipping: 0,
+    delivered: 0,
     complete: 0,
     cancelled: 0
   };
@@ -424,8 +469,9 @@ const searchTimeout = ref(null);
 
 const getStatusText = (status) => {
   const statusMap = {
-    'pending': 'Chờ xử lý',
-    'processing': 'Đang xử lý',
+    'pending': 'Chờ xác nhận',
+    'confirmed': 'Đã xác nhận',
+    'shipping': 'Đang giao',
     'complete': 'Hoàn thành',
     'cancelled': 'Đã hủy'
   };
@@ -435,7 +481,8 @@ const getStatusText = (status) => {
 const getStatusClass = (status) => {
   const classMap = {
     'pending': 'bg-yellow-100 text-yellow-800',
-    'processing': 'bg-blue-100 text-blue-800',
+    'confirmed': 'bg-blue-100 text-blue-800',
+    'shipping': 'bg-purple-100 text-purple-800',
     'complete': 'bg-green-100 text-green-800',
     'cancelled': 'bg-red-100 text-red-800'
   };
@@ -475,12 +522,17 @@ const updateOrderStatus = async (orderId, newStatus) => {
     // Refresh current page
     await fetchOrders(currentPage.value);
   } catch (error) {
-    alert('Có lỗi xảy ra khi cập nhật trạng thái đơn hàng');
+    toast.error('Có lỗi xảy ra khi cập nhật trạng thái đơn hàng');
   }
 };
 
 // Quick actions for status updates
-const markAsProcessing = (order) => {
+const markAsConfirmed = (order) => {
+  orderToUpdate.value = order;
+  isStatusModalOpen.value = true;
+};
+
+const markAsShipping = (order) => {
   orderToUpdate.value = order;
   isStatusModalOpen.value = true;
 };
@@ -505,9 +557,9 @@ const handleStatusUpdate = async (updateData) => {
     await OrderService.updateStatus(updateData.orderId, updateData.newStatus);
     // Refresh current page
     await fetchOrders(currentPage.value);
-    alert('Cập nhật trạng thái thành công!');
+    toast.success('Cập nhật trạng thái thành công!');
   } catch (error) {
-    alert('Có lỗi xảy ra khi cập nhật trạng thái đơn hàng');
+    toast.error(`Có lỗi xảy ra: ${error.response?.data?.detail || error.message}`);
   }
 };
 
@@ -521,8 +573,9 @@ const exportOrders = async () => {
     // Convert to CSV format
     const csvContent = convertToCSV(allOrders);
     downloadCSV(csvContent, `orders_${new Date().toISOString().split('T')[0]}.csv`);
+    toast.success('Xuất đơn hàng thành công!');
   } catch (error) {
-    alert('Có lỗi xảy ra khi xuất đơn hàng');
+    toast.error('Có lỗi xảy ra khi xuất đơn hàng');
   }
 };
 
@@ -554,16 +607,74 @@ const downloadCSV = (content, filename) => {
 };
 
 // Clear all filters
+// Giải thích: Khi clear, quay về pending (đơn hàng mới)
 const clearFilters = () => {
   searchQuery.value = '';
-  statusFilter.value = '';
+  statusFilter.value = 'pending'; // Quay về pending orders
   startDate.value = '';
   endDate.value = '';
   applyFilters();
 };
 
+// Giải thích: Connect Socket.IO để nhận notification đơn hàng mới
+const connectSocket = () => {
+  console.log('🔌 Connecting to notification server for admin...');
+
+  socket.value = io('http://localhost:8000/notifications', {
+    transports: ['websocket', 'polling'],
+    autoConnect: true
+  });
+
+  // Khi connect thành công, join admin room
+  socket.value.on('connect', () => {
+    console.log('✅ Admin connected to notification server');
+    socket.value.emit('join_room', { room: 'admin' });
+  });
+
+  // Nhận notification đơn hàng mới
+  socket.value.on('notification', (data) => {
+    console.log('📬 Admin received notification:', data);
+
+    // Kiểm tra nếu là đơn hàng mới
+    if (data.type === 'new_order') {
+      // Hiển thị notification bằng toast
+      toast.info(data.message, '🆕 Đơn hàng mới');
+
+      // Reload orders nếu đang filter theo pending
+      if (statusFilter.value === 'pending' || !statusFilter.value) {
+        fetchOrders();
+      }
+    }
+  });
+
+  // Handle disconnect
+  socket.value.on('disconnect', () => {
+    console.log('❌ Admin disconnected from notification server');
+  });
+
+  // Handle errors
+  socket.value.on('connect_error', (error) => {
+    console.error('Socket connection error:', error);
+  });
+};
+
+// Disconnect socket
+const disconnectSocket = () => {
+  if (socket.value) {
+    socket.value.disconnect();
+    socket.value = null;
+  }
+};
+
 onMounted(() => {
   fetchOrders();
+  // Giải thích: Connect socket để nhận notifications
+  connectSocket();
+});
+
+onUnmounted(() => {
+  // Giải thích: Cleanup socket connection
+  disconnectSocket();
 });
 </script>
 

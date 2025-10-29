@@ -15,7 +15,7 @@
 
             <!-- Orders List -->
             <div v-else class="space-y-6">
-                <OrderCard v-for="order in paginatedOrders" :key="order.id" :order="order"
+                <OrderCard v-for="order in paginatedOrders" :key="order.id || order._id" :order="order"
                     @view-detail="viewOrderDetail" @cancel-order="cancelOrder" @reorder="handleReorder" />
             </div>
 
@@ -30,6 +30,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useOrderStore } from '@/stores/order'
+import { useToast } from '@/composables/useToast'
 import OrdersHeader from '@/components/orders/OrdersHeader.vue'
 import OrdersLoading from '@/components/orders/OrdersLoading.vue'
 import OrdersEmpty from '@/components/orders/OrdersEmpty.vue'
@@ -39,86 +41,18 @@ import Footer from '@/templates/Footer.vue'
 import Header from '@/templates/Header.vue'
 
 const router = useRouter()
+const orderStore = useOrderStore()
+const toast = useToast()
 
 // Reactive data
 const loading = ref(true)
-const orders = ref([])
 const activeFilter = ref('all')
 const currentPage = ref(1)
 const itemsPerPage = 5
 
-// Mock data - trong thực tế sẽ lấy từ API
-const mockOrders = [
-    {
-        id: 'ORD-001',
-        orderNumber: 'ORD-2024-001',
-        createdAt: new Date('2024-01-15'),
-        status: 'delivered',
-        items: [
-            { id: 1, name: 'Nike Air Force 1', price: 2200000, quantity: 1, image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80' },
-            { id: 2, name: 'Nike Socks', price: 150000, quantity: 2, image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80' }
-        ],
-        totalAmount: 2500000,
-        shippingAddress: {
-            name: 'Nguyễn Văn A',
-            phone: '0123456789',
-            address: '123 Đường ABC, Quận 1, TP.HCM'
-        },
-        paymentMethod: 'credit_card',
-        trackingNumber: 'TRK123456789'
-    },
-    {
-        id: 'ORD-002',
-        orderNumber: 'ORD-2024-002',
-        createdAt: new Date('2024-01-10'),
-        status: 'shipped',
-        items: [
-            { id: 3, name: 'Adidas Ultraboost', price: 4500000, quantity: 1, image: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80' }
-        ],
-        totalAmount: 4500000,
-        shippingAddress: {
-            name: 'Nguyễn Văn A',
-            phone: '0123456789',
-            address: '123 Đường ABC, Quận 1, TP.HCM'
-        },
-        paymentMethod: 'cod',
-        trackingNumber: 'TRK987654321'
-    },
-    {
-        id: 'ORD-003',
-        orderNumber: 'ORD-2024-003',
-        createdAt: new Date('2024-01-05'),
-        status: 'pending',
-        items: [
-            { id: 4, name: 'Converse Chuck Taylor', price: 1500000, quantity: 1, image: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60' }
-        ],
-        totalAmount: 1500000,
-        shippingAddress: {
-            name: 'Nguyễn Văn A',
-            phone: '0123456789',
-            address: '123 Đường ABC, Quận 1, TP.HCM'
-        },
-        paymentMethod: 'credit_card'
-    },
-    {
-        id: 'ORD-004',
-        orderNumber: 'ORD-2024-004',
-        createdAt: new Date('2024-01-01'),
-        status: 'cancelled',
-        items: [
-            { id: 5, name: 'Puma RS-X', price: 2800000, quantity: 1, image: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80' }
-        ],
-        totalAmount: 2800000,
-        shippingAddress: {
-            name: 'Nguyễn Văn A',
-            phone: '0123456789',
-            address: '123 Đường ABC, Quận 1, TP.HCM'
-        },
-        paymentMethod: 'credit_card'
-    }
-]
-
 // Computed properties
+const orders = computed(() => orderStore.orders || [])
+
 const filteredOrders = computed(() => {
     if (activeFilter.value === 'all') {
         return orders.value
@@ -140,10 +74,9 @@ const totalPages = computed(() => {
 const fetchOrders = async () => {
     loading.value = true
     try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        orders.value = mockOrders
+        await orderStore.loadOrders()
     } catch (error) {
+        console.error('Error loading orders:', error)
     } finally {
         loading.value = false
     }
@@ -168,22 +101,32 @@ const viewOrderDetail = (orderId) => {
 }
 
 const cancelOrder = async (orderId) => {
+    const order = orders.value.find(o => (o.id || o._id) === orderId)
+
+    // CHỈ cho phép hủy khi order đang "pending" (chưa admin xác nhận)
+    if (order && order.status !== 'pending') {
+        toast.warning('Không thể hủy đơn hàng này. Đơn hàng đã được xác nhận bởi admin. Vui lòng liên hệ admin để hủy.')
+        return
+    }
+
     if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
         try {
-            const order = orders.value.find(o => o.id === orderId)
-            if (order) {
-                order.status = 'cancelled'
-            }
+            // Update order status
+            await orderStore.updateOrderStatus(orderId, 'cancelled')
+            // Reload orders
+            await fetchOrders()
+            toast.success('Đơn hàng đã được hủy thành công!')
         } catch (error) {
+            console.error('Error cancelling order:', error)
+            toast.error('Không thể hủy đơn hàng')
         }
     }
 }
 
 const handleReorder = (orderId) => {
-    const order = orders.value.find(o => o.id === orderId)
-    if (order) {
-        // Add items to cart
-        alert('Sản phẩm đã được thêm vào giỏ hàng!')
+    const order = orders.value.find(order => order.id === orderId || order._id === orderId)
+    if (order && order.items) {
+        toast.success('Sản phẩm đã được thêm vào giỏ hàng!')
     }
 }
 

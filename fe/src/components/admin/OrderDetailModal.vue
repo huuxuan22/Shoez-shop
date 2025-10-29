@@ -21,9 +21,16 @@
                         <div class="bg-gray-50 rounded-lg p-4">
                             <h4 class="font-semibold text-gray-900 mb-3">Thông tin khách hàng</h4>
                             <div class="space-y-2">
-                                <p><span class="font-medium">Tên:</span> {{ order.user_id?.full_name || 'N/A' }}</p>
-                                <p><span class="font-medium">Email:</span> {{ order.user_id?.email || 'N/A' }}</p>
-                                <p><span class="font-medium">SĐT:</span> {{ order.user_id?.numberphone || 'N/A' }}</p>
+                                <p><span class="font-medium">Tên:</span> {{ order?.fullName || 'N/A' }}</p>
+                                <p><span class="font-medium">Email:</span> {{ order?.email || 'N/A' }}</p>
+                                <p><span class="font-medium">SĐT:</span> {{ order?.phone || 'N/A' }}</p>
+                                <div class="pt-2 border-t border-gray-300 mt-2">
+                                    <p class="font-medium mb-1">Địa chỉ:</p>
+                                    <p class="text-sm">{{ getFullAddress(order) }}</p>
+                                </div>
+                                <p v-if="order?.note" class="pt-2 border-t border-gray-300 mt-2">
+                                    <span class="font-medium">Ghi chú:</span> {{ order.note }}
+                                </p>
                             </div>
                         </div>
 
@@ -40,6 +47,10 @@
                                 </p>
                                 <p><span class="font-medium">Ngày đặt:</span> {{ formatDate(order.created_at) }}</p>
                                 <p><span class="font-medium">Cập nhật:</span> {{ formatDate(order.updated_at) }}</p>
+                                <p v-if="order.shippingMethod"><span class="font-medium">Phương thức vận chuyển:</span>
+                                    {{ getShippingMethod(order.shippingMethod) }}</p>
+                                <p><span class="font-medium">Thanh toán:</span> {{ getPaymentMethod(order.paymentMethod)
+                                    }}</p>
                             </div>
                         </div>
                     </div>
@@ -48,24 +59,27 @@
                     <div>
                         <h4 class="font-semibold text-gray-900 mb-3">Sản phẩm</h4>
                         <div class="bg-gray-50 rounded-lg p-4">
-                            <div v-if="order.products && order.products.length > 0" class="space-y-3">
-                                <div v-for="(product, index) in order.products" :key="index"
+                            <div v-if="order.items && order.items.length > 0" class="space-y-3">
+                                <div v-for="(product, index) in order.items" :key="index"
                                     class="flex items-center justify-between border-b border-gray-200 pb-3 last:border-b-0">
                                     <div class="flex items-center space-x-3">
-                                        <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <p class="font-medium text-gray-900">{{ product.name || 'Sản phẩm không tên'
-                                            }}</p>
-                                            <p class="text-sm text-gray-500">Số lượng: {{ product.quantity || 1 }}</p>
+                                        <!-- Product Image -->
+                                        <img :src="product.image" :alt="product.productName || product.name"
+                                            class="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                                            @error="$event.target.src = '/images/default-product.png'" />
+                                        <div class="flex-1">
+                                            <p class="font-medium text-gray-900">{{ product.productName || product.name
+                                                || 'Sản phẩm không tên' }}</p>
+                                            <p v-if="product.brand" class="text-sm text-gray-500">{{ product.brand }}
+                                            </p>
+                                            <div class="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                                                <span v-if="product.size">Size: {{ product.size }}</span>
+                                                <span v-if="product.color">| Color: {{ product.color }}</span>
+                                                <span>| Số lượng: {{ product.quantity || 1 }}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="text-right">
+                                    <div class="text-right ml-4">
                                         <p class="font-medium text-gray-900">{{ formatPrice(product.price) }}</p>
                                         <p class="text-sm text-gray-500">Tổng: {{ formatPrice((product.price || 0) *
                                             (product.quantity || 1)) }}</p>
@@ -84,11 +98,15 @@
                         <div class="space-y-2">
                             <div class="flex justify-between">
                                 <span>Tổng sản phẩm:</span>
-                                <span>{{ order.products?.length || 0 }}</span>
+                                <span>{{ order.items?.length || 0 }}</span>
                             </div>
-                            <div class="flex justify-between">
+                            <div v-if="order.shippingFee" class="flex justify-between">
+                                <span>Phí vận chuyển:</span>
+                                <span>{{ formatPrice(order.shippingFee) }}</span>
+                            </div>
+                            <div class="flex justify-between text-lg font-semibold border-t pt-2">
                                 <span>Tổng tiền:</span>
-                                <span class="font-semibold">{{ formatPrice(calculateTotal()) }}</span>
+                                <span>{{ formatPrice(order.total || calculateTotal()) }}</span>
                             </div>
                         </div>
                     </div>
@@ -128,8 +146,9 @@ const emit = defineEmits(['close']);
 
 const getStatusText = (status) => {
     const statusMap = {
-        'pending': 'Chờ xử lý',
-        'processing': 'Đang xử lý',
+        'pending': 'Chờ xác nhận',
+        'confirmed': 'Đã xác nhận',
+        'shipping': 'Đang giao',
         'complete': 'Hoàn thành',
         'cancelled': 'Đã hủy'
     };
@@ -139,7 +158,8 @@ const getStatusText = (status) => {
 const getStatusClass = (status) => {
     const classMap = {
         'pending': 'bg-yellow-100 text-yellow-800',
-        'processing': 'bg-blue-100 text-blue-800',
+        'confirmed': 'bg-blue-100 text-blue-800',
+        'shipping': 'bg-purple-100 text-purple-800',
         'complete': 'bg-green-100 text-green-800',
         'cancelled': 'bg-red-100 text-red-800'
     };
@@ -165,9 +185,39 @@ const formatPrice = (price) => {
 };
 
 const calculateTotal = () => {
-    if (!props.order?.products) return 0;
-    return props.order.products.reduce((total, product) => {
+    if (!props.order?.items) return 0;
+    return props.order.items.reduce((total, product) => {
         return total + ((product.price || 0) * (product.quantity || 1));
     }, 0);
+};
+
+const getFullAddress = (order) => {
+    if (!order) return 'N/A';
+    const parts = [
+        order.address,
+        order.ward,
+        order.district,
+        order.city
+    ].filter(Boolean);
+    return parts.join(', ') || 'N/A';
+};
+
+const getShippingMethod = (method) => {
+    const methods = {
+        'standard': 'Giao hàng tiêu chuẩn',
+        'express': 'Giao hàng nhanh',
+        'pickup': 'Nhận tại cửa hàng'
+    };
+    return methods[method] || method;
+};
+
+const getPaymentMethod = (method) => {
+    const methods = {
+        'cod': 'Thanh toán khi nhận hàng',
+        'credit_card': 'Thẻ tín dụng',
+        'bank_transfer': 'Chuyển khoản ngân hàng',
+        'momo': 'Ví MoMo'
+    };
+    return methods[method] || method;
 };
 </script>

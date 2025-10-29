@@ -44,8 +44,8 @@ const filters = [
     { value: 'all', label: 'Tất cả' },
     { value: 'pending', label: 'Chờ xác nhận' },
     { value: 'confirmed', label: 'Đã xác nhận' },
-    { value: 'shipped', label: 'Đang giao' },
-    { value: 'delivered', label: 'Đã giao' },
+    { value: 'shipping', label: 'Đang giao' },
+    { value: 'complete', label: 'Hoàn thành' },
     { value: 'cancelled', label: 'Đã hủy' }
 ]
 </script>
