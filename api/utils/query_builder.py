@@ -45,7 +45,7 @@ class OrderQueryBuilder:
     
     def add_search_filter(self, search_value: Optional[str] = None) -> 'OrderQueryBuilder':
         """
-        Thêm filter tìm kiếm theo order ID, user ID, hoặc status
+        Thêm filter tìm kiếm theo order ID, user ID, fullName, email, phone, hoặc status
         """
         if not search_value:
             return self
@@ -53,10 +53,13 @@ class OrderQueryBuilder:
         # Tạo regex pattern không phân biệt hoa thường
         regex_pattern = {"$regex": search_value, "$options": "i"}
         
-        # Tìm kiếm trong các field
+        # Tìm kiếm trong các field của Order
         search_conditions = [
-            {"user_id": regex_pattern},
-            {"status": regex_pattern}
+            {"fullName": regex_pattern},  # Tìm theo tên khách hàng
+            {"email": regex_pattern},     # Tìm theo email
+            {"phone": regex_pattern},      # Tìm theo số điện thoại
+            {"status": regex_pattern},    # Tìm theo trạng thái
+            {"user_id": regex_pattern}    # Tìm theo user ID
         ]
         
         # Thêm search cho _id field nhưng không convert thành ObjectId

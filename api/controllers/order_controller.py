@@ -69,6 +69,7 @@ async def get_all_orders_admin(
     starttime: Optional[str] = Query(None, description="Start time filter (ISO format)"),
     endtime: Optional[str] = Query(None, description="End time filter (ISO format)"),
     valueSearch: Optional[str] = Query(None, description="Search value for order ID, user ID, or status"),
+    status: Optional[str] = Query(None, description="Filter by order status"),
     filter_service: OrderFilterService = Depends(get_order_filter_service)
 ):
     try:
@@ -77,7 +78,8 @@ async def get_all_orders_admin(
             limit=limit,
             start_time=starttime,
             end_time=endtime,
-            search_value=valueSearch
+            search_value=valueSearch,
+            status=status
         )
         
         return JSONResponse(
