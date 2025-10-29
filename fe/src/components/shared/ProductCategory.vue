@@ -67,13 +67,16 @@
 
                     <!-- Action Buttons -->
                     <div class="flex gap-2" @click.stop>
-                        <button @click.stop="addToFavorites(product)"
-                            class="flex-1 bg-white border-2 border-red-500 text-red-500 px-3 py-2 rounded-lg hover:bg-red-500 hover:text-white transition-all text-sm font-semibold flex items-center justify-center gap-1">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <button @click.stop="toggleFavourite(product)"
+                            :class="[
+                                'flex-1 px-3 py-2 rounded-lg transition-all text-sm font-semibold flex items-center justify-center gap-1 border-2',
+                                isFavourited(product) ? 'bg-red-500 border-red-500 text-white hover:bg-red-600' : 'bg-white border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
+                            ]">
+                            <svg class="w-4 h-4" :fill="isFavourited(product) ? 'currentColor' : 'none'" :stroke="isFavourited(product) ? 'none' : 'currentColor'" viewBox="0 0 24 24">
                                 <path
                                     d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                             </svg>
-                            <span>Yêu thích</span>
+                            <span>{{ isFavourited(product) ? 'Đã thích' : 'Yêu thích' }}</span>
                         </button>
                         <button @click.stop="handleBuyNow(product)"
                             class="flex-1 bg-black text-white px-3 py-2 rounded-lg hover:bg-gray-800 transition-all text-sm font-semibold flex items-center justify-center gap-1">
@@ -98,6 +101,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useFavouriteStore } from '@/stores/favourite'
+import { useNotificationStore } from '@/stores/notification'
 import ConfirmModal from '@/components/ConfirmModal.vue'
 
 const props = defineProps({
@@ -118,6 +123,8 @@ const props = defineProps({
 
 const router = useRouter()
 const authStore = useAuthStore()
+const favouriteStore = useFavouriteStore()
+const notificationStore = useNotificationStore()
 
 // Modal state
 const showLoginModal = ref(false)
@@ -134,32 +141,25 @@ const isAuthenticated = () => {
     return !!localStorage.getItem('token') && authStore.isAuthenticated;
 }
 
-const addToFavorites = (product) => {
-    // Kiểm tra đăng nhập
+// Favourite helpers
+const isFavourited = (product) => {
+    const productId = product._id || product.id
+    return favouriteStore.favourites.some(p => (p._id || p.id) === productId)
+}
+
+const toggleFavourite = async (product) => {
     if (!isAuthenticated()) {
         loginModalMessage.value = 'Bạn chưa đăng nhập. Vui lòng đăng nhập để thêm sản phẩm vào yêu thích!';
         showLoginModal.value = true;
         return;
     }
-
-    // Get existing favorites from localStorage
-    let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-
-    // Check if product is already in favorites
-    const index = favorites.findIndex(fav => fav.id === product.id);
-
-    if (index > -1) {
-        // Remove from favorites
-        favorites.splice(index, 1);
-        alert(`${product.name} đã được bỏ khỏi yêu thích`);
+    const productId = product._id || product.id
+    if (!productId) return
+    if (isFavourited(product)) {
+        await favouriteStore.removeFavourite(productId)
     } else {
-        // Add to favorites
-        favorites.push(product);
-        alert(`${product.name} đã được thêm vào yêu thích`);
+        await favouriteStore.addFavourite(product)
     }
-
-    // Save back to localStorage
-    localStorage.setItem('favorites', JSON.stringify(favorites));
 }
 
 const handleBuyNow = (product) => {

@@ -16,6 +16,7 @@ from controllers.user_controller import user_router
 from controllers.notification_controller import notification_router
 from controllers.review_controller import review_router
 from controllers.low_rating_review_controller import low_rating_review_router
+from controllers.favourite_product_controller import router as favourite_router
 from exceptions.register_handlers import register_all_handlers
 from dependences.dependencies import set_language_dependency
 from middleware.auth_middlewave import  AuthMiddlewave
@@ -47,6 +48,7 @@ app.include_router(user_router, prefix=PRE_FIX)
 app.include_router(notification_router, prefix=PRE_FIX)
 app.include_router(review_router, prefix=PRE_FIX)
 app.include_router(low_rating_review_router, prefix=PRE_FIX)
+app.include_router(favourite_router, prefix=PRE_FIX)
 @app.on_event("startup")
 async def startup_event():
     """Startup event handler"""

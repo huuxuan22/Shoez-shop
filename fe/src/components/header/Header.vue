@@ -29,6 +29,19 @@
 
         <!-- User Actions -->
         <div class="flex items-center space-x-4">
+          <!-- Favourite Icon (only show when logged in) -->
+          <router-link v-if="isAuthenticated" to="/favourite" class="relative text-gray-700 hover:text-red-500 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+            <!-- Favourite Badge -->
+            <span v-if="favouriteCount > 0"
+              class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+              {{ favouriteCount }}
+            </span>
+          </router-link>
+
           <!-- Cart Icon -->
           <router-link to="/cart" class="relative text-gray-700 hover:text-blue-600 transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,6 +121,11 @@
             :class="{ 'text-blue-600 font-semibold': $route.name === 'Contact' }">
             Liên hệ
           </router-link>
+          <router-link v-if="isAuthenticated" to="/favourite" class="text-gray-700 hover:text-red-500 transition-colors"
+            @click="closeMenus"
+            :class="{ 'text-red-500 font-semibold': $route.name === 'Favourite' }">
+            Yêu thích
+          </router-link>
           
           <!-- Mobile Auth Links -->
           <div v-if="!isAuthenticated" class="flex flex-col space-y-2 pt-4 border-t border-gray-200">
@@ -125,10 +143,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useFavouriteStore } from '@/stores/favourite';
 
 const router = useRouter();
+const favouriteStore = useFavouriteStore();
 
 // Reactive data
 const showUserMenu = ref(false);
@@ -154,6 +174,10 @@ const userName = computed(() => {
 const cartItemCount = computed(() => {
   // This would come from a cart store in a real app
   return 0;
+});
+
+const favouriteCount = computed(() => {
+  return favouriteStore.favourites.length;
 });
 
 // Methods
@@ -188,9 +212,22 @@ const handleClickOutside = (e) => {
   }
 };
 
-// Lifecycle
-onMounted(() => {
+// Load favourites when authenticated
+onMounted(async () => {
   document.addEventListener('click', handleClickOutside);
+  
+  // Load favourites if user is authenticated
+  if (isAuthenticated.value) {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const userId = user._id || user.id;
+      if (userId) {
+        await favouriteStore.fetchFavourites(userId);
+      }
+    } catch (error) {
+      console.error('Error loading favourites:', error);
+    }
+  }
 });
 
 onUnmounted(() => {

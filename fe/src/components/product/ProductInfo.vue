@@ -108,6 +108,17 @@
                 </svg>
                 Thêm vào giỏ
             </button>
+            <button @click="toggleFavourite"
+                :class="[
+                    'px-8 py-4 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2 border-2',
+                    isFavourited ? 'bg-red-500 border-red-500 text-white hover:bg-red-600' : 'bg-white border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
+                ]">
+                <svg class="w-6 h-6" :fill="isFavourited ? 'currentColor' : 'none'" :stroke="isFavourited ? 'none' : 'currentColor'" viewBox="0 0 24 24">
+                    <path
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+                {{ isFavourited ? 'Đã thích' : 'Yêu thích' }}
+            </button>
             <button @click="$emit('buy-now')"
                 class="flex-1 bg-black text-white px-8 py-4 rounded-lg font-semibold hover:bg-gray-800 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,7 +171,11 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { useFavouriteStore } from '@/stores/favourite'
+import { useNotificationStore } from '@/stores/notification'
+
+const props = defineProps({
     product: {
         type: Object,
         required: true
@@ -180,6 +195,24 @@ defineProps({
 })
 
 defineEmits(['update:selectedColor', 'update:selectedSize', 'update:quantity', 'add-to-cart', 'buy-now'])
+
+// Favourite logic
+const favouriteStore = useFavouriteStore()
+const notificationStore = useNotificationStore()
+
+const productId = computed(() => props.product._id || props.product.id)
+const isFavourited = computed(() => {
+    return favouriteStore.favourites.some(p => (p._id || p.id) === productId.value)
+})
+
+const toggleFavourite = async () => {
+    if (!productId.value) return
+    if (isFavourited.value) {
+        await favouriteStore.removeFavourite(productId.value)
+    } else {
+        await favouriteStore.addFavourite(props.product)
+    }
+}
 
 const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);

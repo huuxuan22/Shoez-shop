@@ -39,13 +39,16 @@
 
       <!-- Action Buttons -->
       <div class="flex gap-2">
-        <button @click.stop="$emit('add-to-favorites', product)"
-          class="flex-1 bg-white border-2 border-red-500 text-red-500 px-3 py-2 rounded-lg hover:bg-red-500 hover:text-white transition-all text-sm font-semibold flex items-center justify-center gap-1">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+        <button @click.stop="toggleFavourite"
+          :class="[
+            'flex-1 px-3 py-2 rounded-lg transition-all text-sm font-semibold flex items-center justify-center gap-1 border-2',
+            isFavourited ? 'bg-red-500 border-red-500 text-white hover:bg-red-600' : 'bg-white border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
+          ]">
+          <svg class="w-4 h-4" :fill="isFavourited ? 'currentColor' : 'none'" :stroke="isFavourited ? 'none' : 'currentColor'" viewBox="0 0 24 24">
             <path
               d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
           </svg>
-          <span>Yêu thích</span>
+          <span>{{ isFavourited ? 'Đã thích' : 'Yêu thích' }}</span>
         </button>
         <button @click.stop="$emit('buy-now', product)"
           class="flex-1 bg-black text-white px-3 py-2 rounded-lg hover:bg-gray-800 transition-all text-sm font-semibold flex items-center justify-center gap-1">
@@ -60,6 +63,9 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useFavouriteStore } from '@/stores/favourite'
+import { useNotificationStore } from '@/stores/notification'
 const props = defineProps({
   product: {
     type: Object,
@@ -72,7 +78,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['click', 'add-to-cart', 'buy-now']);
+const emit = defineEmits(['click', 'add-to-cart', 'buy-now', 'add-to-favorites']);
 
 const formatPrice = (price) => {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
@@ -81,4 +87,22 @@ const formatPrice = (price) => {
 const handleImageError = (event) => {
   event.target.src = '/images/shoes/placeholder.jpg';
 };
+
+// Favourite logic
+const favouriteStore = useFavouriteStore()
+const notificationStore = useNotificationStore()
+
+const productId = computed(() => props.product._id || props.product.id)
+const isFavourited = computed(() => {
+  return favouriteStore.favourites.some(p => (p._id || p.id) === productId.value)
+})
+
+const toggleFavourite = async () => {
+  if (!productId.value) return
+  if (isFavourited.value) {
+    await favouriteStore.removeFavourite(productId.value)
+  } else {
+    await favouriteStore.addFavourite(props.product)
+  }
+}
 </script>
