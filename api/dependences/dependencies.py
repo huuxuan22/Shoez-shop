@@ -1,7 +1,6 @@
 # dependencies.py
-from fastapi import Request
+from fastapi import Request, Depends
 from config.context import lang_var
-from fastapi import Depends
 from passlib.context import CryptContext
 from repositories.cart_repository import CartRepository
 from repositories.image_repository import ImageRepository
@@ -9,6 +8,7 @@ from repositories.order_repository import OrderRepository
 from repositories.product_repository import ProductRepository
 from repositories.user_repository import UserRepository
 from repositories.comment_repository import CommentRepository
+from repositories.notification_repository import NotificationRepository
 from config.database import get_database
 
 async def set_language_dependency(request: Request):
@@ -44,6 +44,10 @@ async def get_image_repo():
 
 async def get_comment_repo():
     async with CommentRepository(get_database()) as repo:
+        yield repo
+
+async def get_notification_repo():
+    async with NotificationRepository(get_database()) as repo:
         yield repo
 
 

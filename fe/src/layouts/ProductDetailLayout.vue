@@ -85,9 +85,9 @@ import { ref, computed, onMounted, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ProductService from '@/api-services/ProductService'
 import ToastNotification from '@/components/ToastNotification.vue'
-import { useCartStore } from '@/stores'
+import { useCartStore, useOrderStore } from '@/stores'
 
-// Toast state
+const orderStore = useOrderStore()
 const toast = reactive({ show: false, message: '', type: 'info' })
 function showToast(message, type = 'error') {
     toast.message = message
@@ -224,31 +224,20 @@ const handleBuyNow = () => {
         return
     }
 
-    // Create order item data
-    const orderItem = {
-        id: Date.now(), // Generate unique ID
-        productId: product.value.id,
-        name: product.value.name,
-        image: productImages.value[0] || product.value.images?.[0],
-        price: product.value.price,
-        discount: product.value.discount || 0,
-        original_price: product.value.originalPrice || product.value.price,
-        color: selectedColor.value,
+    const productWithOptions = {
+        ...product.value,
         size: selectedSize.value,
+        color: selectedColor.value,
         quantity: quantity.value
     }
 
-    // Save to localStorage temporarily for checkout
-    const tempOrderItems = JSON.stringify([orderItem])
-    localStorage.setItem('checkout_orderItems', tempOrderItems)
-
-    // Navigate to checkout
+    orderStore.setCheckoutFromProduct(productWithOptions)
     router.push('/checkout')
 }
 
 // Initialize
 onMounted(() => {
-    loadProduct()
+    loadProduct()   
 })
 </script>
 

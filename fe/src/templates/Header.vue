@@ -206,6 +206,8 @@
         </div>
       </div>
     </nav>
+
+    <ToastNotification />
   </header>
 </template>
 
@@ -216,12 +218,17 @@ import home from "@/assets/icons/home.png"
 import blogIcon from "@/assets/icons/blog.svg"
 import { useAuthStore } from '@/stores/auth';
 import { useCartStore } from '@/stores/cart';
+import { useOrderStore } from '@/stores/order';
+import { useNotificationStore } from '@/stores/notification';
 import { watch } from 'vue';
-import NotificationBell from '@/components/shared/NotificationBell.vue';
+import NotificationBell from '@/components/notifications/NotificationBell.vue';
+import ToastNotification from '@/components/notifications/ToastNotification.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
 const cartStore = useCartStore();
+const orderStore = useOrderStore();
+const notificationStore = useNotificationStore();
 
 // Reactive data
 const showUserMenu = ref(false);
@@ -259,8 +266,7 @@ const userAvatar = computed(() => {
 const cartItemCount = computed(() => cartStore.items.length || 0);
 
 const orderCount = computed(() => {
-  // This would come from an order store in a real app
-  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  const orders = orderStore.orders || [];
   return orders.filter(order => order.status === 'pending').length;
 });
 
@@ -300,25 +306,44 @@ const handleClickOutside = (e) => {
   }
 };
 
+// Giải thích: Lấy user ID từ authStore
+const userId = computed(() => {
+  const user = authStore.user;
+  return user?.id || user?._id;
+});
+
 // Lifecycle
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
-  // Load cart once when header mounts (nếu có token)
-  if (isAuthenticated.value) {
+  if (isAuthenticated.value && userId.value) {
     cartStore.loadCart();
+    orderStore.loadOrders();
+    notificationStore.connect(userId.value);
   }
 });
 
 watch(isAuthenticated, (val) => {
   if (val) {
     cartStore.loadCart();
+    orderStore.loadOrders();
+    if (userId.value) {
+      notificationStore.connect(userId.value);
+    }
   } else {
     cartStore.clearCart();
+    orderStore.clearOrders();
+
+    notificationStore.disconnect();
+    // notificationStore.clearNotifications();
   }
 });
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
+  // Giải thích: Cleanup socket connection khi component unmount
+  if (notificationStore.isConnected) {
+    notificationStore.disconnect();
+  }
 });
 </script>
 

@@ -107,13 +107,12 @@ const OrderService = {
     },
 
     /**
-     * Lấy đơn hàng theo user ID
-     * @param {string} userId - ID của user
+     * Lấy đơn hàng theo user hiện tại (dùng user_context từ backend)
+     * Không cần truyền userId nữa, backend tự lấy từ context
      */
-    async getByUser(userId) {
+    async getByUser() {
         try {
             const response = await BaseAxios.get(`/${PREFIX_ORDER}/user`, {
-                params: { id: userId },
                 withCredentials: true,
             });
             return response.data;
@@ -165,7 +164,7 @@ const OrderService = {
             const response = await BaseAxios.post(`/${PREFIX_ORDER}/`, orderData, {
                 withCredentials: true,
             });
-            return response;
+            return response.data;
         } catch (error) {
             throw error;
         }

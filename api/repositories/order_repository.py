@@ -12,7 +12,7 @@ class OrderRepository(BaseRepository[Order]):
         """
         Lấy tất cả đơn hàng của 1 user
         """
-        orders_cursor = self.collection.find({"user_id": user_id, "status": "pending"})
+        orders_cursor = self.collection.find({"user_id": user_id}).sort("created_at", -1)
         orders = await orders_cursor.to_list(length=100)
         return [self._convert_id(order) for order in orders]
 
@@ -28,12 +28,12 @@ class OrderRepository(BaseRepository[Order]):
         if not order:
             return None
 
-        products = order.get("products", [])
-        products.append(product)
+        items = order.get("items", [])
+        items.append(product)
 
         updated_order = await self.collection.find_one_and_update(
             {"_id": ObjectId(order_id)},
-            {"$set": {"products": products, "updated_at": self._get_current_timestamp()}},
+            {"$set": {"items": items, "updated_at": self._get_current_timestamp()}},
             return_document=ReturnDocument.AFTER
         )
         return self._convert_id(updated_order)

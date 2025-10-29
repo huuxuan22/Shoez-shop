@@ -356,13 +356,19 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useOrderStore } from '@/stores/order';
+import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
+import { useToast } from '@/composables/useToast';
 
 // Import các component UI
 import InputField from '@/components/FormInput.vue';
 import Button from '@/components/Button.vue';
 
 const router = useRouter();
+const orderStore = useOrderStore();
+const authStore = useAuthStore();
+const toast = useToast();
 
 // Step management
 const currentStep = ref(1);
@@ -473,7 +479,14 @@ const paymentOptions = [
 
 // Computed
 const shippingFee = computed(() => {
-    return subtotal.value > 5000000 ? 0 : 30000;
+    let base = 0;
+    if (shippingForm.value.shippingMethod === 'standard') base = 30000;
+    else if (shippingForm.value.shippingMethod === 'express') base = 50000;
+    else if (shippingForm.value.shippingMethod === 'pickup') base = 0;
+
+    // Miễn phí nếu vượt ngưỡng
+    if (subtotal.value > 5000000) return 0;
+    return base;
 });
 
 const subtotal = computed(() => {
@@ -511,7 +524,7 @@ const validateShipping = () => {
 
 const goToNextStep = () => {
     if (currentStep.value === 1 && !validateShipping()) {
-        alert('Vui lòng điền đầy đủ thông tin giao hàng');
+        toast.warning('Vui lòng điền đầy đủ thông tin giao hàng');
         return;
     }
 
@@ -538,30 +551,63 @@ const handleAction = () => {
 
 const placeOrder = async () => {
     try {
-        // Simulate API call
+        // Kiểm tra user đã đăng nhập chưa
+        if (!authStore.user) {
+            toast.warning('Vui lòng đăng nhập để đặt hàng');
+            router.push('/login');
+            return;
+        }
+
+        const deliveryDays = 5 + Math.floor(Math.random() * 2); // Random 5 hoặc 6 ngày
+        const estimatedDelivery = new Date(Date.now() + deliveryDays * 24 * 60 * 60 * 1000).toISOString();
+
         const orderData = {
-            id: 'ORD' + Date.now(),
+            user_id: authStore.user.id || authStore.user._id,
             status: 'pending',
-            shipping: shippingForm.value,
-            payment: paymentMethod.value,
-            items: cartItems.value,
+            items: cartItems.value.map(item => ({
+                productId: item.productId,
+                productName: item.name,
+                brand: item.brand,
+                price: item.price,
+                image: item.image,
+                size: item.size,
+                color: item.color,
+                quantity: item.quantity
+            })),
+            fullName: shippingForm.value.fullName,
+            phone: shippingForm.value.phone,
+            email: shippingForm.value.email,
+            address: shippingForm.value.address,
+            city: shippingForm.value.city,
+            district: shippingForm.value.district,
+            ward: shippingForm.value.ward,
+            shippingFee: shippingFee.value,
+            shippingMethod: shippingForm.value.shippingMethod,
+            note: shippingForm.value.note || '',
             total: total.value,
-            orderDate: new Date().toISOString(),
-            estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+            paymentMethod: paymentMethod.value,
+            estimatedDelivery: estimatedDelivery
         };
 
-        // Here would be your API call
-        // const result = await api.placeOrder(orderData);
+        // Gọi API để tạo đơn hàng
+        const result = await orderStore.createOrder(orderData);
 
-        // Save order to localStorage
-        const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-        existingOrders.push(orderData);
-        localStorage.setItem('orders', JSON.stringify(existingOrders));
+        if (result) {
+            // Lưu kết quả vào orderResult
+            orderResult.value = {
+                id: result.id || result._id || result.data?.id || result.data?._id,
+                total: orderData.total,
+                estimatedDelivery: orderData.estimatedDelivery
+            };
 
-        orderResult.value = orderData;
-        showSuccessModal.value = true;
+            await orderStore.loadOrders();
+            showSuccessModal.value = true;
+        } else {
+            throw new Error('Không thể tạo đơn hàng');
+        }
     } catch (error) {
-        alert('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
+        console.error('Error placing order:', error);
+        toast.error('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
     }
 };
 
@@ -572,6 +618,7 @@ const handleSuccessModalClose = () => {
 
 const viewOrder = () => {
     // Navigate to order detail page
+    showSuccessModal.value = false;
     router.push(`/orders/${orderResult.value.id}`);
 };
 
@@ -606,21 +653,20 @@ const getPaymentMethodDescription = (method) => {
 
 // Lifecycle
 onMounted(() => {
-    // Check if data was passed from buy-now (in localStorage)
-    const checkoutItems = localStorage.getItem('checkout_orderItems')
-
-    if (checkoutItems) {
-        try {
-            cartItems.value = JSON.parse(checkoutItems)
-            // Clear temporary data after reading
-            localStorage.removeItem('checkout_orderItems')
-            console.log('Received order items from buy-now:', cartItems.value)
-        } catch (e) {
-            console.error('Error parsing checkout items:', e)
-            cartItems.value = defaultCartItems
-        }
+    if (orderStore.checkoutItems && orderStore.checkoutItems.length > 0) {
+        const mapped = orderStore.checkoutItems.map((item, idx) => ({
+            id: idx + 1,
+            productId: item.productId,
+            name: item.meta?.name,
+            brand: item.meta?.brand,
+            price: item.meta?.price,
+            image: item.meta?.image,
+            size: item.size,
+            color: item.color,
+            quantity: item.quantity || 1
+        }));
+        cartItems.value = mapped;
     } else {
-        // Try to get from localStorage cart
         const savedCart = localStorage.getItem('cart')
         if (savedCart) {
             try {

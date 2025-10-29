@@ -4,7 +4,7 @@
             <!-- Header -->
             <div class="px-6 py-4 border-b border-gray-200">
                 <h3 class="text-lg font-semibold text-gray-900">Cập nhật trạng thái đơn hàng</h3>
-                <p class="text-sm text-gray-500 mt-1">Đơn hàng #{{ order?.id?.slice(-8) }}</p>
+                <p class="text-sm text-gray-500 mt-1">Đơn hàng #{{ (order?.id || order?._id)?.slice(-8) }}</p>
             </div>
 
             <!-- Content -->
@@ -25,10 +25,24 @@
                         <select v-model="newStatus"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
                             <option value="">Chọn trạng thái mới</option>
-                            <option value="pending" :disabled="order.status === 'pending'">Chờ xử lý</option>
-                            <option value="processing" :disabled="order.status === 'processing'">Đang xử lý</option>
-                            <option value="complete" :disabled="order.status === 'complete'">Hoàn thành</option>
-                            <option value="cancelled" :disabled="order.status === 'cancelled'">Đã hủy</option>
+                            <!-- Admin có thể chọn bất kỳ status nào hợp lệ -->
+                            <!-- Sequential flow (đã gộp delivered và complete) -->
+                            <option v-if="order.status === 'pending'" value="confirmed">Đã xác nhận</option>
+                            <option v-if="order.status === 'confirmed'" value="shipping">Đang giao</option>
+                            <option v-if="order.status === 'shipping'" value="complete">Hoàn thành</option>
+
+                            <!-- Admin có thể complete từ bất kỳ status nào (trừ complete) -->
+                            <option
+                                v-if="order.status !== 'complete' && order.status !== 'cancelled' && order.status !== 'shipping'"
+                                value="complete">
+                                ⚡ Hoàn thành (Bỏ qua các bước)
+                            </option>
+
+                            <!-- Cho phép hủy nếu chưa complete -->
+                            <option v-if="order.status !== 'complete' && order.status !== 'cancelled'"
+                                value="cancelled">
+                                Đã hủy
+                            </option>
                         </select>
                     </div>
 
@@ -85,8 +99,9 @@ watch(() => props.isOpen, (isOpen) => {
 
 const getStatusText = (status) => {
     const statusMap = {
-        'pending': 'Chờ xử lý',
-        'processing': 'Đang xử lý',
+        'pending': 'Chờ xác nhận',
+        'confirmed': 'Đã xác nhận',
+        'shipping': 'Đang giao',
         'complete': 'Hoàn thành',
         'cancelled': 'Đã hủy'
     };
@@ -96,7 +111,8 @@ const getStatusText = (status) => {
 const getStatusClass = (status) => {
     const classMap = {
         'pending': 'bg-yellow-100 text-yellow-800',
-        'processing': 'bg-blue-100 text-blue-800',
+        'confirmed': 'bg-blue-100 text-blue-800',
+        'shipping': 'bg-purple-100 text-purple-800',
         'complete': 'bg-green-100 text-green-800',
         'cancelled': 'bg-red-100 text-red-800'
     };
@@ -106,8 +122,11 @@ const getStatusClass = (status) => {
 const updateStatus = () => {
     if (!newStatus.value || newStatus.value === props.order?.status) return;
 
+    // Support both id and _id formats
+    const orderId = props.order.id || props.order._id;
+
     emit('updated', {
-        orderId: props.order.id,
+        orderId: orderId,
         newStatus: newStatus.value,
         reason: reason.value
     });

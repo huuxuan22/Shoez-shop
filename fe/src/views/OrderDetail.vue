@@ -28,15 +28,18 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-gray-200">
                         <div>
                             <p class="text-sm text-gray-600 mb-1">Mã đơn hàng</p>
-                            <p class="text-lg font-bold text-black">{{ order.id }}</p>
+                            <p class="text-lg font-bold text-black">{{ order.id || order._id }}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-600 mb-1">Ngày đặt</p>
-                            <p class="text-lg font-bold text-black">{{ formatDate(order.orderDate) }}</p>
+                            <p class="text-lg font-bold text-black">{{ formatDate(order.created_at) }}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-600 mb-1">Dự kiến giao</p>
-                            <p class="text-lg font-bold text-black">{{ formatDate(order.estimatedDelivery) }}</p>
+                            <p class="text-lg font-bold text-black">
+                                {{ order.estimatedDelivery ? formatDate(order.estimatedDelivery) :
+                                    calculateEstimatedDelivery(order.created_at) }}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -45,11 +48,13 @@
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-6">
                     <h2 class="text-2xl font-bold text-gray-900 mb-6">Sản phẩm đã đặt</h2>
                     <div class="space-y-4">
-                        <div v-for="item in order.items" :key="item.id"
+                        <div v-for="(item, index) in order.items" :key="item.productId || item.id || index"
                             class="flex items-center gap-6 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                            <img :src="item.image" :alt="item.name" class="w-24 h-24 object-cover rounded-lg" />
+                            <img :src="item.image" :alt="item.name || item.productName"
+                                class="w-24 h-24 object-cover rounded-lg" />
                             <div class="flex-1">
-                                <h3 class="font-bold text-gray-900 mb-1">{{ item.name }}</h3>
+                                <h3 class="font-bold text-gray-900 mb-1">{{ item.name || item.productName }}</h3>
+                                <div v-if="item.brand" class="text-sm text-gray-500 mb-2">{{ item.brand }}</div>
                                 <div class="flex items-center gap-4 text-sm text-gray-600">
                                     <span>Size: {{ item.size }}</span>
                                     <span>Màu: {{ item.color }}</span>
@@ -81,11 +86,12 @@
                             Địa chỉ giao hàng
                         </h2>
                         <div class="space-y-2 text-gray-700">
-                            <p class="font-semibold text-black">{{ order.shipping.fullName }}</p>
-                            <p>{{ order.shipping.phone }}</p>
-                            <p>{{ order.shipping.email }}</p>
-                            <p class="mt-2">{{ order.shipping.address }}, {{ order.shipping.ward }}, {{
-                                order.shipping.district }}, {{ order.shipping.city }}</p>
+                            <p class="font-semibold text-black">{{ order.fullName }}</p>
+                            <p>{{ order.phone }}</p>
+                            <p>{{ order.email }}</p>
+                            <p class="mt-2">{{ order.address }}, {{ order.ward }}, {{ order.district }}, {{ order.city
+                            }}</p>
+                            <p v-if="order.note" class="mt-3 text-sm italic text-gray-500">Ghi chú: {{ order.note }}</p>
                         </div>
                     </div>
 
@@ -100,7 +106,7 @@
                         </h2>
                         <div class="space-y-3">
                             <div class="flex items-center gap-3">
-                                <div v-if="order.payment === 'cod'"
+                                <div v-if="order.paymentMethod === 'cod'"
                                     class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -117,9 +123,16 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <p class="font-semibold text-black">{{ getPaymentMethodText(order.payment) }}</p>
-                                    <p class="text-sm text-gray-600">{{ getPaymentDescription(order.payment) }}</p>
+                                    <p class="font-semibold text-black">{{ getPaymentMethodText(order.paymentMethod) }}
+                                    </p>
+                                    <p class="text-sm text-gray-600">{{ getPaymentDescription(order.paymentMethod) }}
+                                    </p>
                                 </div>
+                            </div>
+                            <div v-if="order.shippingMethod" class="mt-4 pt-4 border-t border-gray-200">
+                                <p class="text-sm text-gray-600 mb-1">Phương thức vận chuyển</p>
+                                <p class="font-semibold text-black">{{ getShippingMethodText(order.shippingMethod) }}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -131,11 +144,13 @@
                     <div class="space-y-3">
                         <div class="flex justify-between text-gray-700">
                             <span>Tạm tính</span>
-                            <span>{{ formatPrice(order.total) }}</span>
+                            <span>{{ formatPrice(subtotal) }}</span>
                         </div>
                         <div class="flex justify-between text-gray-700">
                             <span>Phí vận chuyển</span>
-                            <span class="text-green-600">Miễn phí</span>
+                            <span :class="order.shippingFee > 0 ? '' : 'text-green-600'">
+                                {{ order.shippingFee > 0 ? formatPrice(order.shippingFee) : 'Miễn phí' }}
+                            </span>
                         </div>
                         <div class="flex justify-between text-lg font-bold border-t border-gray-300 pt-3">
                             <span class="text-black">Tổng cộng</span>
@@ -204,80 +219,82 @@
                 </button>
             </div>
         </div>
-
-        <Footer />
     </div>
+    <Footer />
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useOrderStore } from '@/stores/order'
 import Header from '@/templates/Header.vue'
 import Footer from '@/templates/Footer.vue'
 
 const route = useRoute()
 const router = useRouter()
+const orderStore = useOrderStore()
 
 const loading = ref(true)
 const order = ref(null)
 
 // Computed
+const subtotal = computed(() => {
+    if (!order.value || !order.value.total || !order.value.shippingFee) return 0
+    return order.value.total - order.value.shippingFee
+})
+
 const orderTimeline = computed(() => {
     if (!order.value) return []
+
+    const status = order.value.status
 
     return [
         {
             label: 'Đơn hàng đã được đặt',
-            date: formatDate(order.value.orderDate),
-            active: true,
-            description: 'Đơn hàng của bạn đã được xác nhận'
+            date: formatDate(order.value.created_at),
+            active: true, // Luôn active
+            description: 'Đơn hàng đã được đặt'
         },
         {
-            label: 'Đang chuẩn bị hàng',
-            date: 'Dự kiến: ' + formatDate(order.value.orderDate),
-            active: order.value.status !== 'pending',
-            description: 'Chúng tôi đang chuẩn bị hàng cho bạn'
+            label: 'Đã xác nhận',
+            date: formatDate(order.value.created_at),
+            active: ['confirmed', 'shipping', 'complete'].includes(status),
+            description: 'Đơn hàng đã được xác nhận'
         },
         {
-            label: 'Đang vận chuyển',
-            date: 'Dự kiến: ' + formatDate(order.value.estimatedDelivery),
-            active: order.value.status === 'shipping',
-            description: 'Hàng đang được vận chuyển đến bạn'
+            label: 'Đang giao hàng',
+            date: 'Dự kiến: ' + (order.value.estimatedDelivery ? formatDate(order.value.estimatedDelivery) : calculateEstimatedDelivery(order.value.created_at)),
+            active: ['shipping', 'complete'].includes(status),
+            description: 'Hàng đang được vận chuyển'
         },
         {
-            label: 'Đã giao hàng',
-            date: order.value.status === 'delivered' ? formatDate(order.value.deliveredDate) : 'Chờ xác nhận',
-            active: order.value.status === 'delivered',
-            description: 'Giao hàng thành công'
+            label: 'Hoàn thành',
+            date: order.value.estimatedDelivery ? formatDate(order.value.estimatedDelivery) : calculateEstimatedDelivery(order.value.created_at),
+            active: status === 'complete',
+            description: 'Đơn hàng đã hoàn thành'
         }
     ]
 })
 
 // Methods
-const loadOrder = () => {
+const loadOrder = async () => {
     try {
         const orderId = route.params.id
 
-        // Try to get from localStorage
-        const savedOrders = localStorage.getItem('orders')
-        if (savedOrders) {
-            const orders = JSON.parse(savedOrders)
-            order.value = orders.find(o => o.id === orderId)
+        // Luôn fetch từ API để có dữ liệu mới nhất (không dùng cache trong store)
+        const orderData = await orderStore.loadOrderDetail(orderId)
+        if (orderData) {
+            order.value = orderData
+        } else {
+            // Nếu API không tìm thấy, thử check trong store như fallback
+            if (orderStore.orders && orderStore.orders.length > 0) {
+                order.value = orderStore.orders.find(o => o.id === orderId || o._id === orderId)
+            }
         }
 
-        // If not found, create sample order for demo
+        // If still not found, show error
         if (!order.value) {
-            // This is for demo - in production, fetch from API
-            order.value = {
-                id: orderId,
-                status: 'pending',
-                orderDate: new Date().toISOString(),
-                estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-                items: [],
-                shipping: {},
-                payment: 'cod',
-                total: 0
-            }
+            console.error('Order not found')
         }
 
     } catch (error) {
@@ -306,10 +323,10 @@ const formatPrice = (price) => {
 
 const getStatusText = (status) => {
     const statusMap = {
-        'pending': 'Chờ xử lý',
+        'pending': 'Chờ xác nhận',
         'confirmed': 'Đã xác nhận',
         'shipping': 'Đang giao',
-        'delivered': 'Đã giao',
+        'complete': 'Hoàn thành',
         'cancelled': 'Đã hủy'
     }
     return statusMap[status] || status
@@ -320,7 +337,7 @@ const getStatusClass = (status) => {
         'pending': 'bg-yellow-100 text-yellow-800',
         'confirmed': 'bg-blue-100 text-blue-800',
         'shipping': 'bg-purple-100 text-purple-800',
-        'delivered': 'bg-green-100 text-green-800',
+        'complete': 'bg-green-100 text-green-800',
         'cancelled': 'bg-red-100 text-red-800'
     }
     return classMap[status] || 'bg-gray-100 text-gray-800'
@@ -339,10 +356,36 @@ const getPaymentDescription = (method) => {
     const descMap = {
         'cod': 'Bạn sẽ thanh toán khi nhận hàng',
         'credit_card': 'Đã thanh toán bằng thẻ',
+        'bank_transfer': 'Đã chuyển khoản ngân hàng',
         'momo': 'Đã thanh toán qua MoMo'
     }
     return descMap[method] || ''
 }
+
+const getShippingMethodText = (method) => {
+    const methodMap = {
+        'standard': 'Giao hàng tiêu chuẩn',
+        'express': 'Giao hàng nhanh',
+        'pickup': 'Nhận tại cửa hàng'
+    }
+    return methodMap[method] || method
+}
+
+const calculateEstimatedDelivery = (createdAt) => {
+    if (!createdAt) return ''
+    const deliveryDays = 5 + Math.floor(Math.random() * 2)
+    const createdDate = new Date(createdAt)
+    const estimatedDate = new Date(createdDate.getTime() + deliveryDays * 24 * 60 * 60 * 1000)
+    return formatDate(estimatedDate.toISOString())
+}
+
+watch(() => route.params.id, (newId) => {
+    if (newId) {
+        loading.value = true
+        order.value = null
+        loadOrder()
+    }
+})
 
 onMounted(() => {
     loadOrder()

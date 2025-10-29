@@ -50,11 +50,9 @@ class OrderService(IOrderService):
         return deleted_orders
 
     async def count_orders(self) -> int:
-        """Đếm tổng số đơn hàng"""
         return await self.order_repo.count({})
 
     async def get_orders_paginated(self, skip: int = 0, limit: int = 20):
-        """Lấy danh sách orders theo phân trang, sắp xếp theo created_at DESC"""
         orders = await self.order_repo.get_all(
             skip=skip,
             limit=limit,
@@ -65,11 +63,9 @@ class OrderService(IOrderService):
         return self._serialize_for_json(orders)
 
     async def count_orders_with_filter(self, filter_query: Dict[str, Any]) -> int:
-        """Đếm tổng số đơn hàng với filter"""
         return await self.order_repo.count(filter_query)
 
     async def get_orders_paginated_with_filter(self, skip: int = 0, limit: int = 20, filter_query: Dict[str, Any] = None):
-        """Lấy danh sách orders theo phân trang với filter, sắp xếp theo created_at DESC"""
         if filter_query is None:
             filter_query = {}
             
@@ -85,14 +81,32 @@ class OrderService(IOrderService):
     async def update_order_status(self, order_id: str, status: str) -> Optional[Dict[str, Any]]:
         """
         Cập nhật trạng thái đơn hàng
+        Admin có thể: complete từ bất kỳ status nào, cancelled từ confirmed/shipping
         """
         order = await self.order_repo.get_by_id(order_id)
         if not order:
             return None
 
         current_status = order.get("status")
-        if current_status == "pending" and status.lower() == "complete":
-            updated_order = await self.order_repo.update(order_id, {"status": "complete"})
+        new_status = status.lower()
+
+        # Final states - không thể thay đổi
+        if current_status in ['complete', 'cancelled']:
+            return None
+
+        # Giải thích: Validate status transitions
+        # Gộp delivered và complete thành 1
+        valid_transitions = {
+            'pending': ['confirmed', 'cancelled', 'complete'],      # Admin có thể complete luôn
+            'confirmed': ['shipping', 'cancelled', 'complete'],    # Admin có thể complete luôn
+            'shipping': ['complete', 'cancelled'],                  # Chỉ có complete, không có delivered
+            'complete': [],                                          # Final
+        }
+
+        # Check if transition is valid
+        if new_status in valid_transitions.get(current_status, []):
+            updated_order = await self.order_repo.update(order_id, {"status": new_status})
             return updated_order
+        
         return None
 
