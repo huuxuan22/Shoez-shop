@@ -5,8 +5,8 @@
 
         <!-- Products Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div v-for="product in products" :key="product.id"
-                class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div v-for="product in products" :key="product.id" @click="goToProduct(product)"
+                class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
                 <!-- Product Image -->
                 <div class="relative overflow-hidden rounded-t-lg">
                     <img :src="product.image" :alt="product.name"
@@ -66,8 +66,8 @@
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="flex gap-2">
-                        <button @click="addToFavorites(product)"
+                    <div class="flex gap-2" @click.stop>
+                        <button @click.stop="addToFavorites(product)"
                             class="flex-1 bg-white border-2 border-red-500 text-red-500 px-3 py-2 rounded-lg hover:bg-red-500 hover:text-white transition-all text-sm font-semibold flex items-center justify-center gap-1">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                 <path
@@ -75,7 +75,7 @@
                             </svg>
                             <span>Yêu thích</span>
                         </button>
-                        <button @click.stop="goToProduct(product)"
+                        <button @click.stop="handleBuyNow(product)"
                             class="flex-1 bg-black text-white px-3 py-2 rounded-lg hover:bg-gray-800 transition-all text-sm font-semibold flex items-center justify-center gap-1">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -87,11 +87,18 @@
                 </div>
             </div>
         </div>
+
+        <!-- Login Required Modal -->
+        <ConfirmModal :show="showLoginModal" :message="loginModalMessage" confirm-text="Đăng nhập" cancel-text="Đóng"
+            @confirm="handleLoginModalConfirm" @cancel="handleLoginModalCancel" />
     </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import ConfirmModal from '@/components/ConfirmModal.vue'
 
 const props = defineProps({
     products: {
@@ -110,6 +117,11 @@ const props = defineProps({
 })
 
 const router = useRouter()
+const authStore = useAuthStore()
+
+// Modal state
+const showLoginModal = ref(false)
+const loginModalMessage = ref('')
 
 const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -118,7 +130,18 @@ const formatPrice = (price) => {
     }).format(price)
 }
 
+const isAuthenticated = () => {
+    return !!localStorage.getItem('token') && authStore.isAuthenticated;
+}
+
 const addToFavorites = (product) => {
+    // Kiểm tra đăng nhập
+    if (!isAuthenticated()) {
+        loginModalMessage.value = 'Bạn chưa đăng nhập. Vui lòng đăng nhập để thêm sản phẩm vào yêu thích!';
+        showLoginModal.value = true;
+        return;
+    }
+
     // Get existing favorites from localStorage
     let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
 
@@ -137,6 +160,27 @@ const addToFavorites = (product) => {
 
     // Save back to localStorage
     localStorage.setItem('favorites', JSON.stringify(favorites));
+}
+
+const handleBuyNow = (product) => {
+    // Kiểm tra đăng nhập
+    if (!isAuthenticated()) {
+        loginModalMessage.value = 'Bạn chưa đăng nhập. Vui lòng đăng nhập để mua sản phẩm!';
+        showLoginModal.value = true;
+        return;
+    }
+
+    // TODO: Implement buy now logic
+    console.log('Buy now:', product);
+}
+
+const handleLoginModalConfirm = () => {
+    showLoginModal.value = false;
+    router.push('/login');
+}
+
+const handleLoginModalCancel = () => {
+    showLoginModal.value = false;
 }
 
 function goToProduct(product) {

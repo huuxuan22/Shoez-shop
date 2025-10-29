@@ -102,8 +102,11 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { io } from 'socket.io-client'
+import AdminService from '@/api-services/AdminService'
+import { useToast } from '@/composables/useToast'
 
 const router = useRouter()
+const { error: showErrorToast, success: showSuccessToast } = useToast()
 
 const showNotifications = ref(false)
 const notifications = ref([])
@@ -125,14 +128,11 @@ const handleNotificationClick = async (notif) => {
 
     // Đánh dấu admin đã click vào notification
     try {
-      await fetch(`http://localhost:8000/api/v1/admin/low-rating-reviews/respond/${notif.review_id}`, {
-        method: 'POST',
-        credentials: 'include'
-      })
+      await AdminService.respondToLowRatingReview(notif.review_id)
       // Remove notification khỏi list
       notifications.value = notifications.value.filter(n => n.id !== notif.id)
     } catch (error) {
-      console.error('Error marking as responded:', error)
+      showErrorToast('Không thể đánh dấu thông báo là đã phản hồi. Vui lòng thử lại.')
     }
   }
   showNotifications.value = false
@@ -173,14 +173,11 @@ const connectSocket = () => {
   })
 
   socket.value.on('connect', () => {
-    console.log('✅ Admin connected to notification server')
     socket.value.emit('join_room', { room: 'admin' })
   })
 
   // Listen for admin notifications (low rating reviews)
   socket.value.on('admin_notification', (data) => {
-    console.log('📬 Admin received notification:', data)
-
     const notification = {
       id: Date.now(),
       type: data.type,
@@ -195,11 +192,11 @@ const connectSocket = () => {
   })
 
   socket.value.on('disconnect', () => {
-    console.log('❌ Admin disconnected from notification server')
+    showErrorToast('Mất kết nối với server thông báo', 'Ngắt kết nối')
   })
 
   socket.value.on('connect_error', (error) => {
-    console.error('Socket connection error:', error)
+    showErrorToast('Lỗi kết nối với server thông báo. Vui lòng thử lại.', 'Lỗi kết nối')
   })
 }
 

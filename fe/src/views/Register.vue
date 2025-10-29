@@ -225,8 +225,8 @@ onBeforeUnmount(() => {
 // Submit handler - VeeValidate sẽ tự động validate trước khi gọi hàm này
 const onSubmit = async (values) => {
   try {
-
-    const response = await authStore.register({
+    debugger;
+    await authStore.register({
       full_name: values.full_name,
       email: values.email,
       password: values.password,
@@ -234,8 +234,6 @@ const onSubmit = async (values) => {
     });
 
     showToast('Đăng ký thành công!', 'success');
-    await authStore.logout();
-    // Delay chuyển trang 1.5 giây để user thấy toast
     setTimeout(() => {
       router.push('/');
     }, 1500);

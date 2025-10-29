@@ -69,6 +69,10 @@
             <router-link to="/products" class="text-black hover:underline">Quay lại trang sản phẩm</router-link>
         </div>
         <Footer />
+
+        <!-- Login Required Modal -->
+        <ConfirmModal :show="showLoginModal" :message="loginModalMessage" confirm-text="Đăng nhập" cancel-text="Đóng"
+            @confirm="handleLoginModalConfirm" @cancel="handleLoginModalCancel" />
     </div>
 </template>
 
@@ -86,15 +90,24 @@ import { useRoute, useRouter } from 'vue-router'
 import { nextTick } from 'vue'
 import ProductService from '@/api-services/ProductService'
 import ToastNotification from '@/components/ToastNotification.vue'
-import { useCartStore, useOrderStore } from '@/stores'
+import ConfirmModal from '@/components/ConfirmModal.vue'
+import { useCartStore, useOrderStore, useAuthStore } from '@/stores'
 
 const orderStore = useOrderStore()
+const authStore = useAuthStore()
 const toast = reactive({ show: false, message: '', type: 'info' })
+const showLoginModal = ref(false)
+const loginModalMessage = ref('')
+
 function showToast(message, type = 'error') {
     toast.message = message
     toast.type = type
     toast.show = true
     setTimeout(() => { toast.show = false }, 2000)
+}
+
+const isAuthenticated = () => {
+    return !!localStorage.getItem('token') && authStore.isAuthenticated;
 }
 
 const route = useRoute()
@@ -207,7 +220,13 @@ const handleProductClick = (productId) => {
 }
 
 const handleAddToCart = async () => {
-    debugger;
+    // Kiểm tra đăng nhập
+    if (!isAuthenticated()) {
+        loginModalMessage.value = 'Bạn chưa đăng nhập. Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!';
+        showLoginModal.value = true;
+        return;
+    }
+
     if (!selectedSize.value) { showToast('Vui lòng chọn size', 'error'); return; }
     if (!selectedColor.value) { showToast('Vui lòng chọn màu sắc', 'error'); return; }
     if (!product.value) return;
@@ -230,6 +249,13 @@ const handleAddToCart = async () => {
 };
 
 const handleBuyNow = () => {
+    // Kiểm tra đăng nhập
+    if (!isAuthenticated()) {
+        loginModalMessage.value = 'Bạn chưa đăng nhập. Vui lòng đăng nhập để mua sản phẩm!';
+        showLoginModal.value = true;
+        return;
+    }
+
     // Validate required fields
     if (!selectedSize.value) {
         showToast('Vui lòng chọn size', 'error')
@@ -254,6 +280,15 @@ const handleBuyNow = () => {
 
     orderStore.setCheckoutFromProduct(productWithOptions)
     router.push('/checkout')
+}
+
+const handleLoginModalConfirm = () => {
+    showLoginModal.value = false;
+    router.push('/login');
+}
+
+const handleLoginModalCancel = () => {
+    showLoginModal.value = false;
 }
 
 // Initialize

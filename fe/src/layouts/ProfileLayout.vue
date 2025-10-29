@@ -197,11 +197,12 @@ const handleChangePassword = async (passwordData) => {
 };
 
 const handleAvatarChange = async (file) => {
+    debugger;
     isUploading.value = true;
     try {
         const response = await UserService.uploadAvatar(file, authUser.value.id);
-        if (authUser.value && response.avatar_url) {
-            authUser.value.avatar = response.avatar_url;
+        if (authUser.value && response.data?.avatar_url) {
+            authUser.value.avatar = response.data?.avatar_url;
             localStorage.setItem("user", JSON.stringify(authUser.value));
         }
 

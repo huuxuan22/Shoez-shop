@@ -1,15 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-
-// Views
 import Home from "@/views/Home.vue";
 import Login from "@/views/Login.vue";
 import Register from "@/views/Register.vue";
 import Contact from "@/views/Contact.vue";
 import AdminLogin from "@/views/AdminLogin.vue";
-
-// Templates
-import AboutView from "@/templates/AboutTemplate.vue";
 import About from "@/views/About.vue";
 import ProductListLayout from "@/layouts/ProductListLayout.vue";
 
@@ -118,7 +113,8 @@ const routes = [
     name: "Checkout",
     component: () => import("@/views/Checkout.vue"),
     meta: {
-      title: "Chi tiết sản phẩm - Shoez Shop"
+      title: "Thanh toán - Shoez Shop",
+      requiresAuth: true  // 👈 Nên bảo vệ trang checkout
     }
   },
   {
@@ -276,6 +272,30 @@ const router = createRouter({
 });
 
 // Navigation guards
+// ============================================
+// HƯỚNG DẪN: Cách phân loại trang trong router
+// ============================================
+// 1. TRANG PUBLIC (Không cần đăng nhập)
+//    -> Không thêm meta gì, hoặc để rỗng
+//    -> Ví dụ: Home, About, Contact, Products, ProductDetail
+//
+// 2. TRANG PROTECTED (Cần đăng nhập)
+//    -> Thêm: meta: { requiresAuth: true }
+//    -> Nếu chưa đăng nhập -> redirect về Login
+//    -> Ví dụ: Cart, Profile, Orders, OrderDetail
+//
+// 3. TRANG GUEST-ONLY (Chỉ guest mới vào được)
+//    -> Thêm: meta: { requiresGuest: true }
+//    -> Nếu đã đăng nhập -> redirect về Home
+//    -> Ví dụ: Login, Register, AdminLogin
+//
+// 4. TRANG ADMIN (Cần quyền admin)
+//    -> Thêm: meta: { requiresAdmin: true }
+//    -> Tự động check requiresAuth trước
+//    -> Nếu không phải admin -> redirect về /403
+//    -> Ví dụ: AdminDashboard, AdminProducts, AdminOrders
+// ============================================
+
 router.beforeEach((to, from, next) => {
   if (to.meta.title) {
     document.title = to.meta.title;
@@ -284,7 +304,9 @@ router.beforeEach((to, from, next) => {
 
   const isAuthenticated = authStore.isAuthenticated;
   const user = authStore.user;
-  const isAdmin = authStore.isAdmin;  // Check auth requirements
+  const isAdmin = authStore.isAdmin;
+
+  // Check auth requirements - Cần đăng nhập
   if (to.meta.requiresAuth) {
     if (!isAuthenticated) {
       next({ name: 'Login' });
@@ -292,7 +314,7 @@ router.beforeEach((to, from, next) => {
     }
   }
 
-  // Check admin requirements
+  // Check admin requirements - Cần quyền admin
   if (to.meta.requiresAdmin) {
     if (!isAuthenticated) {
       next({ name: 'AdminLogin' });
@@ -304,6 +326,7 @@ router.beforeEach((to, from, next) => {
     }
   }
 
+  // Check guest requirements - Chỉ guest mới vào được (Login, Register)
   if (to.meta.requiresGuest) {
     if (isAuthenticated) {
       if (to.name === 'AdminLogin' && isAdmin) {
@@ -314,6 +337,7 @@ router.beforeEach((to, from, next) => {
       return;
     }
   }
+
   next();
 });
 
