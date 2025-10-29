@@ -32,14 +32,34 @@ BaseAxios.interceptors.response.use(
     if (error.response) {
       const { status, data } = error.response;
 
+      // 401 Unauthorized: Chưa login hoặc token hết hạn
       if (status === 401) {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+        localStorage.removeItem("refresh_token");
+
+        // KHÔNG redirect nếu đang ở trang public
+        const currentPath = window.location.pathname;
+        const isPublicPage = currentPath === '/' ||
+          currentPath === '/products' ||
+          currentPath.startsWith('/products/') ||
+          currentPath.includes('/about') ||
+          currentPath.includes('/contact') ||
+          currentPath.includes('/faq');
+
+        // Chỉ redirect về Login nếu KHÔNG phải trang public
+        if (!isPublicPage &&
+          !currentPath.includes('/login') &&
+          !currentPath.includes('/register') &&
+          !currentPath.includes('/403')) {
+          window.location.href = '/login';
+        }
+      }
+      // 403 Forbidden: Không có quyền truy cập -> Về 403
+      else if (status === 403) {
         if (!window.location.pathname.includes('/403')) {
           window.location.href = '/403';
         }
-      } else if (status === 403) {
-        window.location.href = '/403';
       }
 
       return Promise.reject({

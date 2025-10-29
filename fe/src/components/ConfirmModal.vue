@@ -16,11 +16,11 @@
             <div class="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end space-x-3">
                 <button @click="$emit('cancel')"
                     class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
-                    Hủy
+                    {{ cancelText }}
                 </button>
                 <button @click="$emit('confirm')"
                     class="px-4 py-2 text-sm font-medium text-white bg-gray-900 border border-transparent rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
-                    Xác nhận
+                    {{ confirmText }}
                 </button>
             </div>
         </div>
@@ -36,6 +36,14 @@ defineProps({
     message: {
         type: String,
         default: 'Bạn có chắc chắn muốn thực hiện hành động này?'
+    },
+    confirmText: {
+        type: String,
+        default: 'Xác nhận'
+    },
+    cancelText: {
+        type: String,
+        default: 'Hủy'
     }
 });
 

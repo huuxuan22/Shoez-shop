@@ -70,6 +70,10 @@ class AuthMiddlewave(BaseHTTPMiddleware):
         ("/image", ["POST", "GET"]),
         ("/auth/google/login", ["GET"]),
         ("/auth/google/callback", ["GET"]),
+        ("/products/get-all", ["GET"]),
+        ("/products/top-rated", ["GET"]),
+        ("/products/top-rated-by-brand", ["GET"]),
+        ("/products/detail/", ["GET"]),  # /products/detail/{product_id}  
     ]
 
     # Swagger mặc định của FastAPI

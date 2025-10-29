@@ -47,52 +47,51 @@
 
         <!-- User Actions -->
         <div class="flex items-center space-x-4">
-          <!-- Favorites Button -->
-          <router-link to="/favorites" class="relative text-gray-800 hover:text-black transition-colors p-2">
-            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-              <path
-                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-            </svg>
-            <span v-if="favoritesCount > 0"
-              class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {{ favoritesCount > 9 ? '9+' : favoritesCount }}
-            </span>
-          </router-link>
+          <template v-if="isAuthenticated">
+            <!-- Favorites Button -->
+            <router-link to="/favorites" class="relative text-gray-800 hover:text-black transition-colors p-2">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+              <span v-if="favoritesCount > 0"
+                class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {{ favoritesCount > 9 ? '9+' : favoritesCount }}
+              </span>
+            </router-link>
 
-          <!-- Cart Icon -->
-          <router-link to="/cart" class="relative text-gray-800 hover:text-black transition-colors p-2">
-            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-              <path
-                d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14l.84-2h8.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49a1 1 0 00-.87-1.48H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.45C4.52 14.37 5.48 16 7 16h12v-2H7.42a.5.5 0 01-.26-.69z" />
-            </svg>
-            <span v-if="cartItemCount > 0"
-              class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] leading-none rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center">
-              {{ cartItemCount > 99 ? '99+' : cartItemCount }}
-            </span>
-          </router-link>
+            <!-- Cart Icon -->
+            <router-link to="/cart" class="relative text-gray-800 hover:text-black transition-colors p-2">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14l.84-2h8.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49a1 1 0 00-.87-1.48H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.45C4.52 14.37 5.48 16 7 16h12v-2H7.42a.5.5 0 01-.26-.69z" />
+              </svg>
+              <span v-if="cartItemCount > 0"
+                class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] leading-none rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center">
+                {{ cartItemCount > 99 ? '99+' : cartItemCount }}
+              </span>
+            </router-link>
 
-          <!-- Notification Bell -->
-          <div class="hidden sm:block">
-            <NotificationBell />
-          </div>
-
-          <!-- Auth Links -->
-          <div v-if="!isAuthenticated" class="flex items-center space-x-2">
-            <!-- Auth Links -->
-            <div v-if="!isAuthenticated" class="flex items-center space-x-2">
-              <router-link to="/login" class="text-gray-800 hover:text-black transition-colors font-medium">
-                Đăng nhập
-              </router-link>
-              <span class="text-gray-400">|</span>
-              <router-link to="/register"
-                class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors font-medium">
-                Đăng ký
-              </router-link>
+            <!-- Notification Bell -->
+            <div class="hidden sm:block">
+              <NotificationBell />
             </div>
+          </template>
+
+          <!-- Auth Links - Chỉ hiển thị khi CHƯA đăng nhập -->
+          <div v-if="!isAuthenticated" class="flex items-center space-x-2">
+            <router-link to="/login" class="text-gray-800 hover:text-black transition-colors font-medium">
+              Đăng nhập
+            </router-link>
+            <span class="text-gray-400">|</span>
+            <router-link to="/register"
+              class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors font-medium">
+              Đăng ký
+            </router-link>
           </div>
 
           <!-- User Menu (when logged in) -->
-          <div v-else class="relative">
+          <div v-if="isAuthenticated" class="relative">
             <button @click="toggleUserMenu"
               class="flex items-center space-x-3 text-gray-800 hover:text-black transition-colors font-medium p-2">
               <!-- User Avatar -->
@@ -313,12 +312,28 @@ const userId = computed(() => {
 });
 
 // Lifecycle
-onMounted(() => {
+onMounted(async () => {
   document.addEventListener('click', handleClickOutside);
-  if (isAuthenticated.value && userId.value) {
-    cartStore.loadCart();
-    orderStore.loadOrders();
-    notificationStore.connect(userId.value);
+
+  // Chỉ load data nếu user đã đăng nhập VÀ có token hợp lệ VÀ có user data
+  const token = localStorage.getItem('token');
+  const user = authStore.user;
+  const userIdValue = userId.value;
+
+  if (token && user && userIdValue) {
+    try {
+      await Promise.all([
+        cartStore.loadCart(),
+        orderStore.loadOrders()
+      ]);
+      notificationStore.connect(userIdValue);
+    } catch (error) {
+      // Nếu lỗi authentication, clear và reload
+      if (error.status === 401) {
+        localStorage.clear();
+        location.reload();
+      }
+    }
   }
 });
 
