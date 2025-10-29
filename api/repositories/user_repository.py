@@ -13,6 +13,40 @@ class UserRepository(BaseRepository[User]):
     async def get_by_email(self, email: str) -> User | None:
         return await self.find_one({"email": email})
 
+    async def get_by_id_str(self, user_id: str) -> User | None:
+        """
+        Tìm user theo id. Ưu tiên tìm bằng ObjectId(_id) nếu user_id hợp lệ,
+        nếu không thì fallback sang trường string 'id'.
+        """
+        user = None
+        # Attempt lookup by MongoDB _id (ObjectId)
+        try:
+            oid = ObjectId(user_id)
+            user = await self.find_one({"_id": oid})
+        except Exception:
+            user = None
+
+        # Fallback: lookup by stored string 'id' field
+        if not user:
+            user = await self.find_one({"id": user_id})
+
+        if user:
+            if '_id' in user:
+                user['id'] = str(user['_id'])
+                del user['_id']
+        return user
+
+    async def get_by_name_and_login_type(self, full_name: str, is_login: str) -> User | None:
+        """
+        Tìm user theo full_name và is_login (dùng cho Facebook login)
+        """
+        user = await self.find_one({"full_name": full_name, "is_login": is_login})
+        if user:
+            if '_id' in user:
+                user['id'] = str(user['_id'])
+                del user['_id']
+        return user
+
     async def get_all(self, page: int = 1, page_size: int = 10) -> List[dict]:
         users = []
         skip = (page - 1) * page_size
@@ -27,23 +61,6 @@ class UserRepository(BaseRepository[User]):
             users.append(user)
         return users
     
-
-    # async def get_user_principal(self, email: str):
-    #     user = await self.db["users"].find_one({"email": email})
-    #     if user:
-    #         # Ensure id field exists - use _id as id
-    #         if 'id' not in user and '_id' in user:
-    #             user['id'] = str(user['_id'])
-    #             # Update the document to add id field
-    #             await self.db["users"].update_one(
-    #                 {"_id": user['_id']},
-    #                 {"$set": {"id": user['id']}}
-    #             )
-    #         # Remove _id from response
-    #         if '_id' in user:
-    #             del user['_id']
-    #     return user
-
     async def get_user_principal(self, email: str):
         user = await self.db["users"].find_one({"email": email})
 

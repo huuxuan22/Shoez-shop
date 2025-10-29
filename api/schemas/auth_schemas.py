@@ -21,7 +21,7 @@ class UserCreate(BaseModel):
 
 class UserPrincipal(BaseModel):
     id: Union[str, uuid.UUID] = Field(default_factory=uuid.uuid4)
-    email: EmailStr
+    email: Optional[str] = None  
     full_name: Optional[str] = None
     numberphone: Optional[str] = None
     age: Optional[int] = None
@@ -29,11 +29,11 @@ class UserPrincipal(BaseModel):
     is_active: bool = True
     role: Optional[str] = None
     address: Optional[str] = None
-    birthday: Optional[str] = None  # Format: YYYY-MM-DD
-    gender: Optional[str] = None  # Values: male, female, other
+    birthday: Optional[str] = None  
+    gender: Optional[str] = None  
 
     class Config:
-        orm_mode = True  # Giúp chuyển từ dict/DB object sang schema
+        orm_mode = True  
 
 class TokenResponse(BaseModel):
     message: str

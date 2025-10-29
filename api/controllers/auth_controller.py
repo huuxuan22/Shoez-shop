@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Body, Depends
 from starlette import status
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, RedirectResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dependences.dependencies import get_user_repo
 from exceptions import UserNotFoundException
@@ -9,9 +9,12 @@ from services.auth_service import AuthService
 from services.user_service import UserService
 from utils import auth
 from fastapi import Request, Response
-from schemas.auth_schemas import UserCreate, LoginRequest, TokenResponse
+from schemas.auth_schemas import UserCreate, LoginRequest, TokenResponse, UserPrincipal
 from i18n.translator import translate
 from config.enum import MessageKey
+from config.config import get_settings
+
+settings = get_settings()
 
 security = HTTPBearer()
 auth_router = APIRouter(tags=["Auth"], prefix="/auth")
@@ -83,13 +86,78 @@ async def facebook(request: Request):
     return await AuthService.get_google_redirect_uri(request)
 
 @auth_router.get("/google/callback")
-async def Google(request: Request):
-    return await AuthService.handle_google_callback(request)
+async def Google(
+    request: Request,
+    response: Response,
+    user_repo: UserRepository = Depends(get_user_repo)
+):
+    service = AuthService(user_repo)
+    result: TokenResponse = await service.handle_google_callback(request)
+
+    redirect_url = f"{settings.frontend_url}/oauth/callback?oauth=google&status=success"
+    redirect_response = RedirectResponse(url=redirect_url)
+    redirect_response.set_cookie(key="token_access", value=result.access_token, httponly=True, secure=True, samesite="none")
+    redirect_response.set_cookie(key="token_refresh", value=result.refresh_token, httponly=True, secure=True, samesite="none")
+    redirect_response.set_cookie(key="current_user", value=result.user_principal.email, httponly=False, secure=True, samesite="none")
+    return redirect_response
 
 @auth_router.get("/facebook/login")
 async def facebook(request: Request):
     return await AuthService.get_facebook_redirect_uri(request)
 
 @auth_router.get("/facebook/callback")
-async def Google(request: Request):
-    return await AuthService.handle_facebook_callback(request)
+async def Facebook(
+    request: Request,
+    response: Response,
+    user_repo: UserRepository = Depends(get_user_repo)
+):
+    service = AuthService(user_repo)
+    result: TokenResponse = await service.handle_facebook_callback(request)
+
+    redirect_url = f"{settings.frontend_url}/oauth/callback?oauth=facebook&status=success"
+    redirect_response = RedirectResponse(url=redirect_url)
+    redirect_response.set_cookie(key="token_access", value=result.access_token, httponly=True, secure=True, samesite="none")
+    redirect_response.set_cookie(key="token_refresh", value=result.refresh_token, httponly=True, secure=True, samesite="none")
+    current_user_cookie = result.user_principal.email or str(result.user_principal.id)
+    redirect_response.set_cookie(key="current_user", value=current_user_cookie, httponly=False, secure=True, samesite="none")
+    return redirect_response
+
+@auth_router.get("/session", response_model=TokenResponse)
+async def get_session(
+    request: Request,
+    user_repo: UserRepository = Depends(get_user_repo)
+):
+    access_token = request.cookies.get("token_access")
+    refresh_token = request.cookies.get("token_refresh")
+    if not access_token or not refresh_token:
+        return JSONResponse(status_code=401, content={"message": "Missing session cookies"})
+
+    try:
+        decoded = auth.validate_token(access_token)
+        email = decoded.get("email")
+        user_id = decoded.get("id")
+
+        user_dict = None
+        
+        # Ưu tiên tìm bằng email nếu có (Google/NORMAL login)
+        if email:
+            user_dict = await user_repo.get_user_principal(email)
+        
+        # Nếu không có email hoặc không tìm thấy bằng email, tìm bằng id (Facebook login)
+        if not user_dict and user_id:
+            user_dict = await user_repo.get_by_id_str(str(user_id))
+        
+        if not user_dict:
+            return JSONResponse(status_code=404, content={"message": "User not found"})
+
+        user_principal = UserPrincipal(**user_dict)
+
+        return TokenResponse(
+            message=translate(MessageKey.LOGIN_SUCCESS),
+            access_token=access_token,
+            refresh_token=refresh_token,
+            user_principal=user_principal
+        )
+    except Exception as e:
+        print(f"Session error: {str(e)}")
+        return JSONResponse(status_code=401, content={"message": "Invalid or expired session"})

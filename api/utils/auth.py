@@ -52,21 +52,23 @@ def extract_all_claims(token: str) -> dict[str,Any]:
     except JWTError as e:
         raise AuthTokenMissingException(MessageKey.TOKEN_INVALID)
 
-# lấy email từ token
-def extract_email(token: str) -> str:
+def extract_email(token: str) -> Optional[str]:
     claims = extract_all_claims(token)
-    email = str = claims.get("email")
-    if not email:
-        raise AuthTokenMissingException(MessageKey.NOT_FOUND_USER_IN_TOKEN)
-
+    email = claims.get("email")
     return email
+
+def extract_id(token: str) -> Optional[str]:
+    claims = extract_all_claims(token)
+    user_id = claims.get("id")
+    if not user_id:
+        user_id = claims.get("sub")  
+    return str(user_id) if user_id else None
 
 def extract_role(token: str) -> str:
     claims = extract_all_claims(token)
-    role = str = claims.get("role")
+    role = claims.get("role")
     if not role:
         raise AuthTokenMissingException(MessageKey.NOT_FOUND_USER_IN_TOKEN)
-
     return role
 
 # kiểm tra token hết hạn
@@ -78,16 +80,33 @@ def is_token_expired(token: str) -> bool:
     expiration = datetime.utcfromtimestamp(ex_timestamp)
     return datetime.utcnow() > expiration
 
-# xác thực token
+# xác thực token - hỗ trợ cả case có email và không có email (Facebook)
 def validate_token(token: str) -> dict[str,Any]:
+    """
+    Validate token và trả về thông tin user.
+    Hỗ trợ cả token có email (Google/NORMAL) và token không có email (Facebook).
+    
+    Returns:
+        dict với keys: email (optional), id (required), role (required)
+    """
     claims = extract_all_claims(token)
     email = extract_email(token)
+    user_id = extract_id(token)
     role = extract_role(token)
-    if not email:
+    
+    # Phải có ít nhất id hoặc email, và phải có role
+    if not user_id and not email:
         raise AuthTokenMissingException(MessageKey.USER_NOT_FOUND)
     if not role:
         raise AuthTokenMissingException(MessageKey.USER_NOT_FOUND)
-    return {"email": email, "role": role}
+    
+    result = {"role": role}
+    if user_id:
+        result["id"] = user_id
+    if email:
+        result["email"] = email
+    
+    return result
 
 # Hash password
 def hash_password(password: str) -> str:

@@ -76,6 +76,14 @@ const routes = [
     }
   },
   {
+    path: "/oauth/callback",
+    name: "OAuthCallback",
+    component: () => import("@/views/OAuthCallback.vue"),
+    meta: {
+      title: "Đang xử lý đăng nhập... - Shoez Shop"
+    }
+  },
+  {
     path: "/about",
     name: "About",
     component: About,

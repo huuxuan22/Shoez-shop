@@ -64,21 +64,14 @@
           </div>
 
           <div class="flex items-center justify-between">
-            <div class="flex items-center">
-              <input id="remember-me" name="remember-me" type="checkbox"
-                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-              <label for="remember-me" class="ml-2 block text-sm text-gray-700">
-                Ghi nhớ đăng nhập
-              </label>
-            </div>
-
-            <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-500">
+            <a href="#" class="text-sm font-medium text-gray-600 hover:text-black-500">
               Quên mật khẩu?
             </a>
           </div>
 
           <div>
-            <FormButton label="Đăng nhập" type="submit" variant="black" @click="onSubmit" class="w-full" />
+            <FormButton label="Đăng nhập" :loading="isLoading" :disabled="isLoading" type="submit" variant="black"
+              @click="onSubmit" class="w-full" />
           </div>
         </form>
 
@@ -143,7 +136,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, onBeforeUnmount } from "vue";
+import { reactive, ref, onMounted, onBeforeUnmount, watch } from "vue";
 import FormInput from "../components/FormInput.vue";
 import FormButton from "../components/FormButton.vue";
 import { useRoute, useRouter } from "vue-router";
@@ -157,12 +150,27 @@ let timer = null;
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
+const handledOAuth = ref(false)
 
-// Định nghĩa email và password
+function readOAuthQuery() {
+  debugger;
+  let oauth = route?.query?.oauth;
+  let status = route?.query?.status;
+  if (!oauth || !status) {
+    try {
+      const params = new URLSearchParams(window.location.search || "");
+      oauth = oauth || params.get("oauth");
+      status = status || params.get("status");
+    } catch (error) {
+      console.error("Lỗi khi đọc query params:", error);
+    }
+  }
+
+  return { oauth, status };
+}
 const email = ref('');
 const password = ref('');
-
-// Error messages
+const isLoading = ref(false);
 const emailError = ref('');
 const passwordError = ref('');
 
@@ -172,7 +180,6 @@ const toast = reactive({
   type: 'info',
 });
 
-// 3. Thêm hàm kích hoạt toast
 function showToast(message, type = 'info') {
   if (timer) {
     clearTimeout(timer);
@@ -186,7 +193,6 @@ function showToast(message, type = 'info') {
   }, 3000);
 }
 
-// Validation function
 const validateEmail = (email) => {
   if (!email) {
     return 'Vui lòng nhập email';
@@ -253,8 +259,34 @@ const resetInterval = () => {
 };
 
 onMounted(() => {
+  debugger;
   startInterval();
 });
+
+watch(
+  // Kiểm tra query params từ OAuth callback
+  () => route.fullPath,
+  () => {
+    debugger;
+    if (handledOAuth.value) return;
+    const { oauth, status } = readOAuthQuery();
+    if (oauth && status === 'success') {
+      handledOAuth.value = true;
+      // Gọi hydrate để lấy user và token từ session
+      AuthService.hydrateFromOAuthRedirect(authStore).then(async () => {
+        const providerName = oauth === 'google' ? 'Google' : (oauth === 'facebook' ? 'Facebook' : 'OAuth');
+        showToast(`Đăng nhập ${providerName} thành công!`, 'success');
+        // Chuyển trang sau khi hiển thị toast
+        setTimeout(() => {
+          router.push('/');
+        }, 1200);
+      }).catch((error) => {
+        showToast('Có lỗi xảy ra khi đăng nhập', 'error');
+      });
+    }
+  },
+  { immediate: true }
+)
 
 onBeforeUnmount(() => {
   clearInterval(slideInterval);
@@ -281,6 +313,7 @@ const onSubmit = async () => {
 
   // If validation passes, proceed with login
   try {
+    isLoading.value = true;
     const response = await authStore.login({
       email: email.value,
       password: password.value,
@@ -296,13 +329,17 @@ const onSubmit = async () => {
   } catch (error) {
     const errorMessage = error.data?.detail || error.message || 'Sai email hoặc mật khẩu!';
     showToast(errorMessage, 'error');
+  } finally {
+    isLoading.value = false;
   }
 };
 
 const loginWithGoogle = () => {
+  isLoading.value = true;
   AuthService.loginWithGoogle();
 }
 const loginWithFacebook = () => {
+  isLoading.value = true;
   AuthService.loginWithFacebook()
 }
 </script>
