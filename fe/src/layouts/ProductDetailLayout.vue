@@ -56,7 +56,7 @@
             <RelatedProducts :related-products="relatedProducts" @product-click="handleProductClick" />
 
             <!-- Product Reviews -->
-            <ProductReviews :product="product" :reviews="productReviews" :can-review="false" />
+            <ReviewList :product-id="product.id || product._id" />
         </div>
 
         <!-- Product Not Found -->
@@ -78,11 +78,12 @@ import ProductGallery from '@/components/product/ProductGallery.vue'
 import ProductInfo from '@/components/product/ProductInfo.vue'
 import ProductTabs from '@/components/product/ProductTabs.vue'
 import RelatedProducts from '@/components/product/RelatedProducts.vue'
-import ProductReviews from '@/components/product/ProductReviews.vue'
+import ReviewList from '@/components/reviews/ReviewList.vue'
 import Footer from '@/templates/Footer.vue'
 import Header from '@/templates/Header.vue'
 import { ref, computed, onMounted, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { nextTick } from 'vue'
 import ProductService from '@/api-services/ProductService'
 import ToastNotification from '@/components/ToastNotification.vue'
 import { useCartStore, useOrderStore } from '@/stores'
@@ -113,6 +114,9 @@ const quantity = ref(1)
 // Related products và reviews
 const relatedProducts = ref([])
 const productReviews = ref([])
+
+// Check if need to highlight a review
+const highlightReviewId = computed(() => route.query.highlightReview)
 
 // Load product from API
 const loadProduct = async () => {
@@ -158,6 +162,23 @@ const loadProduct = async () => {
                 createdAt: new Date(comment.created_at),
                 verified: comment.verified
             }))
+
+            // Scroll to review nếu có highlightReviewId
+            nextTick(() => {
+                if (highlightReviewId.value) {
+                    setTimeout(() => {
+                        const reviewElement = document.getElementById(`review-${highlightReviewId.value}`)
+                        if (reviewElement) {
+                            reviewElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                            // Add highlight effect
+                            reviewElement.classList.add('highlight-review')
+                            setTimeout(() => {
+                                reviewElement.classList.remove('highlight-review')
+                            }, 3000)
+                        }
+                    }, 500)
+                }
+            })
         }
 
         // Load related products (same brand)
@@ -237,7 +258,7 @@ const handleBuyNow = () => {
 
 // Initialize
 onMounted(() => {
-    loadProduct()   
+    loadProduct()
 })
 </script>
 
@@ -246,6 +267,26 @@ onMounted(() => {
 .toast-enter-active,
 .toast-leave-active {
     transition: all 0.25s ease;
+}
+
+/* Highlight review animation */
+@keyframes highlight {
+
+    0%,
+    100% {
+        background-color: transparent;
+    }
+
+    50% {
+        background-color: #fef3c7;
+        border: 2px solid #f59e0b;
+    }
+}
+
+.highlight-review {
+    animation: highlight 2s ease-in-out;
+    border-radius: 8px;
+    padding: 16px;
 }
 
 .toast-enter-from {

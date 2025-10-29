@@ -87,18 +87,80 @@
 
     <!-- Filters -->
     <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <!-- Active Filters Display -->
+      <div v-if="searchQuery || statusFilter || startDate || endDate" class="mb-4 pb-4 border-b border-gray-200">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-sm font-medium text-gray-700">Bộ lọc đang áp dụng:</span>
+
+          <!-- Search filter tag -->
+          <span v-if="searchQuery"
+            class="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+            <span>Khách hàng: "{{ searchQuery }}"</span>
+            <button @click="searchQuery = ''" class="hover:bg-blue-200 rounded-full p-0.5">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+          </span>
+
+          <!-- Status filter tag -->
+          <span v-if="statusFilter"
+            class="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+            <span>Trạng thái: {{ getStatusText(statusFilter) }}</span>
+            <button @click="statusFilter = ''" class="hover:bg-purple-200 rounded-full p-0.5">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+          </span>
+
+          <!-- Date filter tag -->
+          <span v-if="startDate || endDate"
+            class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+            <span>
+              {{ startDate ? formatDateFilter(startDate) : '...' }}
+              →
+              {{ endDate ? formatDateFilter(endDate) : '...' }}
+            </span>
+            <button @click="startDate = ''; endDate = ''" class="hover:bg-green-200 rounded-full p-0.5">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+          </span>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Tìm kiếm</label>
-          <input type="text" placeholder="Mã đơn, khách hàng..." v-model="searchQuery"
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            Tìm kiếm
+          </label>
+          <input type="text" placeholder="Tên, email, SĐT, mã đơn..." v-model="searchQuery"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Trạng thái</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Trạng thái
+          </label>
           <select v-model="statusFilter"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
             <option value="">Tất cả</option>
-            <option value="pending">Chờ xác nhận (Mặc định)</option>
+            <option value="pending">Chờ xác nhận</option>
             <option value="confirmed">Đã xác nhận</option>
             <option value="shipping">Đang giao</option>
             <option value="delivered">Đã nhận</option>
@@ -107,27 +169,42 @@
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Từ ngày</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Từ ngày
+          </label>
           <input type="date" v-model="startDate"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Đến ngày</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Đến ngày
+          </label>
           <input type="date" v-model="endDate"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" />
         </div>
         <div class="flex items-end space-x-2">
           <button @click="applyFilters"
-            class="flex-1 bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+            class="flex-1 bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors font-medium">
             Lọc
           </button>
           <button @click="clearFilters"
-            class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-            Xóa bộ lọc
+            class="px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-colors">
+            Xóa
           </button>
-          <button @click="exportOrders"
+          <button @click="exportOrders" title="Xuất CSV"
             class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-            Xuất CSV
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
           </button>
         </div>
       </div>
@@ -338,7 +415,7 @@ const itemsPerPage = ref(20);
 
 // Filters
 const searchQuery = ref('');
-const statusFilter = ref('pending'); // Mặc định chỉ load pending orders
+const statusFilter = ref('');
 const startDate = ref('');
 const endDate = ref('');
 
@@ -380,7 +457,6 @@ const fetchOrders = async (page = 1) => {
     if (searchQuery.value) {
       params.valueSearch = searchQuery.value;
     }
-    // Giải thích: Luôn filter theo status (mặc định là 'pending')
     if (statusFilter.value) {
       params.status = statusFilter.value;
     }
@@ -500,6 +576,15 @@ const formatDate = (dateString) => {
   });
 };
 
+const formatDateFilter = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+};
+
 // Actions
 const viewOrder = (order) => {
   selectedOrder.value = order;
@@ -607,10 +692,10 @@ const downloadCSV = (content, filename) => {
 };
 
 // Clear all filters
-// Giải thích: Khi clear, quay về pending (đơn hàng mới)
+// Giải thích: Khi clear, quay về Tất cả (không filter)
 const clearFilters = () => {
   searchQuery.value = '';
-  statusFilter.value = 'pending'; // Quay về pending orders
+  statusFilter.value = ''; // Quay về tất cả
   startDate.value = '';
   endDate.value = '';
   applyFilters();
@@ -640,10 +725,8 @@ const connectSocket = () => {
       // Hiển thị notification bằng toast
       toast.info(data.message, '🆕 Đơn hàng mới');
 
-      // Reload orders nếu đang filter theo pending
-      if (statusFilter.value === 'pending' || !statusFilter.value) {
-        fetchOrders();
-      }
+      // Reload orders tự động
+      fetchOrders();
     }
   });
 

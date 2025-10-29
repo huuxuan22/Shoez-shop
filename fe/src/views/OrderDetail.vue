@@ -51,9 +51,10 @@
                         <div v-for="(item, index) in order.items" :key="item.productId || item.id || index"
                             class="flex items-center gap-6 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                             <img :src="item.image" :alt="item.name || item.productName"
-                                class="w-24 h-24 object-cover rounded-lg" />
-                            <div class="flex-1">
-                                <h3 class="font-bold text-gray-900 mb-1">{{ item.name || item.productName }}</h3>
+                                class="w-24 h-24 object-cover rounded-lg cursor-pointer" @click="goToProduct(item)" />
+                            <div class="flex-1 cursor-pointer" @click="goToProduct(item)">
+                                <h3 class="font-bold text-gray-900 mb-1 hover:text-blue-600">{{ item.name ||
+                                    item.productName }}</h3>
                                 <div v-if="item.brand" class="text-sm text-gray-500 mb-2">{{ item.brand }}</div>
                                 <div class="flex items-center gap-4 text-sm text-gray-600">
                                     <span>Size: {{ item.size }}</span>
@@ -192,6 +193,28 @@
                     </div>
                 </div>
 
+                <!-- Review Section (Chỉ hiển thị khi đơn hàng đã hoàn thành) -->
+                <div v-if="order.status === 'complete'"
+                    class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mt-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">Đánh giá sản phẩm</h2>
+                    <p class="text-gray-600 mb-6">Chia sẻ trải nghiệm của bạn về sản phẩm đã mua</p>
+
+                    <div class="space-y-4">
+                        <div v-for="(item, index) in order.items" :key="index"
+                            class="flex items-center gap-4 p-4 border border-gray-200 rounded-lg">
+                            <img :src="item.image" :alt="item.name" class="w-20 h-20 object-cover rounded-lg" />
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-900">{{ item.name || item.productName }}</h3>
+                                <p class="text-sm text-gray-600">Size: {{ item.size }} - Màu: {{ item.color }}</p>
+                            </div>
+                            <button @click="openReviewModal(item)"
+                                class="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium">
+                                Đánh giá
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Action Buttons -->
                 <div class="flex gap-4 mt-8">
                     <button @click="router.push('/products')"
@@ -221,6 +244,10 @@
         </div>
     </div>
     <Footer />
+
+    <!-- Review Modal -->
+    <ReviewModal :isOpen="isReviewModalOpen" :product="selectedProduct" :orderId="order?.id || order?._id"
+        @close="closeReviewModal" @submitted="handleReviewSubmitted" />
 </template>
 
 <script setup>
@@ -229,6 +256,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useOrderStore } from '@/stores/order'
 import Header from '@/templates/Header.vue'
 import Footer from '@/templates/Footer.vue'
+import ReviewModal from '@/components/reviews/ReviewModal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -236,6 +264,10 @@ const orderStore = useOrderStore()
 
 const loading = ref(true)
 const order = ref(null)
+
+// Review modal state
+const isReviewModalOpen = ref(false)
+const selectedProduct = ref(null)
 
 // Computed
 const subtotal = computed(() => {
@@ -386,6 +418,30 @@ watch(() => route.params.id, (newId) => {
         loadOrder()
     }
 })
+
+// Review modal methods
+const openReviewModal = (product) => {
+    selectedProduct.value = product
+    isReviewModalOpen.value = true
+}
+
+const closeReviewModal = () => {
+    isReviewModalOpen.value = false
+    selectedProduct.value = null
+}
+
+const handleReviewSubmitted = () => {
+    // Reload orders để cập nhật
+    loadOrder()
+}
+
+// Navigate to product detail page
+const goToProduct = (item) => {
+    const productId = item.productId || item._id || item.id
+    if (productId) {
+        router.push(`/products/${productId}`)
+    }
+}
 
 onMounted(() => {
     loadOrder()

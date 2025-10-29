@@ -16,7 +16,8 @@ const OrderService = {
                     limit: params.limit || 20,
                     starttime: params.starttime || null,
                     endtime: params.endtime || null,
-                    valueSearch: params.valueSearch || null
+                    valueSearch: params.valueSearch || null,
+                    status: params.status || null
                 },
                 withCredentials: true,
             });
