@@ -61,6 +61,19 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
               </button>
+              <!-- Heart overlay -->
+              <button
+                @click.stop="toggleFavourite(product)"
+                class="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:scale-110 transition-transform"
+                :title="isInFavourites(product) ? 'Bỏ yêu thích' : 'Yêu thích'"
+              >
+                <svg v-if="!isInFavourites(product)" class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+                <svg v-else class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12.1 21.35l-.1.1-.1-.1C7.14 17.24 4 14.39 4 10.5 4 8 6 6 8.5 6c1.54 0 3.04.99 3.57 2.36h.87C13.46 6.99 14.96 6 16.5 6 19 6 21 8 21 10.5c0 3.89-3.14 6.74-8.9 10.85z" />
+                </svg>
+              </button>
               
               <button
                 @click.stop="addToCart(product)"
@@ -141,6 +154,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useFavouriteStore } from '@/stores/favourite'
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -222,6 +236,18 @@ const getColorHex = (colorName) => {
   };
   return colorMap[colorName] || '#9CA3AF';
 };
+
+// Favourite integration
+const favouriteStore = useFavouriteStore()
+const getId = (p) => p?._id || p?.id
+const isInFavourites = (p) => !!favouriteStore.favourites.find(i => (i._id || i.id) === getId(p))
+const toggleFavourite = async (p) => {
+  if (isInFavourites(p)) {
+    await favouriteStore.removeFavourite(getId(p))
+  } else {
+    await favouriteStore.addFavourite(p)
+  }
+}
 </script>
 
 <style scoped>

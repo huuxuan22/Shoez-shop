@@ -6,13 +6,26 @@
     <!-- Product Image -->
     <div :class="viewMode === 'list' ? 'w-48' : 'w-full'">
       <div class="relative pt-[100%] bg-gray-100">
-        <img :src="product.images[0]" :alt="product.name"
+        <img :src="product.images?.[0] || product.image" :alt="product.name"
           class="absolute inset-0 w-full h-full object-cover hover:scale-110 transition-transform duration-300"
           @error="handleImageError" />
         <div v-if="product.discount"
           class="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
           -{{ product.discount }}%
         </div>
+        <!-- Heart button overlay -->
+        <button
+          @click.stop="toggleFavourite()"
+          class="absolute top-4 left-4 w-10 h-10 rounded-full flex items-center justify-center bg-white/90 hover:bg-white shadow"
+          :aria-pressed="isFavourite"
+          :title="isFavourite ? 'Bỏ yêu thích' : 'Thêm yêu thích'">
+          <svg v-if="!isFavourite" class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
+          <svg v-else class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12.1 21.35l-.1.1-.1-.1C7.14 17.24 4 14.39 4 10.5 4 8 6 6 8.5 6c1.54 0 3.04.99 3.57 2.36h.87C13.46 6.99 14.96 6 16.5 6 19 6 21 8 21 10.5c0 3.89-3.14 6.74-8.9 10.85z" />
+          </svg>
+        </button>
       </div>
     </div>
 
@@ -24,7 +37,7 @@
 
       <!-- Colors -->
       <div class="flex flex-wrap gap-1 mb-3">
-        <span v-for="color in product.colors.slice(0, 3)" :key="color" class="text-xs bg-gray-100 px-2 py-1 rounded">
+        <span v-for="color in (product.colors || []).slice(0, 3)" :key="color" class="text-xs bg-gray-100 px-2 py-1 rounded">
           {{ color }}
         </span>
       </div>
@@ -39,13 +52,12 @@
 
       <!-- Action Buttons -->
       <div class="flex gap-2">
-        <button @click.stop="$emit('add-to-favorites', product)"
+        <button @click.stop="toggleFavourite()"
           class="flex-1 bg-white border-2 border-red-500 text-red-500 px-3 py-2 rounded-lg hover:bg-red-500 hover:text-white transition-all text-sm font-semibold flex items-center justify-center gap-1">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path
-              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
           </svg>
-          <span>Yêu thích</span>
+          <span>{{ isFavourite ? 'Bỏ yêu thích' : 'Yêu thích' }}</span>
         </button>
         <button @click.stop="$emit('buy-now', product)"
           class="flex-1 bg-black text-white px-3 py-2 rounded-lg hover:bg-gray-800 transition-all text-sm font-semibold flex items-center justify-center gap-1">
@@ -60,25 +72,33 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useFavouriteStore } from '@/stores/favourite'
+
 const props = defineProps({
-  product: {
-    type: Object,
-    required: true
-  },
-  viewMode: {
-    type: String,
-    default: 'grid',
-    validator: (value) => ['grid', 'list'].includes(value)
-  }
+  product: { type: Object, required: true },
+  viewMode: { type: String, default: 'grid', validator: (value) => ['grid', 'list'].includes(value) }
 });
 
 const emit = defineEmits(['click', 'add-to-cart', 'buy-now']);
 
 const formatPrice = (price) => {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price || 0);
 };
 
 const handleImageError = (event) => {
   event.target.src = '/images/shoes/placeholder.jpg';
 };
+
+const favouriteStore = useFavouriteStore()
+const getId = (p) => p?._id || p?.id
+const isFavourite = computed(() => !!favouriteStore.favourites.find(i => (i._id || i.id) === getId(props.product)))
+
+const toggleFavourite = async () => {
+  if (isFavourite.value) {
+    await favouriteStore.removeFavourite(getId(props.product))
+  } else {
+    await favouriteStore.addFavourite(props.product)
+  }
+}
 </script>

@@ -18,6 +18,24 @@ const routes = [
     }
   },
   {
+    path: '/favourites',
+    name: 'Favourites',
+    component: () => import('@/views/Favourite.vue'),
+    meta: {
+      title: 'Yêu thích - Shoez Shop',
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/favorites', // US spelling alias
+    name: 'FavoritesAlias',
+    component: () => import('@/views/Favourite.vue'),
+    meta: {
+      title: 'Yêu thích - Shoez Shop',
+      requiresAuth: true
+    }
+  },
+  {
     path: "/policy/returns",
     name: "ReturnPolicy",
     component: () => import("@/views/ReturnPolicy.vue"),
