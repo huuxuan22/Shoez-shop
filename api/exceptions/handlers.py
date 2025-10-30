@@ -23,7 +23,6 @@ async def system_exception_handler(request: Request, exc: SystemException):
         content={"message": _(exc.message)}
     )
 
-
 @exception_handler(AuthTokenMissingException)
 async def auth_token_exception_handler(request: Request, exc: AuthTokenMissingException):
     return JSONResponse(

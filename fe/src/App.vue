@@ -2,6 +2,7 @@
   <router-view />
   <ToastManager />
   <ReviewPromptBanner />
+  <GlobalLoading />
 </template>
 
 <script setup>
@@ -10,12 +11,13 @@ import ToastManager from '@/components/shared/ToastManager.vue'
 import ReviewPromptBanner from '@/components/reviews/ReviewPromptBanner.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useFavouriteStore } from '@/stores/favourite'
+import GlobalLoading from '@/components/shared/GlobalLoading.vue'
 
 // Load favourites when app starts (if user is logged in)
 onMounted(async () => {
   const authStore = useAuthStore()
   const favouriteStore = useFavouriteStore()
-  
+
   // Wait for auth to initialize
   if (authStore.isAuthenticated && authStore.user) {
     try {

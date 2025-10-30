@@ -123,7 +123,6 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     except Exception:
         return False
 
-# Try to connect to Redis, but don't fail if not available
 try:
     r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True, socket_connect_timeout=1)
     r.ping()

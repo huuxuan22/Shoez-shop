@@ -225,20 +225,26 @@ onBeforeUnmount(() => {
 // Submit handler - VeeValidate sẽ tự động validate trước khi gọi hàm này
 const onSubmit = async (values) => {
   try {
-    debugger;
-    await authStore.register({
+    const result = await authStore.register({
       full_name: values.full_name,
       email: values.email,
       password: values.password,
       numberphone: values.numberphone,
     });
+    debugger;
+    console.log(result);
 
-    showToast('Đăng ký thành công!', 'success');
+    showToast(result.data?.message || 'Đã gửi mã xác thực đến email của bạn!', 'success');
+
+    // Redirect đến trang xác thực email với email trong query
     setTimeout(() => {
-      router.push('/');
+      router.push({
+        name: 'VerifyEmail',
+        query: { email: values.email }
+      });
     }, 1500);
   } catch (error) {
-    const errorMessage = error.data?.detail || error.message || 'Đăng ký thất bại!';
+    const errorMessage = error.response?.data?.detail || error.message || 'Đăng ký thất bại!';
     showToast(errorMessage, 'error');
   }
 };

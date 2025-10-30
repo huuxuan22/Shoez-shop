@@ -1,6 +1,6 @@
 <template>
     <div
-        class="max-w-md min-w-[250px] w-full bg-zinc-900 text-gray-100 border border-zinc-700 rounded-lg shadow-xl p-4">
+        class="max-w-md min-w-[450px] w-full bg-zinc-900 text-gray-100 border border-zinc-700 rounded-lg shadow-xl p-4">
         <div class="p-4">
             <div class="flex items-start">
                 <div class="flex-shrink-0">

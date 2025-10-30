@@ -29,7 +29,16 @@ class Settings(BaseSettings):
     facebook_app_secret: str = Field(..., alias="FACEBOOK_APP_SECRET")
     mongodb_url: str = Field(..., alias="MONGODB_URL")
     database_name: str = Field(..., alias="DATABASE_NAME")
-
+    redis_host: str = Field(..., alias="REDIS_HOST")
+    redis_port: int = Field(..., alias="REDIS_PORT")
+    redis_db: int = Field(..., alias="REDIS_DB")
+    # SMTP Configuration
+    smtp_host: str = Field(..., alias="SMTP_HOST")
+    smtp_port: int = Field(..., alias="SMTP_PORT")
+    smtp_username: str = Field(..., alias="SMTP_USERNAME")
+    smtp_password: str = Field(..., alias="SMTP_PASSWORD")
+    smtp_from_email: str = Field(..., alias="SMTP_FROM_EMAIL")
+    smtp_use_tls: bool = Field(default=True, alias="SMTP_USE_TLS")
     class Config:
         env_file = '.env'
         env_file_encoding = 'utf-8'
@@ -41,6 +50,13 @@ class Settings(BaseSettings):
             "access_type": self.google_access_type,
             "prompt": self.google_prompt,
         }
+
+    @property
+    def backend_api_base(self) -> str:
+        """
+        Base URL for backend API endpoints, e.g. http://localhost:8000/api/v1
+        """
+        return f"{self.backend_url}"
 
 
 @lru_cache

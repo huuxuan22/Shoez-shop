@@ -59,6 +59,7 @@ class AuthMiddlewave(BaseHTTPMiddleware):
 
     __disable_auth_paths = [
         "/auth/login",
+        "/auth/verify-email",
         "/auth/session",
         "/auth/register",
         "auth/logout",
