@@ -9,7 +9,9 @@ from services.auth_service import AuthService
 from services.user_service import UserService
 from utils import auth
 from fastapi import Request, Response
-from schemas.auth_schemas import UserCreate, LoginRequest, TokenResponse, UserPrincipal
+from schemas.auth_schemas import UserCreate, LoginRequest, TokenResponse, UserPrincipal, VerifyEmailRequest, RegisterResponse
+from pydantic import EmailStr
+from fastapi import Body
 from i18n.translator import translate
 from config.enum import MessageKey
 from config.config import get_settings
@@ -19,20 +21,49 @@ settings = get_settings()
 security = HTTPBearer()
 auth_router = APIRouter(tags=["Auth"], prefix="/auth")
 
-@auth_router.post("/register", response_model=TokenResponse)
+@auth_router.post("/register", response_model=RegisterResponse)
 async def register(
     user: UserCreate,
+    user_repo: UserRepository = Depends(get_user_repo)
+):
+    """
+    Đăng ký user mới - Gửi mã xác thực qua email
+    Sau khi gửi thành công, user cần verify email ở endpoint /auth/verify-email
+    """
+    service = AuthService(user_repo)
+    result: RegisterResponse = await service.register(user)
+    return result
+
+@auth_router.post("/verify-email", response_model=TokenResponse)
+async def verify_email(
+    verify_data: VerifyEmailRequest,
     response: Response,
     user_repo: UserRepository = Depends(get_user_repo)
 ):
+    """
+    Xác thực email với mã code đã nhận
+    Sau khi xác thực thành công, user sẽ tự động được login
+    """
     service = AuthService(user_repo)
-    result: TokenResponse = await service.register(user)
+    result: TokenResponse = await service.verify_email(verify_data)
     
-    # Set cookies
+    # Set cookies sau khi xác thực thành công
     response.set_cookie(key="token_access", value=result.access_token, httponly=True)
     response.set_cookie(key="token_refresh", value=result.refresh_token, httponly=True)
     response.set_cookie(key="current_user", value=result.user_principal.email, httponly=False)
     
+    return result
+
+@auth_router.post("/resend-verification-code", response_model=RegisterResponse)
+async def resend_verification_code(
+    email: EmailStr = Body(..., embed=True),
+    user_repo: UserRepository = Depends(get_user_repo)
+):
+    """
+    Gửi lại mã xác thực email
+    """
+    service = AuthService(user_repo)
+    result: RegisterResponse = await service.resend_verification_code(email)
     return result
 
 @auth_router.post("/login", response_model=TokenResponse)

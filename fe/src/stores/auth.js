@@ -99,32 +99,7 @@ export const useAuthStore = defineStore("auth", {
 
         async register(credentials) {
             try {
-                debugger;
-                console.log(credentials);
                 const res = await registerApi(credentials);
-
-                this.user = res.data.user_principal;
-                this.accessToken = res.data.access_token;
-                this.refreshToken = res.data.refresh_token;
-
-                // Lưu localStorage
-                localStorage.setItem("token", res.data.access_token);
-                localStorage.setItem("refresh_token", res.data.refresh_token);
-                localStorage.setItem("user", JSON.stringify(res.data.user_principal));
-
-                // Load favourites after register
-                try {
-                    const { useFavouriteStore } = await import('@/stores/favourite');
-                    const favouriteStore = useFavouriteStore();
-                    const userId = res.data.user_principal._id || res.data.user_principal.id;
-                    if (userId) {
-                        await favouriteStore.fetchFavourites(userId);
-                        console.log('[Auth] Loaded favourites after register:', favouriteStore.favourites.length);
-                    }
-                } catch (error) {
-                    console.error('[Auth] Error loading favourites after register:', error);
-                }
-
                 return res;
             } catch (error) {
                 throw error;

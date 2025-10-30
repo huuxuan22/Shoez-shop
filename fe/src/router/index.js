@@ -76,6 +76,15 @@ const routes = [
     }
   },
   {
+    path: "/verify-email",
+    name: "VerifyEmail",
+    component: () => import("@/views/VerifyEmail.vue"),
+    meta: {
+      title: "Xác thực Email - Shoez Shop",
+      requiresGuest: true
+    }
+  },
+  {
     path: "/oauth/callback",
     name: "OAuthCallback",
     component: () => import("@/views/OAuthCallback.vue"),

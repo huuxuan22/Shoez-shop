@@ -18,6 +18,7 @@ from controllers.review_controller import review_router
 from controllers.low_rating_review_controller import low_rating_review_router
 from controllers.favourite_product_controller import router as favourite_router
 from exceptions.register_handlers import register_all_handlers
+import exceptions.handlers 
 from dependences.dependencies import set_language_dependency
 from middleware.auth_middlewave import  AuthMiddlewave
 from middleware.locale_middlewave import LocaleMiddlewave
@@ -28,8 +29,6 @@ import uvicorn
 
 load_dotenv()
 PRE_FIX = os.getenv("api_prefix")
-# Create FastAPI app
-# app = FastAPI(title="SHOEZ", version="1.0.0", dependencies=[Depends(set_language_dependency)])
 app = FastAPI(
     title="My Shop API",
     docs_url="/docs",    

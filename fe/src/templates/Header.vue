@@ -220,6 +220,7 @@ import blogIcon from "@/assets/icons/blog.svg"
 import { useAuthStore } from '@/stores/auth';
 import { useCartStore } from '@/stores/cart';
 import { useOrderStore } from '@/stores/order';
+import { useFavouriteStore } from '@/stores/favourite';
 import { useNotificationStore } from '@/stores/notification';
 import { watch } from 'vue';
 import NotificationBell from '@/components/notifications/NotificationBell.vue';
@@ -230,6 +231,7 @@ const router = useRouter();
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 const orderStore = useOrderStore();
+const favouriteStore = useFavouriteStore();
 const notificationStore = useNotificationStore();
 
 // Reactive data
@@ -274,8 +276,7 @@ const orderCount = computed(() => {
 });
 
 const favoritesCount = computed(() => {
-  const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-  return favorites.length;
+  return favouriteStore.count;
 });
 
 // Methods
@@ -328,7 +329,8 @@ onMounted(async () => {
     try {
       await Promise.all([
         cartStore.loadCart(),
-        orderStore.loadOrders()
+        orderStore.loadOrders(),
+        favouriteStore.fetchFavourites(userIdValue)
       ]);
       notificationStore.connect(userIdValue);
     } catch (error) {
@@ -346,11 +348,13 @@ watch(isAuthenticated, (val) => {
     cartStore.loadCart();
     orderStore.loadOrders();
     if (userId.value) {
+      favouriteStore.fetchFavourites(userId.value);
       notificationStore.connect(userId.value);
     }
   } else {
     cartStore.clearCart();
     orderStore.clearOrders();
+    favouriteStore.favourites = [];
 
     notificationStore.disconnect();
     // notificationStore.clearNotifications();

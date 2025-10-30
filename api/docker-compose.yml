@@ -10,10 +10,11 @@ services:
       - "8000:8000"
     depends_on:
       - minio
+      - redis
     networks:
       - app-network
     env_file:
-      - .env  # Dùng env file để nạp biến
+      - .env # Dùng env file để nạp biến
     environment:
       MINIO_URL: ${MINIO_URL}
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
@@ -32,6 +33,26 @@ services:
     command: server /data --console-address ":9001"
     networks:
       - app-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis_server
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  redis_data:
+
 
 networks:
   app-network:

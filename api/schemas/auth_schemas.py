@@ -35,6 +35,14 @@ class UserPrincipal(BaseModel):
     class Config:
         orm_mode = True  
 
+class VerifyEmailRequest(BaseModel):
+    email: EmailStr
+    code: str = Field(..., min_length=6, max_length=6, description="Mã xác thực 6 chữ số")
+
+class RegisterResponse(BaseModel):
+    message: str
+    email: str
+
 class TokenResponse(BaseModel):
     message: str
     access_token: str

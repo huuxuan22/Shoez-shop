@@ -90,6 +90,14 @@ export const registerApi = async (data) => {
     return await BaseAxios.post(`${PREFIX_AUTH}/register`, data);
 }
 
+export const verifyEmailApi = async (data) => {
+    return await BaseAxios.post(`${PREFIX_AUTH}/verify-email`, data);
+}
+
+export const resendVerificationCodeApi = async (data) => {
+    return await BaseAxios.post(`${PREFIX_AUTH}/resend-verification-code`, data);
+}
+
 export const logoutApi = async (data) => {
     return await BaseAxios.post(`${PREFIX_AUTH}/logout`);
 }
@@ -102,5 +110,7 @@ export default {
     hydrateFromOAuthRedirect,
     loginApi,
     registerApi,
+    verifyEmailApi,
+    resendVerificationCodeApi,
     logoutApi
 }

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { API_URL } from "@/config/url/url";
+import { useUiStore } from "@/stores/ui";
 
 const BaseAxios = axios.create({
   baseURL: API_URL,
@@ -12,6 +13,10 @@ const BaseAxios = axios.create({
 
 BaseAxios.interceptors.request.use(
   (config) => {
+    try {
+      const ui = useUiStore();
+      ui.incrementLoading();
+    } catch (_) { }
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -20,15 +25,27 @@ BaseAxios.interceptors.request.use(
     return config;
   },
   (error) => {
+    try {
+      const ui = useUiStore();
+      ui.decrementLoading();
+    } catch (_) { }
     return Promise.reject(error);
   }
 );
 
 BaseAxios.interceptors.response.use(
   (response) => {
+    try {
+      const ui = useUiStore();
+      ui.decrementLoading();
+    } catch (_) { }
     return response;
   },
   (error) => {
+    try {
+      const ui = useUiStore();
+      ui.decrementLoading();
+    } catch (_) { }
     if (error.response) {
       const { status, data } = error.response;
 
