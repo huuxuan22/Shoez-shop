@@ -143,6 +143,15 @@ const routes = [
       requiresAuth: true
     }
   },
+  {
+    path: "/favorites",
+    name: "Favorites",
+    component: () => import("@/views/Favourite.vue"),
+    meta: {
+      title: "Sản phẩm yêu thích - Shoez Shop",
+      requiresAuth: true
+    }
+  },
   // Admin login route
   {
     path: "/admin/login",
@@ -256,6 +265,15 @@ const routes = [
     meta: {
       requiresAuth: true,
       title: 'Chi tiết đơn hàng - Shoez Shop'
+    }
+  },
+  {
+    path: '/favourite',
+    name: 'Favourite',
+    component: () => import('@/views/Favourite.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Sản phẩm yêu thích - Shoez Shop'
     }
   },
   {

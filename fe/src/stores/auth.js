@@ -78,6 +78,19 @@ export const useAuthStore = defineStore("auth", {
                 localStorage.setItem("refresh_token", res.data.refresh_token);
                 localStorage.setItem("user", JSON.stringify(res.data.user_principal));
 
+                // Load favourites after login
+                try {
+                    const { useFavouriteStore } = await import('@/stores/favourite');
+                    const favouriteStore = useFavouriteStore();
+                    const userId = res.data.user_principal._id || res.data.user_principal.id;
+                    if (userId) {
+                        await favouriteStore.fetchFavourites(userId);
+                        console.log('[Auth] Loaded favourites after login:', favouriteStore.favourites.length);
+                    }
+                } catch (error) {
+                    console.error('[Auth] Error loading favourites after login:', error);
+                }
+
                 return res.data;
             } catch (error) {
                 throw error;
@@ -98,6 +111,19 @@ export const useAuthStore = defineStore("auth", {
                 localStorage.setItem("token", res.data.access_token);
                 localStorage.setItem("refresh_token", res.data.refresh_token);
                 localStorage.setItem("user", JSON.stringify(res.data.user_principal));
+
+                // Load favourites after register
+                try {
+                    const { useFavouriteStore } = await import('@/stores/favourite');
+                    const favouriteStore = useFavouriteStore();
+                    const userId = res.data.user_principal._id || res.data.user_principal.id;
+                    if (userId) {
+                        await favouriteStore.fetchFavourites(userId);
+                        console.log('[Auth] Loaded favourites after register:', favouriteStore.favourites.length);
+                    }
+                } catch (error) {
+                    console.error('[Auth] Error loading favourites after register:', error);
+                }
 
                 return res;
             } catch (error) {
