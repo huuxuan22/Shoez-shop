@@ -144,6 +144,22 @@ const ReviewService = {
     },
 
     /**
+     * Upload media (images/videos) for reviews/comments
+     * @param {FormData} formData - contains files under key 'files'
+     */
+    async uploadMedia(formData) {
+        try {
+            const response = await BaseAxios.post(`/${PREFIX_REVIEW}/upload-media`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                withCredentials: true
+            });
+            return response.data; // { images: [url, ...] }
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    /**
      * Admin comment vào review
      */
     async addAdminComment(reviewId, comment) {

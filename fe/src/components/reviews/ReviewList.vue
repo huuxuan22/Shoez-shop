@@ -48,10 +48,26 @@
                 <!-- Comment -->
                 <p class="text-gray-700 mb-4">{{ review.comment }}</p>
 
-                <!-- Images -->
-                <div v-if="review.images && review.images.length > 0" class="flex gap-2 mb-4">
-                    <img v-for="(img, idx) in review.images" :key="idx" :src="img"
-                        class="w-20 h-20 object-cover rounded-lg cursor-pointer" />
+                <!-- Images/Video Gallery -->
+                <div v-if="review.images && review.images.length > 0" class="flex gap-2 mb-4 flex-wrap">
+                    <div v-for="(mediaUrl, idx) in review.images" :key="idx" class="relative group cursor-pointer"
+                        @click="openMedia(mediaUrl, review.images, idx)">
+                        <div class="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                            <img v-if="isImage(mediaUrl)" :src="mediaUrl" :alt="`Review image ${idx + 1}`"
+                                class="w-full h-full object-cover" />
+                            <video v-else-if="isVideo(mediaUrl)" :src="mediaUrl" class="w-full h-full object-cover"
+                                muted preload="metadata">
+                            </video>
+                            <div v-if="isVideo(mediaUrl)"
+                                class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-lg">
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Helpful -->
@@ -85,7 +101,7 @@
                                         clip-rule="evenodd" />
                                 </svg>
                                 <span class="font-semibold text-blue-900">{{ adminComment.admin_name || 'Admin'
-                                }}</span>
+                                    }}</span>
                                 <span class="text-xs text-blue-600">{{ formatDate(adminComment.created_at) }}</span>
                             </div>
                             <p class="text-gray-700">{{ adminComment.comment }}</p>
@@ -103,10 +119,58 @@
             </button>
         </div>
     </div>
+
+    <!-- Media Lightbox -->
+    <Transition name="lightbox">
+        <div v-if="selectedMedia" class="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+            @click="closeMedia">
+            <div class="relative max-w-5xl max-h-[90vh] w-full mx-4" @click.stop>
+                <!-- Close button -->
+                <button @click="closeMedia"
+                    class="absolute top-4 right-4 z-10 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <!-- Media content -->
+                <div class="relative">
+                    <img v-if="isImage(selectedMedia)" :src="selectedMedia" alt="Review media"
+                        class="max-w-full max-h-[90vh] mx-auto object-contain" />
+                    <video v-else-if="isVideo(selectedMedia)" :src="selectedMedia" controls
+                        class="max-w-full max-h-[90vh] mx-auto">
+                    </video>
+                </div>
+
+                <!-- Navigation arrows (if multiple media) -->
+                <template v-if="mediaList.length > 1">
+                    <button v-if="mediaIndex > 0" @click.stop="prevMedia"
+                        class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <button v-if="mediaIndex < mediaList.length - 1" @click.stop="nextMedia"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </template>
+
+                <!-- Media counter -->
+                <div v-if="mediaList.length > 1"
+                    class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm">
+                    {{ mediaIndex + 1 }} / {{ mediaList.length }}
+                </div>
+            </div>
+        </div>
+    </Transition>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import ReviewService from '@/api-services/ReviewService'
 
 const props = defineProps({
@@ -118,6 +182,9 @@ const loading = ref(true)
 const page = ref(1)
 const limit = ref(5)
 const total = ref(0)
+const selectedMedia = ref(null)
+const mediaIndex = ref(0)
+const mediaList = ref([])
 
 const loadReviews = async () => {
     try {
@@ -156,7 +223,71 @@ const formatDate = (dateString) => {
     })
 }
 
+const isImage = (url) => {
+    if (!url) return false
+    const ext = url.split('.').pop().toLowerCase()
+    return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(ext) || url.includes('/images/') || url.includes('image')
+}
+
+const isVideo = (url) => {
+    if (!url) return false
+    const ext = url.split('.').pop().toLowerCase()
+    return ['mp4', 'webm', 'ogg', 'mov', 'avi'].includes(ext) || url.includes('/videos/') || url.includes('video')
+}
+
+const openMedia = (mediaUrl, allMedia, index) => {
+    mediaList.value = allMedia || []
+    mediaIndex.value = index || 0
+    selectedMedia.value = mediaUrl
+}
+
+const closeMedia = () => {
+    selectedMedia.value = null
+    mediaList.value = []
+    mediaIndex.value = 0
+}
+
+const nextMedia = () => {
+    if (mediaIndex.value < mediaList.value.length - 1) {
+        mediaIndex.value++
+        selectedMedia.value = mediaList.value[mediaIndex.value]
+    }
+}
+
+const prevMedia = () => {
+    if (mediaIndex.value > 0) {
+        mediaIndex.value--
+        selectedMedia.value = mediaList.value[mediaIndex.value]
+    }
+}
+
+// Keyboard navigation
+const handleKeydown = (e) => {
+    if (selectedMedia.value) {
+        if (e.key === 'Escape') closeMedia()
+        if (e.key === 'ArrowRight' && mediaList.value.length > 1) nextMedia()
+        if (e.key === 'ArrowLeft' && mediaList.value.length > 1) prevMedia()
+    }
+}
+
 onMounted(() => {
     loadReviews()
+    window.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+    window.removeEventListener('keydown', handleKeydown)
 })
 </script>
+
+<style scoped>
+.lightbox-enter-active,
+.lightbox-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.lightbox-enter-from,
+.lightbox-leave-to {
+    opacity: 0;
+}
+</style>
