@@ -17,6 +17,7 @@ from controllers.notification_controller import notification_router
 from controllers.review_controller import review_router
 from controllers.low_rating_review_controller import low_rating_review_router
 from controllers.favourite_product_controller import router as favourite_router
+from controllers.category_controller import category_router
 from exceptions.register_handlers import register_all_handlers
 import exceptions.handlers 
 from dependences.dependencies import set_language_dependency
@@ -28,13 +29,13 @@ from utils.logger import logger
 import uvicorn
 
 load_dotenv()
-PRE_FIX = os.getenv("api_prefix")
+settings = get_settings()
+PRE_FIX = settings.api_prefix
 app = FastAPI(
     title="My Shop API",
     docs_url="/docs",    
     redoc_url="/redoc"   
 )
-settings = get_settings()
 if not minio_client.bucket_exists(settings.minio_bucket):
     minio_client.make_bucket(settings.minio_bucket)
 
@@ -48,6 +49,7 @@ app.include_router(notification_router, prefix=PRE_FIX)
 app.include_router(review_router, prefix=PRE_FIX)
 app.include_router(low_rating_review_router, prefix=PRE_FIX)
 app.include_router(favourite_router, prefix=PRE_FIX)
+app.include_router(category_router, prefix=PRE_FIX)
 @app.on_event("startup")
 async def startup_event():
     """Startup event handler"""
@@ -90,10 +92,15 @@ async def db_session_middleware(request: Request, call_next):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins="*",
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 app.mount("/socket.io", socket_io_app)
+
+# Simple health check
+@app.get(f"{PRE_FIX}/health")
+async def health_check():
+    return {"status": "ok"}

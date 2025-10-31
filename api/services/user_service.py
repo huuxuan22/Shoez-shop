@@ -58,10 +58,25 @@ class UserService:
         await self.user_repository.update_by_id(user_id=user_id, data={"password": hashed_password})
         return {"message": "Cập nhật mật khẩu thành công!"}
 
-    async def delete_user(self, ids: List[str]) -> None:
-        # Xóa theo trường 'id' trong document
-        await asyncio.gather(
-            *(self.user_repository.delete(entity_id=id, id_key="id") for id in ids)
+    async def delete_user(self, ids: List[str]) -> int:
+        # Soft delete users by _id
+        return await self.user_repository.soft_delete_by_ids(ids, id_key="_id")
+
+    async def lock_users(self, ids: List[str], is_active: bool) -> int:
+        # bulk update is_active
+        from bson import ObjectId
+        object_ids = [ObjectId(i) for i in ids if ObjectId.is_valid(i)]
+        return await self.user_repository.update_all(
+            {"_id": {"$in": object_ids}},
+            {"is_active": is_active}
+        )
+
+    async def restore_users(self, ids: List[str]) -> int:
+        from bson import ObjectId
+        object_ids = [ObjectId(i) for i in ids if ObjectId.is_valid(i)]
+        return await self.user_repository.update_all(
+            {"_id": {"$in": object_ids}},
+            {"is_deleted": False}
         )
 
     async def upload_avatar(self, file: UploadFile, user_id: int) -> str:

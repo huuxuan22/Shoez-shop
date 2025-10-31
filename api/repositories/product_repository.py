@@ -69,6 +69,12 @@ class ProductRepository(BaseRepository[Product]):
             cursor = cursor.sort(sort)
         return await cursor.to_list(length=limit)
 
+    async def get_distinct_categories(self) -> list[str]:
+        """Return distinct category names from products collection."""
+        categories = await self.collection.distinct("category")
+        # Filter out falsy values and ensure str
+        return [str(c).strip() for c in categories if c]
+
     async def delete_product(self, product_id: str) -> bool:
         try:
             obj_id = ObjectId(product_id)  # Chuyển string sang ObjectId

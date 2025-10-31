@@ -42,6 +42,17 @@ async def _authenticate_user(self, request: Request):
     if not user:
         raise AuthTokenMissingException(MessageKey.USER_NOT_FOUND)
     
+    # Chặn truy cập nếu tài khoản đã bị khoá
+    if isinstance(user, dict):
+        if user.get("is_active") is False:
+            raise UnauthorizedException("Tài khoản đã bị khoá")
+    else:
+        try:
+            if getattr(user, "is_active", True) is False:
+                raise UnauthorizedException("Tài khoản đã bị khoá")
+        except Exception:
+            pass
+
     current_user.set(user)
     request.state.user = user
 

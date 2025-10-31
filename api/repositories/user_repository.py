@@ -50,7 +50,8 @@ class UserRepository(BaseRepository[User]):
     async def get_all(self, page: int = 1, page_size: int = 10) -> List[dict]:
         users = []
         skip = (page - 1) * page_size
-        cursor = self.db["users"].find({}).skip(skip).limit(page_size)
+        # Exclude soft-deleted users by default
+        cursor = self.db["users"].find({"is_deleted": {"$ne": True}}).skip(skip).limit(page_size)
         async for user in cursor:
             # Ensure id field exists - use _id as id
             if 'id' not in user and '_id' in user:
