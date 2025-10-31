@@ -444,6 +444,26 @@ const goToProduct = (item) => {
 }
 
 onMounted(() => {
-    loadOrder()
+    loadOrder().then(() => {
+        // Auto-open review modal if requested via query
+        const shouldOpen = route.query.openReview === '1' || route.query.openReview === 'true'
+        if (shouldOpen && order.value && order.value.status === 'complete') {
+            let productToReview = null
+            const productIdFromQuery = route.query.productId
+            if (productIdFromQuery && Array.isArray(order.value.items)) {
+                productToReview = order.value.items.find(it => (
+                    (it.productId || it._id || it.id) === productIdFromQuery
+                )) || null
+            }
+            if (!productToReview && Array.isArray(order.value.items) && order.value.items.length > 0) {
+                productToReview = order.value.items[0]
+            }
+            if (productToReview) {
+                openReviewModal(productToReview)
+            }
+            // Clean query so it doesn't reopen on navigation
+            router.replace({ path: route.path, query: {} })
+        }
+    })
 })
 </script>
