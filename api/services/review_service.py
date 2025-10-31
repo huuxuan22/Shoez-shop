@@ -70,6 +70,8 @@ class ReviewService:
         
         review_dict["created_at"] = review_dict["updated_at"] = datetime.utcnow()
 
+        # Chỉ lưu media do người dùng upload gửi từ FE trong review_data.images
+
         created_review = await self.review_repo.create(review_dict)
         
         # Nếu rating <= 3, gửi notification cho admin qua WebSocket

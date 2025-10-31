@@ -4,15 +4,18 @@ Giải thích: API endpoints cho reviews
 """
 import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import UploadFile, File
 from fastapi.encoders import jsonable_encoder
 from starlette.responses import JSONResponse
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from repositories.review_repository import ReviewRepository
 from services.review_service import ReviewService
 from schemas.review_schemas import ReviewCreateSchema, ReviewUpdateSchema
 from config.database import get_database
 from config.context import get_current_user
+from repositories.image_repository import ImageRepository
+from starlette.concurrency import run_in_threadpool
 
 review_router = APIRouter(prefix="/reviews", tags=["Reviews"])
 
@@ -52,6 +55,33 @@ async def create_review(
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@review_router.post("/upload-media")
+async def upload_review_media(
+    files: List[UploadFile] = File(...)
+):
+    """Upload ảnh/video đính kèm review, trả về danh sách URL"""
+    if not files or len(files) == 0:
+        raise HTTPException(status_code=400, detail="No files uploaded")
+
+    image_repo = ImageRepository()
+    uploaded_urls: List[str] = []
+    try:
+        for upload_file in files:
+            fileobj = upload_file.file
+            fileobj.seek(0)
+            filename = upload_file.filename
+            url = await run_in_threadpool(
+                image_repo.upload,
+                fileobj,
+                filename,
+                upload_file.content_type or "application/octet-stream",
+            )
+            uploaded_urls.append(url)
+
+        return {"images": uploaded_urls}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Upload failed: {e}")
 
 
 @review_router.get("/product/{product_id}")
