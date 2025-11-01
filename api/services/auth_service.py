@@ -251,6 +251,10 @@ class AuthService:
         if not auth.verify_password(password, hashed_password):
             raise HTTPException(status_code=ErrorCode.BAD_REQUEST, detail="Sai mật khẩu")
 
+        # Block login if user is locked/inactive
+        if user_dict.get("is_active") is False:
+            raise HTTPException(status_code=ErrorCode.FORBIDDEN, detail="Tài khoản đã bị khoá")
+
         user_principal = UserPrincipal(**user_dict)
         to_encode = convert_uuid_to_str(user_principal.dict())
 
@@ -297,6 +301,9 @@ class AuthService:
         # Tìm user theo email, nếu chưa có thì tạo mới
         existing_user = await self.user_repository.get_by_email(email)
         if existing_user:
+            # Chặn đăng nhập nếu tài khoản bị khoá
+            if existing_user.get("is_active") is False:
+                raise HTTPException(status_code=ErrorCode.FORBIDDEN, detail="Tài khoản đã bị khoá")
             db_user = existing_user
         else:
             create_data = {
@@ -371,6 +378,8 @@ class AuthService:
         # 3. Tìm user theo name và is_login="FACEBOOK" (không dùng email)
         existing_user = await self.user_repository.get_by_name_and_login_type(name, "FACEBOOK")
         if existing_user:
+            if existing_user.get("is_active") is False:
+                raise HTTPException(status_code=ErrorCode.FORBIDDEN, detail="Tài khoản đã bị khoá")
             db_user = existing_user
             # Nếu user đã có email từ lần trước và giờ Facebook trả về email, cập nhật
             if email and not db_user.get("email"):

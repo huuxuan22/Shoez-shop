@@ -205,7 +205,7 @@ const routes = [
   {
     path: "/admin/customers",
     name: "AdminCustomers",
-    component: () => import("@/views/admin/Dashboard.vue"), // Placeholder
+    component: () => import("@/views/admin/Customers.vue"),
     meta: {
       title: "Quản lý khách hàng - Admin - Shoez Shop",
       requiresAuth: true,
@@ -215,7 +215,7 @@ const routes = [
   {
     path: "/admin/categories",
     name: "AdminCategories",
-    component: () => import("@/views/admin/Dashboard.vue"), // Placeholder
+    component: () => import("@/views/admin/Categories.vue"),
     meta: {
       title: "Quản lý danh mục - Admin - Shoez Shop",
       requiresAuth: true,

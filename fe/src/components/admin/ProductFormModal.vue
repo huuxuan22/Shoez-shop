@@ -38,10 +38,9 @@
                         <select v-model="productForm.category" required
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
                             <option value="">Chọn danh mục</option>
-                            <option value="Sneaker">Sneaker</option>
-                            <option value="Running">Running</option>
-                            <option value="Basketball">Basketball</option>
-                            <option value="Lifestyle">Lifestyle</option>
+                            <option v-for="c in categoryOptions" :key="c.id || c.name" :value="c.name">
+                                {{ c.name }}
+                            </option>
                         </select>
                     </div>
                     <div>
@@ -145,8 +144,9 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import ProductService from "@/api-services/ProductService"
+import CategoryService from "@/api-services/CategoryService"
 
 // Props
 const props = defineProps({
@@ -173,6 +173,7 @@ const errorMessage = ref('')
 const successMessage = ref('')
 const imageFiles = ref([])
 const imagePreview = ref([])
+const categoryOptions = ref([])
 
 // Product form data
 const productForm = ref({
@@ -364,6 +365,21 @@ watch(() => props.editingProduct, (newProduct) => {
 watch(() => props.isVisible, (isVisible) => {
     if (!isVisible) {
         resetForm()
+    }
+})
+
+// Load categories when modal mounts (or when first opened)
+onMounted(async () => {
+    try {
+        const list = await CategoryService.getAll()
+        // Accept both array and wrapped response
+        const categories = Array.isArray(list) ? list : (list?.categories || [])
+        categoryOptions.value = categories
+            .filter(c => c && c.name)
+            .sort((a, b) => a.name.localeCompare(b.name))
+    } catch (e) {
+        // fallback: keep empty; user can type category manually if needed
+        categoryOptions.value = []
     }
 })
 </script>

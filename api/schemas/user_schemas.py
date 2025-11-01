@@ -33,6 +33,15 @@ class UserUpdate(BaseModel):
     birthday: Optional[str] = None  # Format: YYYY-MM-DD
     gender: Optional[str] = None  # Values: male, female, other
     avatar: Optional[str] = None
+    is_active: Optional[bool] = None
+    role: Optional[str] = None
+
+class LockUsersRequest(BaseModel):
+    ids: list[str]
+    is_active: bool
+
+class RestoreUsersRequest(BaseModel):
+    ids: list[str]
     
 class ResetPasswordRequest(BaseModel):
     id: str

@@ -9,6 +9,7 @@ from repositories.product_repository import ProductRepository
 from repositories.user_repository import UserRepository
 from repositories.comment_repository import CommentRepository
 from repositories.notification_repository import NotificationRepository
+from repositories.category_repository import CategoryRepository
 from config.database import get_database
 
 async def set_language_dependency(request: Request):
@@ -48,6 +49,10 @@ async def get_comment_repo():
 
 async def get_notification_repo():
     async with NotificationRepository(get_database()) as repo:
+        yield repo
+
+async def get_category_repo():
+    async with CategoryRepository(get_database()) as repo:
         yield repo
 
 

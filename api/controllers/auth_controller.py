@@ -103,14 +103,16 @@ async def logout(request: Request, response: Response):
         except Exception as e:
             print(f"Warning: Could not blacklist token: {e}")
     
-    response.delete_cookie(key="token_access")
-    response.delete_cookie(key="token_refresh")
-    response.delete_cookie(key="current_user")
-    
-    return JSONResponse({
-        "success": True, 
+    # Create the actual response object first, then delete cookies on it
+    resp = JSONResponse({
+        "success": True,
         "message": translate(MessageKey.LOGOUT_SUCCESS)
     })
+    resp.delete_cookie(key="token_access")
+    resp.delete_cookie(key="token_refresh")
+    resp.delete_cookie(key="current_user")
+
+    return resp
 
 @auth_router.get("/google/login")
 async def facebook(request: Request):

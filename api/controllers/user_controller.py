@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from starlette.responses import JSONResponse
 
 from dependences.permissions import require_roles
-from schemas.user_schemas import ResetPasswordRequest, UserCreate, UserUpdate
+from schemas.user_schemas import ResetPasswordRequest, UserCreate, UserUpdate, LockUsersRequest, RestoreUsersRequest
 from fastapi import APIRouter, Depends
 from repositories.user_repository import UserRepository
 from services.user_service import UserService
@@ -85,7 +85,23 @@ async def upload_avatar(
     return JSONResponse(status_code=200, content={"avatar_url": avatar_url})
 
 @user_router.delete("/")
+@require_roles("ADMIN")
 async def delete_user(ids: List[str], user_repo: UserRepository = Depends(get_user_repo)):
     service = UserService(user_repo)
-    return await service.delete_user(ids)
+    deleted = await service.delete_user(ids)
+    return JSONResponse(status_code=200, content={"deleted": deleted})
+
+@user_router.patch("/admin/lock")
+@require_roles("ADMIN")
+async def lock_users(payload: LockUsersRequest, user_repo: UserRepository = Depends(get_user_repo)):
+    service = UserService(user_repo)
+    modified = await service.lock_users(payload.ids, payload.is_active)
+    return JSONResponse(status_code=200, content={"modified": modified})
+
+@user_router.patch("/admin/restore")
+@require_roles("ADMIN")
+async def restore_users(payload: RestoreUsersRequest, user_repo: UserRepository = Depends(get_user_repo)):
+    service = UserService(user_repo)
+    modified = await service.restore_users(payload.ids)
+    return JSONResponse(status_code=200, content={"modified": modified})
 
