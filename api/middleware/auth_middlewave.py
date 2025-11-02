@@ -96,7 +96,9 @@ class AuthMiddlewave(BaseHTTPMiddleware):
         ("/products/get-all", ["GET"]),
         ("/products/top-rated", ["GET"]),
         ("/products/top-rated-by-brand", ["GET"]),
-        ("/products/detail/", ["GET"]),  
+        ("/products/detail/", ["GET"]),
+        ("/brands", ["GET"]),  # Public access cho danh sách brands (trang home)
+        ("/brands/logo/", ["GET"]),  # Public access cho brand logos
     ]
 
     __swagger_paths = ["/docs", "/redoc", "/openapi.json"]

@@ -39,9 +39,9 @@
           <select v-model="filters.brand"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
             <option value="">Tất cả</option>
-            <option value="Nike">Nike</option>
-            <option value="Adidas">Adidas</option>
-            <option value="Puma">Puma</option>
+            <option v-for="brand in brandOptions" :key="brand.id || brand.name" :value="brand.name">
+              {{ brand.name }}
+            </option>
           </select>
         </div>
         <div>
@@ -395,6 +395,7 @@ import ProductDetailModal from '@/components/admin/ProductDetailModal.vue';
 import ProductFormModal from '@/components/admin/ProductFormModal.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import ProductService from "@/api-services/ProductService";
+import BrandService from "@/api-services/BrandService";
 import ToastNotification from '@/components/ToastNotification.vue';
 // Khi thêm sản phẩm thành công từ modal
 const onProductCreated = () => {
@@ -438,6 +439,7 @@ const closeNotificationError = () => {
 // Delete Confirm Modal
 const showDeleteConfirm = ref(false);
 const productToDelete = ref(null);
+const brandOptions = ref([]);
 
 // Computed property for delete confirm message
 const deleteConfirmMessage = computed(() => {
@@ -587,8 +589,23 @@ watch([filters, sortBy, sortOrder], () => {
   fetchProducts();
 }, { deep: true });
 
+const loadBrands = async () => {
+  try {
+    const brandsList = await BrandService.getAll();
+    // Accept both array and wrapped response
+    const brands = Array.isArray(brandsList) ? brandsList : (brandsList?.brands || []);
+    brandOptions.value = brands
+      .filter(b => b && b.name && (b.is_active !== false))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  } catch (e) {
+    console.error('Failed to load brands:', e);
+    brandOptions.value = [];
+  }
+};
+
 onMounted(() => {
   fetchProducts();
+  loadBrands();
 });
 
 const closeModal = () => {

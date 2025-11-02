@@ -18,6 +18,7 @@ from controllers.review_controller import review_router
 from controllers.low_rating_review_controller import low_rating_review_router
 from controllers.favourite_product_controller import router as favourite_router
 from controllers.category_controller import category_router
+from controllers.brand_controller import brand_router
 from exceptions.register_handlers import register_all_handlers
 import exceptions.handlers 
 from dependences.dependencies import set_language_dependency
@@ -50,6 +51,7 @@ app.include_router(review_router, prefix=PRE_FIX)
 app.include_router(low_rating_review_router, prefix=PRE_FIX)
 app.include_router(favourite_router, prefix=PRE_FIX)
 app.include_router(category_router, prefix=PRE_FIX)
+app.include_router(brand_router, prefix=PRE_FIX)
 @app.on_event("startup")
 async def startup_event():
     """Startup event handler"""
