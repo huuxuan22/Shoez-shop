@@ -121,7 +121,6 @@ const loadBrands = async () => {
       .filter(b => b && b.name && b.is_active !== false && b.logo && b.logo.trim())
       .sort((a, b) => a.name.localeCompare(b.name))
   } catch (error) {
-    console.error('Failed to load brands:', error)
     // Fallback về empty array nếu lỗi
     brands.value = []
   } finally {

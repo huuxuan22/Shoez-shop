@@ -32,7 +32,6 @@ async def get_all_brands(
         return JSONResponse(status_code=200, content=brands)
     except Exception as e:
         logger.error(f"Error getting brands: {str(e)}")
-        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error getting brands: {str(e)}")
 
 
@@ -69,12 +68,8 @@ async def create_brand(
     Logo có thể để trống hoặc cung cấp file/URL
     """
     try:
-        # Debug log
-        logger.info(f"Creating brand - name: '{name}', description: '{description}', is_active: {is_active}, has_logo_file: {logo_file is not None}, logo_url: '{logo_url}'")
-        
         # Validate
         if not name or not name.strip():
-            logger.error(f"Validation failed: name is empty or whitespace only. name='{name}'")
             raise HTTPException(status_code=400, detail="Tên thương hiệu là bắt buộc")
         
         service = BrandService(brand_repo, image_repo)
@@ -98,7 +93,6 @@ async def create_brand(
     except Exception as e:
         error_detail = traceback.format_exc()
         logger.error(f"Error creating brand: {str(e)}\n{error_detail}")
-        traceback.print_exc()
         raise HTTPException(
             status_code=500, 
             detail=f"Lỗi khi tạo thương hiệu: {str(e)}"
@@ -141,7 +135,6 @@ async def update_brand_by_id(
         raise e
     except Exception as e:
         logger.error(f"Error updating brand: {str(e)}")
-        traceback.print_exc()
         raise HTTPException(
             status_code=500,
             detail=f"Lỗi khi cập nhật thương hiệu: {str(e)}"
@@ -177,7 +170,6 @@ async def sync_logos_from_minio(
         return JSONResponse(content=result, status_code=200)
     except Exception as e:
         logger.error(f"Error syncing logos: {str(e)}")
-        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Lỗi khi đồng bộ logos: {str(e)}")
 
 
@@ -199,8 +191,6 @@ async def get_brand_logo(
         from urllib.parse import unquote
         filename = unquote(filename)
         
-        logger.info(f"Requesting logo: bucket={bucket_name}, filename={filename}")
-        
         # Kiểm tra bucket tồn tại
         if not minio_client.bucket_exists(bucket_name):
             logger.error(f"Bucket '{bucket_name}' does not exist")
@@ -220,10 +210,6 @@ async def get_brand_logo(
                     break
             
             if not file_exists:
-                logger.warning(f"Logo file '{filename}' not found in bucket '{bucket_name}'")
-                # List all files for debugging
-                all_objects = list(minio_client.list_objects(bucket_name, recursive=True))
-                logger.info(f"Available files in bucket: {[obj.object_name for obj in all_objects[:10]]}")
                 raise HTTPException(status_code=404, detail=f"Logo '{filename}' không tìm thấy trong bucket")
         except S3Error as e:
             logger.error(f"S3Error checking file: {str(e)}")
@@ -231,12 +217,10 @@ async def get_brand_logo(
         
         # Lấy object từ MinIO
         try:
-            logger.info(f"Fetching object: {bucket_name}/{actual_filename}")
             response = minio_client.get_object(bucket_name, actual_filename)
             data = response.read()
             response.close()
             response.release_conn()
-            logger.info(f"Successfully read {len(data)} bytes from {actual_filename}")
         except S3Error as e:
             logger.error(f"S3Error getting object: {str(e)}")
             raise HTTPException(status_code=404, detail=f"Không thể lấy logo: {str(e)}")

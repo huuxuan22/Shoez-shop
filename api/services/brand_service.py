@@ -47,7 +47,6 @@ class BrandService:
             try:
                 if not minio_client.bucket_exists(brand_bucket):
                     minio_client.make_bucket(brand_bucket)
-                    logger.info(f"Created bucket: {brand_bucket}")
             except Exception as e:
                 logger.error(f"Error checking/creating bucket: {str(e)}")
                 raise HTTPException(status_code=500, detail=f"Không thể truy cập bucket MinIO: {str(e)}")
@@ -71,7 +70,6 @@ class BrandService:
                     logo_file.content_type,
                     brand_bucket
                 )
-                logger.info(f"Uploaded logo successfully: {url}")
                 
                 # Đảm bảo URL sử dụng backend proxy endpoint
                 if not url.startswith(settings.backend_url):
@@ -134,7 +132,6 @@ class BrandService:
                 raise HTTPException(status_code=400, detail="Tên thương hiệu là bắt buộc")
             
             brand_name = brand_data.name.strip()
-            logger.info(f"Creating brand: {brand_name}")
             
             # Kiểm tra tên thương hiệu đã tồn tại chưa
             try:
@@ -152,9 +149,7 @@ class BrandService:
             if logo_file:
                 try:
                     # Upload file lên MinIO
-                    logger.info(f"Uploading logo file: {logo_file.filename}")
                     logo_url = await self.upload_logo(logo_file)
-                    logger.info(f"Logo uploaded successfully: {logo_url}")
                 except Exception as e:
                     logger.error(f"Error uploading logo: {str(e)}")
                     if isinstance(e, HTTPException):
@@ -163,7 +158,6 @@ class BrandService:
             elif brand_data.logo:
                 # Sử dụng URL được cung cấp
                 logo_url = brand_data.logo.strip() if brand_data.logo and brand_data.logo.strip() else None
-                logger.info(f"Using provided logo URL: {logo_url}")
 
             # Tạo brand dict
             brand_dict = {
@@ -175,11 +169,8 @@ class BrandService:
             }
 
             # Lưu vào database
-            logger.info(f"Creating brand in database with data: {brand_dict}")
             try:
                 created_brand = await self.brand_repo.create(brand_dict)
-                brand_id = created_brand.get('id') if created_brand else created_brand.get('_id') if created_brand else 'Unknown'
-                logger.info(f"Brand created successfully with ID: {brand_id}")
                 return created_brand
             except Exception as e:
                 import traceback
@@ -190,9 +181,8 @@ class BrandService:
                 if logo_file and logo_url:
                     try:
                         await self.delete_logo(logo_url)
-                        logger.info(f"Deleted uploaded logo after database error: {logo_url}")
-                    except Exception as delete_error:
-                        logger.warning(f"Failed to delete logo after error: {str(delete_error)}")
+                    except Exception:
+                        pass
                 raise HTTPException(
                     status_code=500, 
                     detail=f"Lỗi khi tạo thương hiệu trong database: {str(e)}"
@@ -297,8 +287,8 @@ class BrandService:
                                 if brand_lower in obj_name_lower and '-logo' in obj_name_lower:
                                     # Tìm thấy file match với brand
                                     return f"{proxy_base}{obj.object_name}"
-                    except Exception as e:
-                        logger.warning(f"Could not match filename for brand '{brand_name}': {str(e)}")
+                    except Exception:
+                        pass
                 
                 # Fallback: dùng filename từ URL
                 return f"{proxy_base}{filename_from_url}"
@@ -419,7 +409,6 @@ class BrandService:
                     await self.brand_repo.update(brand['id'], {'logo': logo_info['url']})
                     updated_count += 1
                     updated_brands.append(brand.get('name', brand_name))
-                    logger.info(f"Updated logo for brand '{brand.get('name', brand_name)}': {logo_info['url']}")
             
             return {
                 "message": f"Đã đồng bộ {updated_count} logo từ MinIO",

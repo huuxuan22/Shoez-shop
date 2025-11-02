@@ -329,7 +329,6 @@ const loadAvailableBrands = async () => {
       .map(b => b.name)
       .sort();
   } catch (error) {
-    console.error('Failed to load brands:', error);
     availableBrands.value = [];
   }
 };

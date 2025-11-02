@@ -403,11 +403,9 @@ const loadBrands = async () => {
         brands.value = updatedData || []
       } catch (syncError) {
         // Nếu sync thất bại thì bỏ qua, không ảnh hưởng đến hiển thị
-        console.warn('Auto-sync logos failed:', syncError)
       }
     }
   } catch (error) {
-    console.error('Load brands failed', error)
     toast.error('Không thể tải danh sách thương hiệu')
   } finally {
     loading.value = false
@@ -568,7 +566,6 @@ const saveBrand = async () => {
           closeModal()
         } else {
           // Sau nhiều lần retry vẫn chưa thấy, nhưng đã thành công nên vẫn đóng modal
-          console.warn('Brand created but not found in list after retries')
           closeModal()
         }
       } else {
@@ -576,7 +573,6 @@ const saveBrand = async () => {
       }
     }
   } catch (error) {
-    console.error('Save brand failed', error)
     toast.error(
       error?.response?.data?.detail ||
       error?.response?.data?.message ||
@@ -597,7 +593,6 @@ const confirmDelete = (id) => {
       toast.success('Đã xoá thương hiệu thành công!')
       await loadBrands()
     } catch (error) {
-      console.error('Delete brand failed', error)
       toast.error(
         error?.response?.data?.detail ||
         error?.response?.data?.message ||
@@ -614,7 +609,6 @@ const toggleActive = async (brand) => {
     toast.success(currentActive ? 'Đã vô hiệu hóa thương hiệu!' : 'Đã kích hoạt thương hiệu!')
     await loadBrands()
   } catch (error) {
-    console.error('Toggle active failed', error)
     toast.error(
       error?.response?.data?.detail ||
       error?.response?.data?.message ||
@@ -635,8 +629,6 @@ const formatDate = (d) => {
 const handleImageError = (event) => {
   // Khi ảnh không load được, ẩn img và hiển thị placeholder
   const img = event.target
-  const logoUrl = img.src
-  console.warn('Failed to load brand logo:', logoUrl)
   
   // Ẩn img element
   img.style.display = 'none'

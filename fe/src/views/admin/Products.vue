@@ -598,7 +598,6 @@ const loadBrands = async () => {
       .filter(b => b && b.name && (b.is_active !== false))
       .sort((a, b) => a.name.localeCompare(b.name));
   } catch (e) {
-    console.error('Failed to load brands:', e);
     brandOptions.value = [];
   }
 };
