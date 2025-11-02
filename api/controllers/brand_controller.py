@@ -1,5 +1,3 @@
-import logging
-import traceback
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query
 from typing import Optional, Annotated
 from fastapi.responses import JSONResponse
@@ -10,8 +8,6 @@ from repositories.image_repository import ImageRepository
 from schemas.brand_schemas import BrandCreate, BrandUpdate
 from services.brand_service import BrandService
 from config.minio_client import minio_client
-
-logger = logging.getLogger(__name__)
 
 brand_router = APIRouter(prefix="/brands", tags=["Brands"])
 
@@ -31,7 +27,6 @@ async def get_all_brands(
         brands = await service.get_all_brands(is_active=is_active)
         return JSONResponse(status_code=200, content=brands)
     except Exception as e:
-        logger.error(f"Error getting brands: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error getting brands: {str(e)}")
 
 
@@ -91,8 +86,6 @@ async def create_brand(
     except HTTPException as e:
         raise e
     except Exception as e:
-        error_detail = traceback.format_exc()
-        logger.error(f"Error creating brand: {str(e)}\n{error_detail}")
         raise HTTPException(
             status_code=500, 
             detail=f"Lỗi khi tạo thương hiệu: {str(e)}"
@@ -134,7 +127,6 @@ async def update_brand_by_id(
     except HTTPException as e:
         raise e
     except Exception as e:
-        logger.error(f"Error updating brand: {str(e)}")
         raise HTTPException(
             status_code=500,
             detail=f"Lỗi khi cập nhật thương hiệu: {str(e)}"
@@ -169,7 +161,6 @@ async def sync_logos_from_minio(
         result = await service.sync_logos_from_minio()
         return JSONResponse(content=result, status_code=200)
     except Exception as e:
-        logger.error(f"Error syncing logos: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Lỗi khi đồng bộ logos: {str(e)}")
 
 
@@ -193,7 +184,6 @@ async def get_brand_logo(
         
         # Kiểm tra bucket tồn tại
         if not minio_client.bucket_exists(bucket_name):
-            logger.error(f"Bucket '{bucket_name}' does not exist")
             raise HTTPException(status_code=404, detail=f"Bucket '{bucket_name}' không tồn tại")
         
         # Kiểm tra file có tồn tại không (list objects để verify)
@@ -212,7 +202,6 @@ async def get_brand_logo(
             if not file_exists:
                 raise HTTPException(status_code=404, detail=f"Logo '{filename}' không tìm thấy trong bucket")
         except S3Error as e:
-            logger.error(f"S3Error checking file: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Lỗi khi kiểm tra file: {str(e)}")
         
         # Lấy object từ MinIO
@@ -222,10 +211,8 @@ async def get_brand_logo(
             response.close()
             response.release_conn()
         except S3Error as e:
-            logger.error(f"S3Error getting object: {str(e)}")
             raise HTTPException(status_code=404, detail=f"Không thể lấy logo: {str(e)}")
         except Exception as e:
-            logger.error(f"Error getting logo from MinIO: {str(e)}\n{traceback.format_exc()}")
             raise HTTPException(status_code=500, detail=f"Lỗi khi đọc logo: {str(e)}")
         
         # Xác định content type
@@ -251,6 +238,5 @@ async def get_brand_logo(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Unexpected error serving logo: {str(e)}\n{traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Lỗi khi lấy logo: {str(e)}")
 

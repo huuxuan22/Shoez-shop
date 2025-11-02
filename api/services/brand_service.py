@@ -1,6 +1,5 @@
 import uuid
 import os
-import logging
 import re
 from urllib.parse import urlparse
 from typing import Optional, Dict
@@ -15,7 +14,6 @@ from repositories.image_repository import ImageRepository
 from schemas.brand_schemas import BrandCreate, BrandUpdate
 
 settings = get_settings()
-logger = logging.getLogger(__name__)
 
 
 class BrandService:
@@ -48,7 +46,6 @@ class BrandService:
                 if not minio_client.bucket_exists(brand_bucket):
                     minio_client.make_bucket(brand_bucket)
             except Exception as e:
-                logger.error(f"Error checking/creating bucket: {str(e)}")
                 raise HTTPException(status_code=500, detail=f"Không thể truy cập bucket MinIO: {str(e)}")
 
             # Generate unique filename (lưu trực tiếp trong bucket, không cần prefix)
@@ -80,9 +77,6 @@ class BrandService:
                 
                 return url
             except Exception as e:
-                import traceback
-                error_detail = traceback.format_exc()
-                logger.error(f"Upload error: {str(e)}\n{error_detail}")
                 raise HTTPException(
                     status_code=500, 
                     detail=f"Upload logo thất bại: {str(e)}. Vui lòng kiểm tra kết nối MinIO."
@@ -90,12 +84,8 @@ class BrandService:
         except HTTPException:
             raise
         except S3Error as e:
-            logger.error(f"MinIO S3Error: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Lỗi MinIO: {str(e)}")
         except Exception as e:
-            import traceback
-            error_detail = traceback.format_exc()
-            logger.error(f"Unexpected error in upload_logo: {str(e)}\n{error_detail}")
             raise HTTPException(status_code=500, detail=f"Lỗi không xác định khi upload logo: {str(e)}")
 
     async def delete_logo(self, logo_url: Optional[str]) -> bool:
@@ -139,7 +129,6 @@ class BrandService:
                 if exists:
                     raise HTTPException(status_code=400, detail=f"Thương hiệu '{brand_name}' đã tồn tại")
             except Exception as e:
-                logger.error(f"Error checking name exists: {str(e)}")
                 if isinstance(e, HTTPException):
                     raise
                 raise HTTPException(status_code=500, detail=f"Lỗi khi kiểm tra tên thương hiệu: {str(e)}")
@@ -151,7 +140,6 @@ class BrandService:
                     # Upload file lên MinIO
                     logo_url = await self.upload_logo(logo_file)
                 except Exception as e:
-                    logger.error(f"Error uploading logo: {str(e)}")
                     if isinstance(e, HTTPException):
                         raise
                     raise HTTPException(status_code=500, detail=f"Lỗi khi upload logo: {str(e)}")
@@ -173,10 +161,6 @@ class BrandService:
                 created_brand = await self.brand_repo.create(brand_dict)
                 return created_brand
             except Exception as e:
-                import traceback
-                error_detail = traceback.format_exc()
-                logger.error(f"Error creating brand in database: {str(e)}\n{error_detail}")
-                
                 # Nếu lỗi khi tạo, xóa logo đã upload (nếu có)
                 if logo_file and logo_url:
                     try:
@@ -190,9 +174,6 @@ class BrandService:
         except HTTPException:
             raise
         except Exception as e:
-            import traceback
-            error_detail = traceback.format_exc()
-            logger.error(f"Unexpected error in create_brand: {str(e)}\n{error_detail}")
             raise HTTPException(
                 status_code=500,
                 detail=f"Lỗi không xác định khi tạo thương hiệu: {str(e)}"
@@ -419,9 +400,6 @@ class BrandService:
         except HTTPException:
             raise
         except Exception as e:
-            import traceback
-            error_detail = traceback.format_exc()
-            logger.error(f"Error syncing logos: {str(e)}\n{error_detail}")
             raise HTTPException(status_code=500, detail=f"Lỗi khi đồng bộ logos: {str(e)}")
 
     async def delete_brand(self, brand_id: str) -> bool:
