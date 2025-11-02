@@ -73,6 +73,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ProductService from '@/api-services/ProductService';
+import BrandService from '@/api-services/BrandService';
 import ProductFilters from '@/components/products/ProductFilters.vue';
 import ProductCard from '@/components/products/ProductCard.vue';
 import ProductSort from '@/components/products/ProductSort.vue';
@@ -83,8 +84,8 @@ const router = useRouter();
 // View mode: grid or list
 const viewMode = ref('grid');
 
-// Available filter options
-const availableBrands = ['Nike', 'Adidas', 'Puma', 'Vans', 'New Balance', 'Converse'];
+// Available filter options - sẽ load từ API
+const availableBrands = ref([]);
 const availableCategories = ['Sneakers', 'Running', 'Casual', 'Lifestyle', 'Basketball', 'Skate', 'Retro'];
 const availableColors = [
   {
@@ -239,10 +240,31 @@ const loadProducts = async (page = 1) => {
   }
 };
 
-// Watch for filter changes
-watch(filters, () => {
+// Flag để tránh infinite loop giữa filter và route
+let isUpdatingFromRoute = false;
+
+// Watch for filter changes và update URL
+watch(filters, (newFilters) => {
+  if (isUpdatingFromRoute) return; // Tránh update URL khi đang update từ route
+  
   loadProducts(1);
   pagination.value.page = 1;
+  
+  // Update URL query parameter khi brand filter thay đổi
+  const queryParams = { ...route.query };
+  if (newFilters.brands.length > 0) {
+    queryParams.brand = newFilters.brands[0];
+  } else {
+    // Xóa brand khỏi query nếu không có filter
+    delete queryParams.brand;
+  }
+  
+  // Chỉ update URL nếu khác với current query
+  const currentBrand = route.query.brand;
+  const newBrand = queryParams.brand;
+  if (currentBrand !== newBrand) {
+    router.replace({ query: queryParams });
+  }
 }, { deep: true });
 
 watch(sortBy, () => {
@@ -259,6 +281,7 @@ const changePage = (page) => {
 
 // Clear all filters
 const clearFilters = () => {
+  isUpdatingFromRoute = true;
   filters.value = {
     search: '',
     brands: [],
@@ -268,6 +291,18 @@ const clearFilters = () => {
     priceRange: [0, 10000000]
   };
   sortBy.value = 'default';
+  pagination.value.page = 1;
+  
+  // Xóa brand khỏi URL
+  const queryParams = { ...route.query };
+  delete queryParams.brand;
+  router.replace({ query: queryParams });
+  
+  loadProducts(1);
+  
+  setTimeout(() => {
+    isUpdatingFromRoute = false;
+  }, 100);
 };
 
 // Event handlers
@@ -283,8 +318,64 @@ const handleBuyNow = (product) => {
   // TODO: Implement buy now
 };
 
-// Load products on mount
-onMounted(() => {
+// Load available brands từ API
+const loadAvailableBrands = async () => {
+  try {
+    const brandsList = await BrandService.getAll();
+    const brands = Array.isArray(brandsList) ? brandsList : (brandsList?.brands || []);
+    // Chỉ lấy tên brand (string) cho filter
+    availableBrands.value = brands
+      .filter(b => b && b.name && b.is_active !== false)
+      .map(b => b.name)
+      .sort();
+  } catch (error) {
+    availableBrands.value = [];
+  }
+};
+
+// Load products on mount và đọc brand từ query parameter
+onMounted(async () => {
+  // Load brands trước
+  await loadAvailableBrands();
+  
+  // Đọc brand từ query parameter nếu có
+  if (route.query.brand) {
+    const brandFromQuery = route.query.brand;
+    // Set brand filter
+    if (brandFromQuery && !filters.value.brands.includes(brandFromQuery)) {
+      filters.value.brands = [brandFromQuery];
+    }
+  }
+  
   loadProducts(1);
+});
+
+// Watch route query để update filter khi URL thay đổi (ví dụ: back/forward browser, click brand)
+watch(() => route.query.brand, (newBrand, oldBrand) => {
+  // Chỉ update nếu brand thay đổi
+  if (newBrand !== oldBrand) {
+    isUpdatingFromRoute = true;
+    
+    if (newBrand) {
+      // Update brand filter từ URL
+      const currentFilterBrand = filters.value.brands[0];
+      if (newBrand !== currentFilterBrand) {
+        filters.value.brands = [newBrand];
+        // Trigger load products với filter mới
+        pagination.value.page = 1;
+        loadProducts(1);
+      }
+    } else {
+      // Nếu URL không còn brand, xóa filter
+      filters.value.brands = [];
+      pagination.value.page = 1;
+      loadProducts(1);
+    }
+    
+    // Reset flag sau một chút
+    setTimeout(() => {
+      isUpdatingFromRoute = false;
+    }, 100);
+  }
 });
 </script>

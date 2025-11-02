@@ -225,7 +225,7 @@ const routes = [
   {
     path: "/admin/brands",
     name: "AdminBrands",
-    component: () => import("@/views/admin/Dashboard.vue"), // Placeholder
+    component: () => import("@/views/admin/Brands.vue"),
     meta: {
       title: "Quản lý thương hiệu - Admin - Shoez Shop",
       requiresAuth: true,

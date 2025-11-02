@@ -91,7 +91,6 @@ const handleImageChange = (e) => {
 
 const handleSubmit = async () => {
   try {
-    debugger;
     // Bước 1: Tạo sản phẩm (chưa có ảnh)
     const payload = {
       ...form.value,
