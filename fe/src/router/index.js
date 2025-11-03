@@ -235,7 +235,7 @@ const routes = [
   {
     path: "/admin/analytics",
     name: "AdminAnalytics",
-    component: () => import("@/views/admin/Dashboard.vue"), // Placeholder
+    component: () => import("@/views/admin/Analytics.vue"),
     meta: {
       title: "Thống kê - Admin - Shoez Shop",
       requiresAuth: true,
