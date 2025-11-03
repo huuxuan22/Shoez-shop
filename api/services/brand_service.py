@@ -4,6 +4,7 @@ import re
 from urllib.parse import urlparse
 from typing import Optional, Dict
 from fastapi import HTTPException, UploadFile
+from fastapi.encoders import jsonable_encoder
 from starlette.concurrency import run_in_threadpool
 from minio.error import S3Error
 
@@ -22,45 +23,38 @@ class BrandService:
         self.image_repo = image_repo
 
     async def upload_logo(self, logo_file: UploadFile) -> str:
-        """Upload logo lên MinIO bucket 'trademark' và trả về URL"""
+        """Upload logo lên MinIO bucket 'trademark' và trả về URL MinIO đầy đủ"""
         try:
-            # Validate file type
             if not logo_file.content_type or not logo_file.content_type.startswith('image/'):
                 raise HTTPException(status_code=400, detail="File phải là hình ảnh")
 
-            # Đọc toàn bộ file content vào memory vì file object có thể bị đóng
             file_content = await logo_file.read()
             
             if len(file_content) == 0:
                 raise HTTPException(status_code=400, detail="File rỗng")
             
-            # Validate file size (max 5MB)
             if len(file_content) > 5 * 1024 * 1024:
                 raise HTTPException(status_code=400, detail="Kích thước file không được vượt quá 5MB")
 
-            # Sử dụng bucket "trademark" cho logo thương hiệu
             brand_bucket = "trademark"
             
-            # Đảm bảo bucket tồn tại
             try:
                 if not minio_client.bucket_exists(brand_bucket):
                     minio_client.make_bucket(brand_bucket)
             except Exception as e:
                 raise HTTPException(status_code=500, detail=f"Không thể truy cập bucket MinIO: {str(e)}")
 
-            # Generate unique filename (lưu trực tiếp trong bucket, không cần prefix)
             file_extension = os.path.splitext(logo_file.filename)[1] if logo_file.filename else '.jpg'
             if not file_extension or file_extension == '':
                 file_extension = '.jpg'
             unique_filename = f"{uuid.uuid4().hex}{file_extension}"
 
-            # Upload to MinIO vào bucket trademark
             try:
-                # Sử dụng BytesIO để tạo file object mới từ content
                 from io import BytesIO
                 file_obj = BytesIO(file_content)
                 
-                url = await run_in_threadpool(
+                # Upload vào MinIO
+                await run_in_threadpool(
                     self.image_repo.upload_to_bucket,
                     file_obj,
                     unique_filename,
@@ -68,14 +62,12 @@ class BrandService:
                     brand_bucket
                 )
                 
-                # Đảm bảo URL sử dụng backend proxy endpoint
-                if not url.startswith(settings.backend_url):
-                    # Tạo URL qua proxy endpoint nếu chưa đúng
-                    backend_base = settings.backend_url.rstrip('/')
-                    api_prefix = settings.api_prefix
-                    url = f"{backend_base}{api_prefix}/brands/logo/{unique_filename}"
+                # Tạo URL MinIO đầy đủ: http://localhost:9000/trademark/filename.jpg
+                minio_base_url = settings.port_image if hasattr(settings, 'port_image') and settings.port_image else f"http://{settings.minio_url}"
+                minio_url = f"{minio_base_url.rstrip('/')}/{brand_bucket}/{unique_filename}"
                 
-                return url
+                # Trả về URL MinIO đầy đủ để lưu vào database
+                return minio_url
             except Exception as e:
                 raise HTTPException(
                     status_code=500, 
@@ -89,26 +81,44 @@ class BrandService:
             raise HTTPException(status_code=500, detail=f"Lỗi không xác định khi upload logo: {str(e)}")
 
     async def delete_logo(self, logo_url: Optional[str]) -> bool:
-        """Xóa logo từ MinIO"""
+        """Xóa logo từ MinIO (chỉ xóa nếu là file từ MinIO, không xóa URL external)"""
         if not logo_url:
             return True
 
         try:
-            # Parse URL để lấy object name
-            parsed_url = urlparse(logo_url)
-            object_name = parsed_url.path.lstrip('/')
+            # Nếu là URL external (không phải MinIO) thì không xóa
+            if logo_url.startswith('http://') or logo_url.startswith('https://'):
+                # Kiểm tra xem có phải là URL của MinIO không (có chứa trademark)
+                if '/trademark/' not in logo_url:
+                    # External URL - không xóa
+                    return True
             
-            # Xác định bucket và object name
             brand_bucket = "trademark"
+            object_name = None
             
-            # Remove bucket name prefix if present
-            if object_name.startswith(f"{brand_bucket}/"):
-                object_name = object_name[len(f"{brand_bucket}/"):]
-            elif object_name.startswith(f"{settings.minio_bucket}/"):
-                object_name = object_name[len(f"{settings.minio_bucket}/"):]
+            # Xử lý URL MinIO đầy đủ: http://localhost:9000/trademark/filename.jpg
+            if logo_url.startswith('http://') or logo_url.startswith('https://'):
+                # URL MinIO - extract filename
+                parsed_url = urlparse(logo_url)
+                path = parsed_url.path.lstrip('/')
+                
+                # Extract filename từ path: trademark/filename.jpg
+                if path.startswith('trademark/'):
+                    object_name = path.replace('trademark/', '')
+            # Xử lý path dạng "trademark/filename"
+            elif logo_url.startswith('trademark/'):
+                object_name = logo_url.replace('trademark/', '')
+            # Format cũ: chỉ filename
+            elif '/' not in logo_url and not logo_url.startswith('http'):
+                object_name = logo_url
 
-            # Delete from MinIO bucket trademark
-            minio_client.remove_object(brand_bucket, object_name)
+            # Xóa file từ MinIO nếu có object_name
+            if object_name:
+                try:
+                    minio_client.remove_object(brand_bucket, object_name)
+                except:
+                    pass
+            
             return True
         except S3Error:
             # Nếu object không tồn tại thì bỏ qua
@@ -133,19 +143,35 @@ class BrandService:
                     raise
                 raise HTTPException(status_code=500, detail=f"Lỗi khi kiểm tra tên thương hiệu: {str(e)}")
 
-            # Xử lý logo: ưu tiên file, sau đó là URL
+            # Xử lý logo: ƯU TIÊN file upload vào MinIO
+            # Nếu có cả file và URL → chỉ dùng file (bỏ qua URL)
+            # Nếu không có file → mới dùng URL (external hoặc MinIO path)
             logo_url = None
             if logo_file:
+                # ƯU TIÊN: Có file thì upload vào MinIO bucket brand_logo
+                # Bỏ qua URL nếu có (không cần xử lý brand_data.logo)
                 try:
-                    # Upload file lên MinIO
                     logo_url = await self.upload_logo(logo_file)
                 except Exception as e:
                     if isinstance(e, HTTPException):
                         raise
                     raise HTTPException(status_code=500, detail=f"Lỗi khi upload logo: {str(e)}")
             elif brand_data.logo:
-                # Sử dụng URL được cung cấp
-                logo_url = brand_data.logo.strip() if brand_data.logo and brand_data.logo.strip() else None
+                # Xử lý URL được cung cấp
+                provided_logo = brand_data.logo.strip() if brand_data.logo and brand_data.logo.strip() else None
+                
+                if provided_logo:
+                    # Nếu là URL external hoặc URL MinIO đầy đủ → lưu trực tiếp
+                    if provided_logo.startswith('http://') or provided_logo.startswith('https://'):
+                        logo_url = provided_logo
+                    # Nếu là path dạng "trademark/filename", chuyển sang URL MinIO đầy đủ
+                    elif provided_logo.startswith('trademark/'):
+                        filename = provided_logo.replace('trademark/', '')
+                        minio_base_url = settings.port_image if hasattr(settings, 'port_image') and settings.port_image else f"http://{settings.minio_url}"
+                        logo_url = f"{minio_base_url.rstrip('/')}/trademark/{filename}"
+                    else:
+                        # Các format khác → giữ nguyên hoặc chuyển sang URL MinIO
+                        logo_url = provided_logo
 
             # Tạo brand dict
             brand_dict = {
@@ -159,7 +185,7 @@ class BrandService:
             # Lưu vào database
             try:
                 created_brand = await self.brand_repo.create(brand_dict)
-                return created_brand
+                return jsonable_encoder(created_brand)
             except Exception as e:
                 # Nếu lỗi khi tạo, xóa logo đã upload (nếu có)
                 if logo_file and logo_url:
@@ -199,22 +225,34 @@ class BrandService:
                     detail=f"Thương hiệu '{brand_data.name}' đã tồn tại"
                 )
 
-        # Xử lý logo
-        logo_url = brand_data.logo if brand_data.logo else existing_brand.get("logo")
+        logo_url = existing_brand.get("logo")
         
-        # Nếu có file mới, upload và xóa logo cũ
         if logo_file:
-            # Xóa logo cũ nếu có
             if existing_brand.get("logo"):
                 await self.delete_logo(existing_brand.get("logo"))
             
-            # Upload logo mới
+            # Upload logo mới - trả về URL MinIO đầy đủ
             logo_url = await self.upload_logo(logo_file)
         elif brand_data.logo is not None:
-            # Nếu có URL mới và khác URL cũ, xóa logo cũ
-            if brand_data.logo != existing_brand.get("logo") and existing_brand.get("logo"):
-                await self.delete_logo(existing_brand.get("logo"))
-            logo_url = brand_data.logo
+            # Xử lý URL được cung cấp
+            provided_logo = brand_data.logo.strip() if brand_data.logo else None
+            
+            if provided_logo:
+                # Nếu là URL external hoặc URL MinIO đầy đủ → lưu trực tiếp
+                if provided_logo.startswith('http://') or provided_logo.startswith('https://'):
+                    logo_url = provided_logo
+                # Nếu là path dạng "trademark/filename", chuyển sang URL MinIO đầy đủ
+                elif provided_logo.startswith('trademark/'):
+                    filename = provided_logo.replace('trademark/', '')
+                    minio_base_url = settings.port_image if hasattr(settings, 'port_image') and settings.port_image else f"http://{settings.minio_url}"
+                    logo_url = f"{minio_base_url.rstrip('/')}/trademark/{filename}"
+                else:
+                    # Các format khác → giữ nguyên
+                    logo_url = provided_logo
+                
+                # Xóa logo cũ nếu có và khác logo mới (chỉ xóa nếu là file MinIO)
+                if existing_brand.get("logo") and existing_brand.get("logo") != logo_url:
+                    await self.delete_logo(existing_brand.get("logo"))
 
         # Cập nhật brand dict
         update_dict = {}
@@ -229,59 +267,12 @@ class BrandService:
 
         # Cập nhật vào database
         updated_brand = await self.brand_repo.update(brand_id, update_dict)
-        return updated_brand
+        # Convert sang JSON serializable format
+        return jsonable_encoder(updated_brand)
 
     def _convert_to_proxy_url(self, logo_url: Optional[str], brand_name: Optional[str] = None) -> Optional[str]:
-        """Chuyển đổi URL logo cũ (direct MinIO) sang proxy endpoint
-        Tự động match với filename thực tế trong MinIO nếu có
-        """
-        if not logo_url:
-            return None
-        
-        # Nếu đã là proxy URL thì không cần convert
-        backend_base = settings.backend_url.rstrip('/')
-        api_prefix = settings.api_prefix
-        proxy_base = f"{backend_base}{api_prefix}/brands/logo/"
-        if logo_url.startswith(proxy_base):
-            return logo_url
-        
-        # Nếu là URL MinIO trực tiếp, extract filename và convert
-        if 'trademark' in logo_url or settings.minio_url in logo_url or '127.0.0.1:9000' in logo_url or 'localhost:9000' in logo_url:
-            # Tìm filename sau /trademark/
-            match = re.search(r'/trademark/([^/?]+)', logo_url)
-            if match:
-                filename_from_url = match.group(1)
-                
-                # Thử tìm file thực tế trong MinIO với tên brand (không cần extension chính xác)
-                # Nếu có brand_name, thử match với file trong bucket
-                if brand_name:
-                    try:
-                        bucket_name = "trademark"
-                        if minio_client.bucket_exists(bucket_name):
-                            # Tìm file có tên brand trong đó (không quan tâm extension)
-                            brand_lower = brand_name.lower().replace(' ', '')
-                            objects = minio_client.list_objects(bucket_name, recursive=True)
-                            
-                            for obj in objects:
-                                obj_name_lower = obj.object_name.lower()
-                                # Match: adidas-logo.jpg hoặc adidas-logo.png hoặc nike-logo.jpg
-                                if brand_lower in obj_name_lower and '-logo' in obj_name_lower:
-                                    # Tìm thấy file match với brand
-                                    return f"{proxy_base}{obj.object_name}"
-                    except Exception:
-                        pass
-                
-                # Fallback: dùng filename từ URL
-                return f"{proxy_base}{filename_from_url}"
-            else:
-                # Thử extract từ path
-                parsed = urlparse(logo_url)
-                path_parts = parsed.path.strip('/').split('/')
-                if len(path_parts) >= 2 and path_parts[0] == 'trademark':
-                    filename = path_parts[1]
-                    return f"{proxy_base}{filename}"
-        
-        # Nếu không match pattern nào, trả về nguyên URL
+        """Trả về logo URL nguyên vẹn (không convert nữa, lưu trực tiếp URL MinIO hoặc external)"""
+        # Không cần convert nữa - logo_url đã là URL đầy đủ (MinIO hoặc external)
         return logo_url
 
     async def get_all_brands(self, is_active: Optional[bool] = None):
@@ -294,14 +285,10 @@ class BrandService:
             is_active=is_active
         )
         
-        # Convert logo URLs sang proxy endpoint
-        from fastapi.encoders import jsonable_encoder
+        # Trả về logo URL nguyên vẹn (đã là URL MinIO đầy đủ hoặc external URL)
         result = []
         for brand in brands:
             brand_dict = brand if isinstance(brand, dict) else brand.dict()
-            if 'logo' in brand_dict and brand_dict['logo']:
-                brand_name = brand_dict.get('name', '')
-                brand_dict['logo'] = self._convert_to_proxy_url(brand_dict['logo'], brand_name=brand_name)
             result.append(brand_dict)
         
         return jsonable_encoder(result)
@@ -309,11 +296,9 @@ class BrandService:
     async def get_brand_by_id(self, brand_id: str) -> Dict:
         """Lấy thương hiệu theo ID"""
         brand = await self.brand_repo.get_by_id(brand_id)
-        if isinstance(brand, dict):
-            if 'logo' in brand and brand['logo']:
-                brand_name = brand.get('name', '')
-                brand['logo'] = self._convert_to_proxy_url(brand['logo'], brand_name=brand_name)
-        return brand
+        # Trả về logo URL nguyên vẹn (đã là URL MinIO đầy đủ hoặc external URL)
+        # Convert sang JSON serializable format
+        return jsonable_encoder(brand)
     
     def _generate_logo_url(self, filename: str) -> str:
         """Tạo URL cho logo từ filename trên MinIO
@@ -332,39 +317,40 @@ class BrandService:
             
             # Kiểm tra bucket tồn tại
             if not minio_client.bucket_exists(brand_bucket):
-                raise HTTPException(status_code=404, detail=f"Bucket '{brand_bucket}' không tồn tại")
+                raise HTTPException(status_code=404, detail=f"Bucket 'trademark' không tồn tại")
             
             # Lấy danh sách tất cả objects trong bucket
             objects = minio_client.list_objects(brand_bucket, recursive=True)
+            
+            # Tạo URL MinIO đầy đủ
+            minio_base_url = settings.port_image if hasattr(settings, 'port_image') and settings.port_image else f"http://{settings.minio_url}"
             
             # Map filename -> brand name (từ các file logo đã có)
             logo_files = {}
             for obj in objects:
                 filename = obj.object_name
+                # Tạo URL MinIO đầy đủ: http://localhost:9000/trademark/filename.jpg
+                logo_url = f"{minio_base_url.rstrip('/')}/{brand_bucket}/{filename}"
+                
                 # Chỉ xử lý các file logo có tên brand (bỏ qua UUID files)
                 if '-' in filename and filename.endswith(('.png', '.jpg', '.jpeg', '.gif', '.svg')):
                     # Extract brand name từ filename (ví dụ: "nike-logo.png" -> "nike")
                     parts = filename.split('-')
                     if len(parts) >= 2:
                         brand_name = parts[0].lower()
-                        # Map các tên brand từ filename -> tên trong DB (có thể khác case)
-                        # Không cần map vì sẽ match case-insensitive
-                        logo_url = self._generate_logo_url(filename)
+                        # Lưu URL MinIO đầy đủ để update vào DB
                         logo_files[brand_name] = {
-                            'filename': filename,
-                            'url': logo_url
+                            'logo_url': logo_url
                         }
                         
                         # Handle "newbalance" -> "new balance" hoặc "New Balance"
                         if brand_name == 'new':
                             logo_files['new balance'] = {
-                                'filename': filename,
-                                'url': logo_url
+                                'logo_url': logo_url
                             }
                         if brand_name == 'newbalance':
                             logo_files['new balance'] = {
-                                'filename': filename,
-                                'url': logo_url
+                                'logo_url': logo_url
                             }
             
             # Lấy tất cả brands để match
@@ -386,13 +372,13 @@ class BrandService:
                     brand = await self.brand_repo.get_by_name(brand_name)
                 
                 if brand:
-                    # Cập nhật logo URL (cả khi đã có để đảm bảo URL đúng)
-                    await self.brand_repo.update(brand['id'], {'logo': logo_info['url']})
+                    # Cập nhật logo URL MinIO đầy đủ vào DB
+                    await self.brand_repo.update(brand['id'], {'logo': logo_info['logo_url']})
                     updated_count += 1
                     updated_brands.append(brand.get('name', brand_name))
             
             return {
-                "message": f"Đã đồng bộ {updated_count} logo từ MinIO",
+                "message": f"Đã đồng bộ {updated_count} logo từ MinIO bucket '{brand_bucket}'",
                 "updated": updated_count,
                 "updated_brands": updated_brands,
                 "found_files": len(logo_files)

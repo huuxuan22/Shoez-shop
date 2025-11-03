@@ -192,11 +192,9 @@ const connectSocket = () => {
   })
 
   socket.value.on('disconnect', () => {
-    showErrorToast('Mất kết nối với server thông báo', 'Ngắt kết nối')
   })
 
   socket.value.on('connect_error', (error) => {
-    showErrorToast('Lỗi kết nối với server thông báo. Vui lòng thử lại.', 'Lỗi kết nối')
   })
 }
 

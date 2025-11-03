@@ -63,13 +63,11 @@ async def create_brand(
     Logo có thể để trống hoặc cung cấp file/URL
     """
     try:
-        # Validate
         if not name or not name.strip():
             raise HTTPException(status_code=400, detail="Tên thương hiệu là bắt buộc")
         
         service = BrandService(brand_repo, image_repo)
         
-        # Tạo brand data
         brand_data = BrandCreate(
             name=name.strip(),
             logo=logo_url.strip() if logo_url and logo_url.strip() else None,
@@ -169,40 +167,48 @@ async def get_brand_logo(
     filename: str
 ):
     """
-    Proxy endpoint để serve logo từ MinIO bucket 'trademark'
+    Proxy endpoint để serve logo từ MinIO bucket 'brand_logo'
+    Hỗ trợ backward compatibility với bucket 'trademark'
     """
     from fastapi.responses import StreamingResponse
     from io import BytesIO
     from minio.error import S3Error
     
     try:
-        bucket_name = "trademark"
-        
         # URL decode filename nếu cần
         from urllib.parse import unquote
         filename = unquote(filename)
         
-        # Kiểm tra bucket tồn tại
-        if not minio_client.bucket_exists(bucket_name):
-            raise HTTPException(status_code=404, detail=f"Bucket '{bucket_name}' không tồn tại")
+        # Thử bucket brand_logo trước, sau đó là trademark (backward compatibility)
+        bucket_name = None
+        actual_filename = filename
         
-        # Kiểm tra file có tồn tại không (list objects để verify)
-        try:
-            # List objects với prefix
-            objects = minio_client.list_objects(bucket_name, prefix=filename, recursive=False)
-            file_exists = False
-            actual_filename = filename
-            
-            for obj in objects:
-                if obj.object_name == filename:
-                    file_exists = True
-                    actual_filename = obj.object_name
-                    break
-            
-            if not file_exists:
-                raise HTTPException(status_code=404, detail=f"Logo '{filename}' không tìm thấy trong bucket")
-        except S3Error as e:
-            raise HTTPException(status_code=500, detail=f"Lỗi khi kiểm tra file: {str(e)}")
+        # Kiểm tra file trong bucket brand_logo
+        if minio_client.bucket_exists("brand_logo"):
+            try:
+                objects = minio_client.list_objects("brand_logo", prefix=filename, recursive=False)
+                for obj in objects:
+                    if obj.object_name == filename:
+                        bucket_name = "brand_logo"
+                        actual_filename = obj.object_name
+                        break
+            except:
+                pass
+        
+        # Nếu không tìm thấy trong brand_logo, thử trademark
+        if not bucket_name and minio_client.bucket_exists("trademark"):
+            try:
+                objects = minio_client.list_objects("trademark", prefix=filename, recursive=False)
+                for obj in objects:
+                    if obj.object_name == filename:
+                        bucket_name = "trademark"
+                        actual_filename = obj.object_name
+                        break
+            except:
+                pass
+        
+        if not bucket_name:
+            raise HTTPException(status_code=404, detail=f"Logo '{filename}' không tìm thấy trong bucket")
         
         # Lấy object từ MinIO
         try:

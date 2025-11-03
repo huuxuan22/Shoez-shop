@@ -36,10 +36,7 @@ const BrandService = {
     try {
       // Validate name
       const name = (brandData.name || '').trim();
-      if (!name) {
-        throw new Error('Tên thương hiệu là bắt buộc');
-      }
-      
+
       const formData = new FormData();
       formData.append('name', name);
       if (brandData.description) {
@@ -56,6 +53,7 @@ const BrandService = {
       if (brandData.is_active !== undefined) {
         formData.append('is_active', String(brandData.is_active));
       }
+      debugger;
 
       const response = await BaseAxios.post(`/${PREFIX}/create`, formData, {
         headers: {
