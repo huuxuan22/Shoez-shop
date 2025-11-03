@@ -39,6 +39,18 @@ class Settings(BaseSettings):
     smtp_password: str = Field(..., alias="SMTP_PASSWORD")
     smtp_from_email: str = Field(..., alias="SMTP_FROM_EMAIL")
     smtp_use_tls: bool = Field(default=True, alias="SMTP_USE_TLS")
+    # MoMo Payment Configuration
+    MOMO_PARTNER_CODE: Optional[str] = Field(default=None, alias="MOMO_PARTNER_CODE")
+    MOMO_ACCESS_KEY: Optional[str] = Field(default=None, alias="MOMO_ACCESS_KEY")
+    MOMO_SECRET_KEY: Optional[str] = Field(default=None, alias="MOMO_SECRET_KEY")
+    MOMO_API_URL: Optional[str] = Field(
+        default="https://test-payment.momo.vn/v2/gateway/api/create",
+        alias="MOMO_API_URL"
+    )
+    MOMO_IPN_URL: Optional[str] = Field(default=None, alias="MOMO_IPN_URL")
+    MOMO_REDIRECT_URL: Optional[str] = Field(default=None, alias="MOMO_REDIRECT_URL")
+    MOMO_ENVIRONMENT: str = Field(default="sandbox", alias="MOMO_ENVIRONMENT")
+    
     class Config:
         env_file = '.env'
         env_file_encoding = 'utf-8'

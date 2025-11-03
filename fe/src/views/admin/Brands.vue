@@ -516,7 +516,6 @@ const saveBrand = async () => {
         if (updatedBrand) {
           closeModal()
         } else {
-          // Retry load nếu chưa thấy
           await new Promise(resolve => setTimeout(resolve, 500))
           await loadBrands()
           closeModal()
@@ -527,24 +526,19 @@ const saveBrand = async () => {
     } else {
       // Thêm thương hiệu mới
       response = await BrandService.create(formData, logoFile.value)
-      // Kiểm tra response thành công
       if (response && (response.message || response.data)) {
         toast.success('Thêm thương hiệu thành công!')
         
-        // Lấy brand ID từ response nếu có
         const createdBrandData = response.data?.data || response.data
         const newBrandId = createdBrandData?.id || createdBrandData?._id
         
-        // Load lại danh sách
         await loadBrands()
         
-        // Kiểm tra brand mới đã có trong danh sách chưa
         let brandFound = false
         let retryCount = 0
         const maxRetries = 5
         
         while (!brandFound && retryCount < maxRetries) {
-          // Tìm brand theo tên (case insensitive) hoặc ID
           brandFound = brands.value.some(b => {
             const nameMatch = b.name && b.name.trim().toLowerCase() === brandName.toLowerCase()
             const idMatch = newBrandId && (b.id === newBrandId || b._id === newBrandId)
@@ -552,7 +546,6 @@ const saveBrand = async () => {
           })
           
           if (!brandFound && retryCount < maxRetries - 1) {
-            // Chưa thấy, đợi và load lại
             await new Promise(resolve => setTimeout(resolve, 300))
             await loadBrands()
             retryCount++
