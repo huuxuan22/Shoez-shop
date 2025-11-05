@@ -248,6 +248,30 @@ export default {
         notRated: "Chưa đánh giá",
       }
     },
+    AddProduct: {
+      title: "Thêm sản phẩm mới",
+      form: {
+        nameLabel: "Tên sản phẩm *",
+        namePlaceholder: "Nhập tên sản phẩm",
+        brandLabel: "Thương hiệu",
+        brandPlaceholder: "Nike, Adidas, ...",
+        categoryLabel: "Danh mục",
+        categoryPlaceholder: "Giày thể thao, dép, ...",
+        sizesLabel: "Size giày (cách nhau bởi dấu phẩy)",
+        sizesPlaceholder: "39, 40, 41, ...",
+        descriptionPlaceholder: "Nhập mô tả chi tiết",
+        priceLabel: "Giá (VNĐ) *",
+        stockLabel: "Số lượng",
+        imagesLabel: "Ảnh sản phẩm",
+        colorsLabel: "Màu sắc (cách nhau bởi dấu phẩy)",
+        colorsPlaceholder: "Đỏ, xanh, trắng, ...",
+        submitButton: "Thêm sản phẩm",
+      },
+      messages: {
+        success: "✅ Thêm sản phẩm thành công!",
+        error: "❌ Có lỗi xảy ra khi thêm sản phẩm!",
+      }
+    },
     Orders: {
       title: "Quản lý đơn hàng",
       subtitle: "Danh sách tất cả đơn hàng",

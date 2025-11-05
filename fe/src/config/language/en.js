@@ -248,6 +248,30 @@ export default {
         notRated: "Not rated",
       }
     },
+    AddProduct: {
+      title: "Add new product",
+      form: {
+        nameLabel: "Product name *",
+        namePlaceholder: "Enter product name",
+        brandLabel: "Brand",
+        brandPlaceholder: "Nike, Adidas, ...",
+        categoryLabel: "Category",
+        categoryPlaceholder: "Sneakers, sandals, ...",
+        sizesLabel: "Shoe sizes (comma separated)",
+        sizesPlaceholder: "39, 40, 41, ...",
+        descriptionPlaceholder: "Enter detailed description",
+        priceLabel: "Price (VND) *",
+        stockLabel: "Stock",
+        imagesLabel: "Product images",
+        colorsLabel: "Colors (comma separated)",
+        colorsPlaceholder: "Red, blue, white, ...",
+        submitButton: "Add product",
+      },
+      messages: {
+        success: "✅ Product added successfully!",
+        error: "❌ An error occurred while adding product!",
+      }
+    },
     Orders: {
       title: "Order management",
       subtitle: "List of all orders",

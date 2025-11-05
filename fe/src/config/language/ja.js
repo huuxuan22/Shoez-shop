@@ -248,6 +248,30 @@ export default {
         notRated: "未評価",
       }
     },
+    AddProduct: {
+      title: "新規商品の追加",
+      form: {
+        nameLabel: "商品名 *",
+        namePlaceholder: "商品名を入力",
+        brandLabel: "ブランド",
+        brandPlaceholder: "ナイキ、アディダス、...",
+        categoryLabel: "カテゴリ",
+        categoryPlaceholder: "スニーカー、サンダル、...",
+        sizesLabel: "靴のサイズ（カンマ区切り）",
+        sizesPlaceholder: "39, 40, 41, ...",
+        descriptionPlaceholder: "詳細な説明を入力",
+        priceLabel: "価格（VND） *",
+        stockLabel: "在庫",
+        imagesLabel: "商品画像",
+        colorsLabel: "色（カンマ区切り）",
+        colorsPlaceholder: "赤、青、白、...",
+        submitButton: "商品を追加",
+      },
+      messages: {
+        success: "✅ 商品を追加しました！",
+        error: "❌ 商品の追加中にエラーが発生しました！",
+      }
+    },
     Orders: {
       title: "注文管理",
       subtitle: "すべての注文一覧",

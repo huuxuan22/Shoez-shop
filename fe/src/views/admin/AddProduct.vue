@@ -1,42 +1,42 @@
 <template>
   <div class="max-w-2xl mx-auto p-6 bg-white rounded-2xl shadow-md mt-8">
-    <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Thêm sản phẩm mới</h2>
+    <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">{{$t('Admin.AddProduct.title')}}</h2>
     
     <form @submit.prevent="handleSubmit" class="space-y-4">
       <div>
-        <label class="block font-semibold mb-1">Tên sản phẩm *</label>
-        <input v-model.trim="form.name" class="input" placeholder="Nhập tên sản phẩm" required />
+        <label class="block font-semibold mb-1">{{$t('Admin.AddProduct.form.nameLabel')}}</label>
+        <input v-model.trim="form.name" class="input" :placeholder="$t('Admin.AddProduct.form.namePlaceholder')" required />
       </div>
 
       <div>
-        <label class="block font-semibold mb-1">Thương hiệu</label>
-        <input v-model.trim="form.brand" class="input" placeholder="Nike, Adidas, ..." />
+        <label class="block font-semibold mb-1">{{$t('Admin.AddProduct.form.brandLabel')}}</label>
+        <input v-model.trim="form.brand" class="input" :placeholder="$t('Admin.AddProduct.form.brandPlaceholder')" />
       </div>
 
       <div>
-        <label class="block font-semibold mb-1">Danh mục</label>
-        <input v-model.trim="form.category" class="input" placeholder="Giày thể thao, dép, ..." />
+        <label class="block font-semibold mb-1">{{$t('Admin.AddProduct.form.categoryLabel')}}</label>
+        <input v-model.trim="form.category" class="input" :placeholder="$t('Admin.AddProduct.form.categoryPlaceholder')" />
       </div>
       <div>
-        <label class="block font-semibold mb-1">Size giày (cách nhau bởi dấu phẩy)</label>
-        <input v-model="form.sizes" class="input mb-3" placeholder="39, 40, 41, ..." />
+        <label class="block font-semibold mb-1">{{$t('Admin.AddProduct.form.sizesLabel')}}</label>
+        <input v-model="form.sizes" class="input mb-3" :placeholder="$t('Admin.AddProduct.form.sizesPlaceholder')" />
       </div>
       <div>
-        <textarea v-model.trim="form.description" class="input" placeholder="Nhập mô tả chi tiết"></textarea>
+        <textarea v-model.trim="form.description" class="input" :placeholder="$t('Admin.AddProduct.form.descriptionPlaceholder')"></textarea>
       </div>
 
       <div>
-        <label class="block font-semibold mb-1">Giá (VNĐ) *</label>
+        <label class="block font-semibold mb-1">{{$t('Admin.AddProduct.form.priceLabel')}}</label>
         <input v-model.number="form.price" type="number" class="input" required min="0" />
       </div>
 
       <div>
-        <label class="block font-semibold mb-1">Số lượng</label>
+        <label class="block font-semibold mb-1">{{$t('Admin.AddProduct.form.stockLabel')}}</label>
         <input v-model.number="form.stock" type="number" class="input" min="0" />
       </div>
 
       <div>
-        <label class="block font-semibold mb-1">Ảnh sản phẩm</label>
+        <label class="block font-semibold mb-1">{{$t('Admin.AddProduct.form.imagesLabel')}}</label>
         <input type="file" multiple accept="image/*" @change="handleImageChange" class="input" />
         <div class="flex flex-wrap gap-2 mt-2">
           <img v-for="(img, idx) in imagePreviews" :key="idx" :src="img" class="w-20 h-20 object-cover rounded border" />
@@ -44,12 +44,12 @@
       </div>
 
       <div>
-        <label class="block font-semibold mb-1">Màu sắc (cách nhau bởi dấu phẩy)</label>
-        <input v-model="form.colors" class="input" placeholder="Đỏ, xanh, trắng, ..." />
+        <label class="block font-semibold mb-1">{{$t('Admin.AddProduct.form.colorsLabel')}}</label>
+        <input v-model="form.colors" class="input" :placeholder="$t('Admin.AddProduct.form.colorsPlaceholder')" />
       </div>
 
       <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition">
-        Thêm sản phẩm
+        {{$t('Admin.AddProduct.form.submitButton')}}
       </button>
     </form>
 
@@ -61,8 +61,12 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import axios from 'axios'
 import { getProductUrl } from '../../api/api.js'
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
+const { t: $t } = useI18n()
 
 const form = ref({
   name: '',
@@ -110,7 +114,7 @@ const handleSubmit = async () => {
       })
     }
 
-    message.value = '✅ Thêm sản phẩm thành công!'
+    message.value = $t('Admin.AddProduct.messages.success')
     success.value = true
     Object.assign(form.value, {
       name: '', brand: '', category: '', description: '', price: 0, stock: 0, colors: '', sizes: ''
@@ -118,7 +122,7 @@ const handleSubmit = async () => {
     imageFiles.value = []
     imagePreviews.value = []
   } catch (err) {
-    message.value = '❌ Có lỗi xảy ra khi thêm sản phẩm!'
+    message.value = $t('Admin.AddProduct.messages.error')
     success.value = false
   }
 }
