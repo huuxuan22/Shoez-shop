@@ -4,7 +4,7 @@
       <!-- Search Bar -->
       <div class="flex-1 max-w-2xl">
         <div class="relative">
-          <input type="text" placeholder="Tìm kiếm..."
+          <input type="text" :placeholder="$t('Admin.Header.searchPlaceholder')"
             class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent" />
           <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none"
             stroke="currentColor" viewBox="0 0 24 24">
@@ -16,6 +16,8 @@
 
       <!-- Right Section -->
       <div class="flex items-center space-x-4 ml-8">
+        <!-- Language Switcher -->
+        <LanguageSwitcher />
         <!-- Notifications Dropdown -->
         <div class="relative">
           <button @click="toggleNotifications"
@@ -35,15 +37,15 @@
             <div v-if="showNotifications"
               class="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-96 overflow-hidden">
               <div class="p-4 border-b border-gray-200 flex items-center justify-between">
-                <h3 class="font-semibold text-gray-900">Thông báo</h3>
+                <h3 class="font-semibold text-gray-900">{{$t('Admin.Header.notifications')}}</h3>
                 <button @click="clearAllNotifications" class="text-sm text-blue-600 hover:text-blue-800">
-                  Xóa tất cả
+                  {{$t('Admin.Header.clearAll')}}
                 </button>
               </div>
 
               <div class="overflow-y-auto max-h-80">
                 <div v-if="notifications.length === 0" class="p-8 text-center text-gray-500">
-                  Không có thông báo
+                  {{$t('Admin.Header.noNotifications')}}
                 </div>
 
                 <div v-for="notif in notifications" :key="notif.id"
@@ -101,11 +103,14 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { io } from 'socket.io-client'
 import AdminService from '@/api-services/AdminService'
 import { useToast } from '@/composables/useToast'
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 
 const router = useRouter()
+const { t: $t } = useI18n()
 const { error: showErrorToast, success: showSuccessToast } = useToast()
 
 const showNotifications = ref(false)
@@ -132,7 +137,7 @@ const handleNotificationClick = async (notif) => {
       // Remove notification khỏi list
       notifications.value = notifications.value.filter(n => n.id !== notif.id)
     } catch (error) {
-      showErrorToast('Không thể đánh dấu thông báo là đã phản hồi. Vui lòng thử lại.')
+      showErrorToast($t('Admin.Header.error.markRespondedFailed'))
     }
   }
   showNotifications.value = false
@@ -157,12 +162,12 @@ const formatTime = (timestamp) => {
   const hours = Math.floor(minutes / 60)
   const days = Math.floor(hours / 24)
 
-  if (seconds < 60) return 'Vừa xong'
-  if (minutes < 60) return `${minutes} phút trước`
-  if (hours < 24) return `${hours} giờ trước`
-  if (days < 7) return `${days} ngày trước`
+  if (seconds < 60) return $t('Admin.Header.timeAgo.justNow')
+  if (minutes < 60) return $t('Admin.Header.timeAgo.minutesAgo', { count: minutes })
+  if (hours < 24) return $t('Admin.Header.timeAgo.hoursAgo', { count: hours })
+  if (days < 7) return $t('Admin.Header.timeAgo.daysAgo', { count: days })
 
-  return date.toLocaleDateString('vi-VN')
+  return date.toLocaleDateString()
 }
 
 // Connect to WebSocket

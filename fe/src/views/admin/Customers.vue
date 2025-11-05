@@ -3,11 +3,11 @@
     <!-- Page Header -->
     <div class="mb-6 flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-semibold text-gray-900">Khách hàng</h1>
-        <p class="text-gray-600 mt-1">Quản lý tài khoản người dùng của cửa hàng</p>
+        <h1 class="text-2xl font-semibold text-gray-900">{{$t('Admin.Customers.title')}}</h1>
+        <p class="text-gray-600 mt-1">{{$t('Admin.Customers.subtitle')}}</p>
       </div>
       <div class="relative w-80">
-        <input v-model="keyword" type="text" placeholder="Tìm theo tên hoặc email..."
+        <input v-model="keyword" type="text" :placeholder="$t('Admin.Customers.searchPlaceholder')"
                class="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70"
         />
         <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -25,7 +25,7 @@
           @click="confirmDeleteSelected"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m4 0H5"/></svg>
-          Xoá đã chọn ({{ selectedIds.length }})
+          {{$t('Admin.Customers.actions.deleteSelected')}} ({{ selectedIds.length }})
         </button>
         <button
           class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-800 bg-white hover:bg-gray-50 disabled:opacity-50"
@@ -33,7 +33,7 @@
           @click="confirmLockSelected(true)"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0v4m-9 4h10a2 2 0 002-2v-2a2 2 0 00-2-2H7a2 2 0 00-2 2v2a2 2 0 002 2z"/></svg>
-          Khoá đã chọn
+          {{$t('Admin.Customers.actions.lockSelected')}}
         </button>
         <button
           class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-green-300 text-green-700 bg-green-50 hover:bg-green-100 disabled:opacity-50"
@@ -41,11 +41,11 @@
           @click="confirmLockSelected(false)"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11V7a4 4 0 118 0m-9 8h10a2 2 0 002-2v-2a2 2 0 00-2-2H7a2 2 0 00-2 2v2a2 2 0 002 2z"/></svg>
-          Mở khoá đã chọn
+          {{$t('Admin.Customers.actions.unlockSelected')}}
         </button>
       </div>
       <div class="flex items-center space-x-2">
-        <label class="text-sm text-gray-600">Hiển thị</label>
+        <label class="text-sm text-gray-600">{{$t('Admin.Customers.actions.perPage')}}</label>
         <select v-model.number="pageSize" @change="reload" class="border rounded px-2 py-1">
           <option :value="10">10</option>
           <option :value="20">20</option>
@@ -62,12 +62,12 @@
             <th class="px-4 py-3">
               <input type="checkbox" :checked="allChecked" @change="toggleAll" />
             </th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Họ tên</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vai trò</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày tạo</th>
-            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{{$t('Admin.Customers.table.fullName')}}</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{$t('Admin.Customers.table.email')}}</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{$t('Admin.Customers.table.status')}}</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{$t('Admin.Customers.table.role')}}</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{$t('Admin.Customers.table.createdAt')}}</th>
+            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{{$t('Admin.Customers.table.actions')}}</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-100">
@@ -77,7 +77,7 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
               </svg>
-              Đang tải dữ liệu...
+              {{$t('Admin.Customers.table.loading')}}
             </td>
           </tr>
           <tr v-for="u in filteredUsers" :key="u.id" class="hover:bg-gray-50/80">
@@ -98,7 +98,7 @@
             <td class="px-4 py-3">
               <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold"
                     :class="u.is_active === false ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'">
-                {{ u.is_active === false ? 'Đã khoá' : 'Hoạt động' }}
+                {{ u.is_active === false ? $t('Admin.Customers.table.locked') : $t('Admin.Customers.table.active') }}
               </span>
             </td>
             <td class="px-4 py-3">
@@ -111,25 +111,25 @@
             <td class="px-4 py-3 text-right space-x-2">
               <button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full border border-slate-300 text-slate-700 bg-white hover:bg-slate-50" @click="resetDraft(u)">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12a9 9 0 119 9m0-18A9 9 0 003 12h6"/></svg>
-                Hoàn tác
+                {{$t('Admin.Customers.table.undo')}}
               </button>
               <button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full border border-red-200 text-red-700 bg-red-50 hover:bg-red-100" @click="confirmDelete(u.id)">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m4 0H5"/></svg>
-                Xoá
+                {{$t('Admin.Customers.table.delete')}}
               </button>
               <button v-if="u.is_active !== false" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full border border-gray-300 text-gray-800 bg-white hover:bg-gray-50" @click="confirmLock(u, true)">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0v4m-9 4h10a2 2 0 002-2v-2a2 2 0 00-2-2H7a2 2 0 00-2 2v2a2 2 0 002 2z"/></svg>
-                Khoá
+                {{$t('Admin.Customers.table.lock')}}
               </button>
               <button v-else class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full border border-green-300 text-green-700 bg-green-50 hover:bg-green-100" @click="confirmLock(u, false)">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11V7a4 4 0 118 0m-9 8h10a2 2 0 002-2v-2a2 2 0 00-2-2H7a2 2 0 00-2 2v2a2 2 0 002 2z"/></svg>
-                Mở khoá
+                {{$t('Admin.Customers.table.unlock')}}
               </button>
             </td>
           </tr>
           <tr v-if="!loading && filteredUsers.length === 0">
             <td colspan="7" class="px-4 py-10 text-center text-gray-500">
-              Không có dữ liệu phù hợp
+              {{$t('Admin.Customers.table.noData')}}
             </td>
           </tr>
         </tbody>
@@ -138,10 +138,10 @@
 
     <!-- Pagination -->
     <div class="flex items-center justify-between mt-4">
-      <div class="text-sm text-gray-600">Trang {{ page }}</div>
+      <div class="text-sm text-gray-600">{{$t('Admin.Customers.pagination.page')}} {{ page }}</div>
       <div class="space-x-2">
-        <button class="px-3 py-1 border rounded disabled:opacity-50" :disabled="page === 1" @click="prevPage">Trước</button>
-        <button class="px-3 py-1 border rounded" @click="nextPage">Sau</button>
+        <button class="px-3 py-1 border rounded disabled:opacity-50" :disabled="page === 1" @click="prevPage">{{$t('Admin.Customers.pagination.prev')}}</button>
+        <button class="px-3 py-1 border rounded" @click="nextPage">{{$t('Admin.Customers.pagination.next')}}</button>
       </div>
     </div>
   </AdminLayout>
@@ -169,12 +169,12 @@
           <button 
             class="px-8 py-3 rounded-full border-2 border-black text-black bg-white hover:bg-gray-50 hover:border-gray-700 font-semibold transition-all duration-200 shadow-sm hover:shadow-md min-w-[120px]" 
             @click="confirm.visible = false">
-            Huỷ
+            {{$t('Admin.Customers.confirm.cancel')}}
           </button>
           <button 
             class="px-8 py-3 rounded-full bg-black text-white hover:bg-gray-800 font-semibold transition-all duration-200 shadow-md hover:shadow-lg min-w-[120px]" 
             @click="confirm.onOk">
-            Xác nhận
+            {{$t('Admin.Customers.confirm.confirm')}}
           </button>
         </div>
       </div>
@@ -185,10 +185,12 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AdminLayout from '@/layouts/admin/AdminLayout.vue'
 import UserService from '@/api-services/UserService'
 import { useToast } from '@/composables/useToast'
 
+const { t: $t } = useI18n()
 // Toast notifications
 const toast = useToast()
 
@@ -251,33 +253,33 @@ const formatDate = (d) => {
 const updateRole = async () => {}
 
 const confirmDelete = (id) => {
-  confirm.message = 'Bạn có chắc muốn xoá người dùng này?'
+  confirm.message = $t('Admin.Customers.confirm.deleteUser')
   confirm.visible = true
   confirm.onOk = async () => {
     confirm.visible = false
     try {
       await UserService.deleteUsers([id])
-      toast.success('Đã xoá người dùng thành công!')
+      toast.success($t('Admin.Customers.messages.deleteSuccess'))
       await load()
     } catch (e) {
       console.error('Delete user failed', e)
-      toast.error(e?.message || 'Xoá người dùng thất bại')
+      toast.error(e?.message || $t('Admin.Customers.messages.deleteFailed'))
     }
   }
 }
 
 const confirmDeleteSelected = () => {
-  confirm.message = `Xoá ${selectedIds.value.length} người dùng đã chọn?`
+  confirm.message = $t('Admin.Customers.confirm.deleteUsers', { count: selectedIds.value.length })
   confirm.visible = true
   confirm.onOk = async () => {
     confirm.visible = false
     try {
       await UserService.deleteUsers(selectedIds.value)
-      toast.success(`Đã xoá ${selectedIds.value.length} người dùng thành công!`)
+      toast.success($t('Admin.Customers.messages.deleteUsersSuccess', { count: selectedIds.value.length }))
       await load()
     } catch (e) {
       console.error('Delete users failed', e)
-      toast.error(e?.message || 'Xoá người dùng thất bại')
+      toast.error(e?.message || $t('Admin.Customers.messages.deleteFailed'))
     }
   }
 }
@@ -288,33 +290,33 @@ const setActive = async (ids, active) => {
 }
 
 const confirmLock = (u, lock) => {
-  confirm.message = lock ? 'Khoá tài khoản này?' : 'Mở khoá tài khoản này?'
+  confirm.message = lock ? $t('Admin.Customers.confirm.lockAccount') : $t('Admin.Customers.confirm.unlockAccount')
   confirm.visible = true
   confirm.onOk = async () => {
     confirm.visible = false
     try {
       await setActive([u.id], !lock ? true : false)
-      toast.success(lock ? 'Đã khoá tài khoản thành công!' : 'Đã mở khoá tài khoản thành công!')
+      toast.success(lock ? $t('Admin.Customers.messages.lockSuccess') : $t('Admin.Customers.messages.unlockSuccess'))
       await load()
     } catch (e) {
       console.error('Lock user failed', e)
-      toast.error(e?.message || 'Khoá/Mở khoá thất bại')
+      toast.error(e?.message || $t('Admin.Customers.messages.lockFailed'))
     }
   }
 }
 
 const confirmLockSelected = (lock) => {
-  confirm.message = lock ? `Khoá ${selectedIds.value.length} tài khoản?` : `Mở khoá ${selectedIds.value.length} tài khoản?`
+  confirm.message = lock ? $t('Admin.Customers.confirm.lockAccounts', { count: selectedIds.value.length }) : $t('Admin.Customers.confirm.unlockAccounts', { count: selectedIds.value.length })
   confirm.visible = true
   confirm.onOk = async () => {
     confirm.visible = false
     try {
       await setActive(selectedIds.value, !lock ? true : false)
-      toast.success(lock ? `Đã khoá ${selectedIds.value.length} tài khoản thành công!` : `Đã mở khoá ${selectedIds.value.length} tài khoản thành công!`)
+      toast.success(lock ? $t('Admin.Customers.messages.lockUsersSuccess', { count: selectedIds.value.length }) : $t('Admin.Customers.messages.unlockUsersSuccess', { count: selectedIds.value.length }))
       await load()
     } catch (e) {
       console.error('Batch lock users failed', e)
-      toast.error(e?.message || 'Thao tác thất bại')
+      toast.error(e?.message || $t('Admin.Customers.messages.actionFailed'))
     }
   }
 }

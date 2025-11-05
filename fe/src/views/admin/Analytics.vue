@@ -2,8 +2,8 @@
   <AdminLayout>
     <!-- Page Header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Thống kê & Phân tích</h1>
-      <p class="text-gray-600 mt-2">Tổng quan về hệ thống và hiệu suất kinh doanh</p>
+      <h1 class="text-3xl font-bold text-gray-900">{{$t('Admin.Analytics.title')}}</h1>
+      <p class="text-gray-600 mt-2">{{$t('Admin.Analytics.subtitle')}}</p>
     </div>
 
     <!-- Loading State -->
@@ -15,7 +15,7 @@
     <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
       <p class="text-red-800">{{ error }}</p>
       <button @click="fetchData" class="mt-2 text-red-600 hover:text-red-800 underline">
-        Thử lại
+        {{$t('Admin.Analytics.retry')}}
       </button>
     </div>
 
@@ -27,7 +27,7 @@
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Tổng doanh thu</p>
+              <p class="text-sm text-gray-600 mb-1">{{$t('Admin.Analytics.cards.totalRevenue')}}</p>
               <h3 class="text-2xl font-bold text-gray-900">
                 {{ formatCurrency(overview.total_revenue) }}
               </h3>
@@ -35,7 +35,7 @@
                 class="text-sm mt-2"
                 :class="overview.revenue_change >= 0 ? 'text-green-600' : 'text-red-600'"
               >
-                {{ overview.revenue_change >= 0 ? '+' : '' }}{{ overview.revenue_change }}% so với tháng trước
+                {{ overview.revenue_change >= 0 ? '+' : '' }}{{ overview.revenue_change }}{{$t('Admin.Analytics.cards.revenueChangeSuffix')}}
               </p>
             </div>
             <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -51,13 +51,13 @@
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Tổng đơn hàng</p>
+              <p class="text-sm text-gray-600 mb-1">{{$t('Admin.Analytics.cards.totalOrders')}}</p>
               <h3 class="text-2xl font-bold text-gray-900">{{ formatNumber(overview.total_orders) }}</h3>
               <p
                 class="text-sm mt-2"
                 :class="overview.orders_change >= 0 ? 'text-blue-600' : 'text-red-600'"
               >
-                {{ overview.orders_change >= 0 ? '+' : '' }}{{ overview.orders_change }}% so với tháng trước
+                {{ overview.orders_change >= 0 ? '+' : '' }}{{ overview.orders_change }}{{$t('Admin.Analytics.cards.revenueChangeSuffix')}}
               </p>
             </div>
             <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -73,9 +73,9 @@
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Tổng sản phẩm</p>
+              <p class="text-sm text-gray-600 mb-1">{{$t('Admin.Analytics.cards.totalProducts')}}</p>
               <h3 class="text-2xl font-bold text-gray-900">{{ formatNumber(overview.total_products) }}</h3>
-              <p class="text-sm text-purple-600 mt-2">Đang hoạt động</p>
+              <p class="text-sm text-purple-600 mt-2">{{$t('Admin.Analytics.cards.active')}}</p>
             </div>
             <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
               <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,9 +90,9 @@
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Tổng khách hàng</p>
+              <p class="text-sm text-gray-600 mb-1">{{$t('Admin.Analytics.cards.totalCustomers')}}</p>
               <h3 class="text-2xl font-bold text-gray-900">{{ formatNumber(overview.total_customers) }}</h3>
-              <p class="text-sm text-orange-600 mt-2">Người dùng đã đăng ký</p>
+              <p class="text-sm text-orange-600 mt-2">{{$t('Admin.Analytics.cards.registeredUsers')}}</p>
             </div>
             <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
               <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,11 +109,11 @@
         <!-- Revenue Chart -->
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">Doanh thu {{ chartDays }} ngày qua</h3>
+            <h3 class="text-lg font-semibold text-gray-900">{{$t('Admin.Analytics.chart.revenueTitle', { days: chartDays })}}</h3>
             <select v-model="chartDays" @change="fetchChartData" class="text-sm border rounded px-2 py-1">
-              <option :value="7">7 ngày</option>
-              <option :value="14">14 ngày</option>
-              <option :value="30">30 ngày</option>
+              <option :value="7">{{$t('Admin.Analytics.chart.option7')}}</option>
+              <option :value="14">{{$t('Admin.Analytics.chart.option14')}}</option>
+              <option :value="30">{{$t('Admin.Analytics.chart.option30')}}</option>
             </select>
           </div>
           <div class="h-64 overflow-hidden">
@@ -134,7 +134,7 @@
           </div>
           <div class="mt-4 pt-4 border-t border-gray-200">
             <div class="flex justify-between text-sm">
-              <span class="text-gray-600">Tổng doanh thu:</span>
+              <span class="text-gray-600">{{$t('Admin.Analytics.chart.totalRevenue')}}</span>
               <span class="font-semibold text-gray-900">
                 {{ formatCurrency(getTotalRevenue(chartData)) }}
               </span>
@@ -144,10 +144,10 @@
 
         <!-- Top Products -->
         <div class="bg-white rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Sản phẩm bán chạy</h3>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">{{$t('Admin.Analytics.topProducts.title')}}</h3>
           <div class="space-y-4">
             <div v-if="topProducts.length === 0" class="text-center text-gray-500 py-8">
-              Chưa có dữ liệu
+              {{$t('Admin.Analytics.topProducts.noData')}}
             </div>
             <div v-for="(product, index) in topProducts" :key="product.product_id"
               class="flex items-center justify-between">
@@ -157,7 +157,7 @@
                 </div>
                 <div class="flex-1 min-w-0">
                   <p class="font-medium text-gray-900 truncate">{{ product.name }}</p>
-                  <p class="text-sm text-gray-500">{{ formatNumber(product.sold) }} đã bán</p>
+                  <p class="text-sm text-gray-500">{{ formatNumber(product.sold) }} {{$t('Admin.Analytics.topProducts.soldSuffix')}}</p>
                 </div>
               </div>
               <div class="text-right">
@@ -172,7 +172,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <!-- Order Status Distribution -->
         <div class="bg-white rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Phân bổ đơn hàng theo trạng thái</h3>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">{{$t('Admin.Analytics.statusDistribution.title')}}</h3>
           <div class="space-y-3">
             <div v-for="(count, status) in overview.status_counts" :key="status" class="flex items-center">
               <div class="flex-1">
@@ -194,10 +194,10 @@
 
         <!-- Recent Orders -->
         <div class="bg-white rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Đơn hàng gần đây</h3>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">{{$t('Admin.Analytics.recentOrders.title')}}</h3>
           <div class="space-y-3">
             <div v-if="recentOrders.length === 0" class="text-center text-gray-500 py-8">
-              Chưa có đơn hàng
+              {{$t('Admin.Analytics.recentOrders.empty')}}
             </div>
             <div v-for="order in recentOrders" :key="order.id"
               class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
@@ -224,34 +224,34 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <!-- Detailed Revenue Stats -->
         <div class="bg-white rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Doanh thu chi tiết</h3>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">{{$t('Admin.Analytics.detailedRevenue.title')}}</h3>
           <div class="space-y-4">
             <div class="flex items-center justify-between pb-3 border-b border-gray-200">
-              <span class="text-sm text-gray-600">Hôm nay</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.detailedRevenue.today')}}</span>
               <div class="text-right">
                 <p class="font-semibold text-gray-900">{{ formatCurrency(detailedRevenue.today?.revenue || 0) }}</p>
-                <p class="text-xs text-gray-500">{{ formatNumber(detailedRevenue.today?.orders || 0) }} đơn</p>
+                <p class="text-xs text-gray-500">{{ formatNumber(detailedRevenue.today?.orders || 0) }} {{$t('Admin.Analytics.detailedRevenue.ordersSuffix')}}</p>
               </div>
             </div>
             <div class="flex items-center justify-between pb-3 border-b border-gray-200">
-              <span class="text-sm text-gray-600">Tuần này</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.detailedRevenue.thisWeek')}}</span>
               <div class="text-right">
                 <p class="font-semibold text-gray-900">{{ formatCurrency(detailedRevenue.this_week?.revenue || 0) }}</p>
-                <p class="text-xs text-gray-500">{{ formatNumber(detailedRevenue.this_week?.orders || 0) }} đơn</p>
+                <p class="text-xs text-gray-500">{{ formatNumber(detailedRevenue.this_week?.orders || 0) }} {{$t('Admin.Analytics.detailedRevenue.ordersSuffix')}}</p>
               </div>
             </div>
             <div class="flex items-center justify-between pb-3 border-b border-gray-200">
-              <span class="text-sm text-gray-600">Tháng này</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.detailedRevenue.thisMonth')}}</span>
               <div class="text-right">
                 <p class="font-semibold text-gray-900">{{ formatCurrency(detailedRevenue.this_month?.revenue || 0) }}</p>
-                <p class="text-xs text-gray-500">{{ formatNumber(detailedRevenue.this_month?.orders || 0) }} đơn</p>
+                <p class="text-xs text-gray-500">{{ formatNumber(detailedRevenue.this_month?.orders || 0) }} {{$t('Admin.Analytics.detailedRevenue.ordersSuffix')}}</p>
               </div>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-600">Năm này</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.detailedRevenue.thisYear')}}</span>
               <div class="text-right">
                 <p class="font-semibold text-gray-900">{{ formatCurrency(detailedRevenue.this_year?.revenue || 0) }}</p>
-                <p class="text-xs text-gray-500">{{ formatNumber(detailedRevenue.this_year?.orders || 0) }} đơn</p>
+                <p class="text-xs text-gray-500">{{ formatNumber(detailedRevenue.this_year?.orders || 0) }} {{$t('Admin.Analytics.detailedRevenue.ordersSuffix')}}</p>
               </div>
             </div>
           </div>
@@ -259,26 +259,26 @@
 
         <!-- Detailed Order Stats -->
         <div class="bg-white rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Đơn hàng theo thời gian</h3>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">{{$t('Admin.Analytics.detailedOrders.title')}}</h3>
           <div class="space-y-4">
             <div class="flex items-center justify-between pb-3 border-b border-gray-200">
-              <span class="text-sm text-gray-600">Hôm nay</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.detailedOrders.today')}}</span>
               <span class="font-semibold text-gray-900">{{ formatNumber(detailedOrders.today || 0) }}</span>
             </div>
             <div class="flex items-center justify-between pb-3 border-b border-gray-200">
-              <span class="text-sm text-gray-600">Tuần này</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.detailedOrders.thisWeek')}}</span>
               <span class="font-semibold text-gray-900">{{ formatNumber(detailedOrders.this_week || 0) }}</span>
             </div>
             <div class="flex items-center justify-between pb-3 border-b border-gray-200">
-              <span class="text-sm text-gray-600">Tháng này</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.detailedOrders.thisMonth')}}</span>
               <span class="font-semibold text-gray-900">{{ formatNumber(detailedOrders.this_month || 0) }}</span>
             </div>
             <div class="flex items-center justify-between pb-3 border-b border-gray-200">
-              <span class="text-sm text-gray-600">Tổng cộng</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.detailedOrders.total')}}</span>
               <span class="font-semibold text-gray-900">{{ formatNumber(detailedOrders.total || 0) }}</span>
             </div>
             <div class="pt-2">
-              <p class="text-xs text-gray-500 mb-2">Phân bổ theo trạng thái:</p>
+              <p class="text-xs text-gray-500 mb-2">{{$t('Admin.Analytics.detailedOrders.byStatus')}}</p>
               <div class="space-y-1">
                 <div v-for="(count, status) in detailedOrders.by_status" :key="status" class="flex items-center justify-between text-xs">
                   <span class="text-gray-600">{{ getStatusLabel(status) }}:</span>
@@ -291,36 +291,36 @@
 
         <!-- Cancellation Stats -->
         <div class="bg-white rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Thống kê hủy hàng</h3>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">{{$t('Admin.Analytics.cancellations.title')}}</h3>
           <div class="space-y-4">
             <div class="bg-red-50 rounded-lg p-4">
               <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-medium text-red-800">Tổng đơn hủy</span>
+                <span class="text-sm font-medium text-red-800">{{$t('Admin.Analytics.cancellations.totalCancelled')}}</span>
                 <span class="text-xl font-bold text-red-900">{{ formatNumber(cancellationStats.total_cancelled || 0) }}</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-xs text-red-600">Tỷ lệ hủy</span>
+                <span class="text-xs text-red-600">{{$t('Admin.Analytics.cancellations.cancellationRate')}}</span>
                 <span class="text-sm font-semibold text-red-700">{{ cancellationStats.cancellation_rate || 0 }}%</span>
               </div>
             </div>
             <div class="pb-3 border-b border-gray-200">
-              <p class="text-sm font-medium text-gray-700 mb-2">Doanh thu mất</p>
+              <p class="text-sm font-medium text-gray-700 mb-2">{{$t('Admin.Analytics.cancellations.lostRevenue')}}</p>
               <p class="text-xl font-bold text-red-600">{{ formatCurrency(cancellationStats.lost_revenue || 0) }}</p>
             </div>
             <div class="space-y-2">
               <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600">Hôm nay:</span>
-                <span class="font-medium">{{ formatNumber(cancellationStats.today?.count || 0) }} đơn
+                <span class="text-gray-600">{{$t('Admin.Analytics.cancellations.today')}}:</span>
+                <span class="font-medium">{{ formatNumber(cancellationStats.today?.count || 0) }} {{$t('Admin.Analytics.detailedRevenue.ordersSuffix')}}
                   ({{ formatCurrency(cancellationStats.today?.lost_revenue || 0) }})</span>
               </div>
               <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600">Tuần này:</span>
-                <span class="font-medium">{{ formatNumber(cancellationStats.this_week?.count || 0) }} đơn
+                <span class="text-gray-600">{{$t('Admin.Analytics.cancellations.thisWeek')}}:</span>
+                <span class="font-medium">{{ formatNumber(cancellationStats.this_week?.count || 0) }} {{$t('Admin.Analytics.detailedRevenue.ordersSuffix')}}
                   ({{ formatCurrency(cancellationStats.this_week?.lost_revenue || 0) }})</span>
               </div>
               <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600">Tháng này:</span>
-                <span class="font-medium">{{ formatNumber(cancellationStats.this_month?.count || 0) }} đơn
+                <span class="text-gray-600">{{$t('Admin.Analytics.cancellations.thisMonth')}}:</span>
+                <span class="font-medium">{{ formatNumber(cancellationStats.this_month?.count || 0) }} {{$t('Admin.Analytics.detailedRevenue.ordersSuffix')}}
                   ({{ formatCurrency(cancellationStats.this_month?.lost_revenue || 0) }})</span>
               </div>
             </div>
@@ -330,15 +330,15 @@
 
       <!-- Recent Cancelled Orders -->
       <div class="bg-white rounded-lg shadow p-6 mb-8" v-if="cancellationStats.recent_cancelled?.length > 0">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Đơn hàng hủy gần đây</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">{{$t('Admin.Analytics.recentCancelled.title')}}</h3>
         <div class="overflow-x-auto">
           <table class="w-full">
             <thead class="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mã đơn</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Khách hàng</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ngày</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Giá trị</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{$t('Admin.Analytics.table.orderId')}}</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{$t('Admin.Analytics.table.customer')}}</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{$t('Admin.Analytics.table.date')}}</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{$t('Admin.Analytics.table.value')}}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
@@ -358,7 +358,7 @@
         <!-- Users Stats -->
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">Người dùng</h3>
+            <h3 class="text-lg font-semibold text-gray-900">{{$t('Admin.Analytics.entities.users')}}</h3>
             <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
               <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -367,27 +367,27 @@
           </div>
           <div class="space-y-2">
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Tổng số:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.total')}}</span>
               <span class="text-sm font-semibold text-gray-900">{{ formatNumber(userStats.total_users) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Đang hoạt động:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.active')}}</span>
               <span class="text-sm font-semibold text-green-600">{{ formatNumber(userStats.active_users) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Ngừng hoạt động:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.inactive')}}</span>
               <span class="text-sm font-semibold text-red-600">{{ formatNumber(userStats.inactive_users) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Mới trong tháng:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.newThisMonth')}}</span>
               <span class="text-sm font-semibold text-blue-600">{{ formatNumber(userStats.new_users_this_month) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Mới trong tuần:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.newThisWeek')}}</span>
               <span class="text-sm font-semibold text-blue-600">{{ formatNumber(userStats.new_users_this_week) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Quản trị viên:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.admins')}}</span>
               <span class="text-sm font-semibold text-purple-600">{{ formatNumber(userStats.total_admins) }}</span>
             </div>
           </div>
@@ -396,7 +396,7 @@
         <!-- Categories Stats -->
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">Danh mục</h3>
+            <h3 class="text-lg font-semibold text-gray-900">{{$t('Admin.Analytics.entities.categories')}}</h3>
             <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
               <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -405,15 +405,15 @@
           </div>
           <div class="space-y-2">
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Tổng số:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.total')}}</span>
               <span class="text-sm font-semibold text-gray-900">{{ formatNumber(categoryStats.total_categories) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Đang hoạt động:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.active')}}</span>
               <span class="text-sm font-semibold text-green-600">{{ formatNumber(categoryStats.active_categories) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Ngừng hoạt động:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.inactive')}}</span>
               <span class="text-sm font-semibold text-red-600">{{ formatNumber(categoryStats.inactive_categories) }}</span>
             </div>
           </div>
@@ -422,7 +422,7 @@
         <!-- Brands Stats -->
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">Thương hiệu</h3>
+            <h3 class="text-lg font-semibold text-gray-900">{{$t('Admin.Analytics.entities.brands')}}</h3>
             <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
               <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
@@ -431,15 +431,15 @@
           </div>
           <div class="space-y-2">
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Tổng số:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.total')}}</span>
               <span class="text-sm font-semibold text-gray-900">{{ formatNumber(brandStats.total_brands) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Đang hoạt động:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.active')}}</span>
               <span class="text-sm font-semibold text-green-600">{{ formatNumber(brandStats.active_brands) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Ngừng hoạt động:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.inactive')}}</span>
               <span class="text-sm font-semibold text-red-600">{{ formatNumber(brandStats.inactive_brands) }}</span>
             </div>
           </div>
@@ -448,7 +448,7 @@
         <!-- Products Stats -->
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">Sản phẩm</h3>
+            <h3 class="text-lg font-semibold text-gray-900">{{$t('Admin.Analytics.entities.products')}}</h3>
             <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
               <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -457,31 +457,31 @@
           </div>
           <div class="space-y-2">
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Tổng số:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.total')}}</span>
               <span class="text-sm font-semibold text-gray-900">{{ formatNumber(productStats.total_products) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Đang hoạt động:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.active')}}</span>
               <span class="text-sm font-semibold text-green-600">{{ formatNumber(productStats.active_products) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Ngừng hoạt động:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.inactive')}}</span>
               <span class="text-sm font-semibold text-red-600">{{ formatNumber(productStats.inactive_products) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Mới trong tháng:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.newThisMonth')}}</span>
               <span class="text-sm font-semibold text-blue-600">{{ formatNumber(productStats.new_products_this_month) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Mới trong tuần:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.newThisWeek')}}</span>
               <span class="text-sm font-semibold text-blue-600">{{ formatNumber(productStats.new_products_this_week) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Tồn kho thấp:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.lowStock')}}</span>
               <span class="text-sm font-semibold text-yellow-600">{{ formatNumber(productStats.low_stock_count) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Hết hàng:</span>
+              <span class="text-sm text-gray-600">{{$t('Admin.Analytics.entities.outOfStock')}}</span>
               <span class="text-sm font-semibold text-red-600">{{ formatNumber(productStats.out_of_stock_count) }}</span>
             </div>
           </div>
@@ -492,10 +492,10 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <!-- Top Categories -->
         <div class="bg-white rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Danh mục có nhiều sản phẩm nhất</h3>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">{{$t('Admin.Analytics.topCategoriesTitle')}}</h3>
           <div class="space-y-3">
             <div v-if="categoryStats.categories_with_products.length === 0" class="text-center text-gray-500 py-4">
-              Chưa có dữ liệu
+              {{$t('Admin.Analytics.topProducts.noData')}}
             </div>
             <div v-for="(category, index) in categoryStats.categories_with_products.slice(0, 10)" :key="category.id" 
               class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
@@ -506,13 +506,13 @@
                 <div>
                   <p class="font-medium text-gray-900">{{ category.name }}</p>
                   <p class="text-xs text-gray-500" :class="category.is_active ? 'text-green-600' : 'text-red-600'">
-                    {{ category.is_active ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
+                    {{ category.is_active ? $t('Admin.Analytics.entities.active').replace(':','') : $t('Admin.Analytics.entities.inactive').replace(':','') }}
                   </p>
                 </div>
               </div>
               <div class="text-right">
                 <span class="font-semibold text-gray-900">{{ formatNumber(category.products_count) }}</span>
-                <p class="text-xs text-gray-500">sản phẩm</p>
+                <p class="text-xs text-gray-500">{{$t('Admin.Analytics.entities.productsUnit')}}</p>
               </div>
             </div>
           </div>
@@ -520,10 +520,10 @@
 
         <!-- Top Brands -->
         <div class="bg-white rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Thương hiệu có nhiều sản phẩm nhất</h3>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">{{$t('Admin.Analytics.topBrandsTitle')}}</h3>
           <div class="space-y-3">
             <div v-if="brandStats.brands_with_products.length === 0" class="text-center text-gray-500 py-4">
-              Chưa có dữ liệu
+              {{$t('Admin.Analytics.topProducts.noData')}}
             </div>
             <div v-for="(brand, index) in brandStats.brands_with_products.slice(0, 10)" :key="brand.id" 
               class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
@@ -534,13 +534,13 @@
                 <div>
                   <p class="font-medium text-gray-900">{{ brand.name }}</p>
                   <p class="text-xs text-gray-500" :class="brand.is_active ? 'text-green-600' : 'text-red-600'">
-                    {{ brand.is_active ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
+                    {{ brand.is_active ? $t('Admin.Analytics.entities.active').replace(':','') : $t('Admin.Analytics.entities.inactive').replace(':','') }}
                   </p>
                 </div>
               </div>
               <div class="text-right">
                 <span class="font-semibold text-gray-900">{{ formatNumber(brand.products_count) }}</span>
-                <p class="text-xs text-gray-500">sản phẩm</p>
+                <p class="text-xs text-gray-500">{{$t('Admin.Analytics.entities.productsUnit')}}</p>
               </div>
             </div>
           </div>
@@ -552,8 +552,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import AdminLayout from '@/layouts/admin/AdminLayout.vue';
 import StatisticsService from '@/api-services/StatisticsService';
+
+const { t: $t } = useI18n();
 
 // State
 const loading = ref(true);
@@ -673,7 +676,7 @@ const fetchData = async () => {
     brandStats.value = brandStatsRes;
     productStats.value = productStatsRes;
   } catch (err) {
-    error.value = err.response?.data?.detail || err.message || 'Không thể tải dữ liệu thống kê';
+    error.value = err.response?.data?.detail || err.message || $t('Admin.Analytics.errors.loadFailed');
   } finally {
     loading.value = false;
   }
@@ -749,17 +752,12 @@ const getTotalRevenue = (data) => {
 };
 
 const getStatusLabel = (status) => {
-  const labels = {
-    'pending': 'Chờ xử lý',
-    'confirmed': 'Đã xác nhận',
-    'shipping': 'Đang giao',
-    'complete': 'Hoàn thành',
-    'completed': 'Hoàn thành',
-    'delivered': 'Đã giao',
-    'cancelled': 'Đã hủy',
-    'canceled': 'Đã hủy'
-  };
-  return labels[status] || status;
+  const key = String(status).toLowerCase();
+  try {
+    return $t(`Admin.Status.${key}`);
+  } catch {
+    return status;
+  }
 };
 
 const getStatusColor = (status) => {

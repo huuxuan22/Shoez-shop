@@ -2,8 +2,8 @@
   <AdminLayout>
     <!-- Page Header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Quản lý đơn hàng</h1>
-      <p class="text-gray-600 mt-2">Danh sách tất cả đơn hàng</p>
+      <h1 class="text-3xl font-bold text-gray-900">{{$t('Admin.Orders.title')}}</h1>
+      <p class="text-gray-600 mt-2">{{$t('Admin.Orders.subtitle')}}</p>
     </div>
 
     <!-- Stats Cards -->
@@ -11,7 +11,7 @@
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-600">Chờ xử lý</p>
+            <p class="text-sm text-gray-600">{{$t('Admin.Orders.stats.pending')}}</p>
             <h3 class="text-2xl font-bold text-yellow-600 mt-1">{{ statusCounts.pending }}</h3>
           </div>
           <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -26,7 +26,7 @@
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-600">Đã xác nhận</p>
+            <p class="text-sm text-gray-600">{{$t('Admin.Orders.stats.confirmed')}}</p>
             <h3 class="text-2xl font-bold text-blue-600 mt-1">{{ statusCounts.confirmed }}</h3>
           </div>
           <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -41,7 +41,7 @@
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-600">Đang giao</p>
+            <p class="text-sm text-gray-600">{{$t('Admin.Orders.stats.shipping')}}</p>
             <h3 class="text-2xl font-bold text-purple-600 mt-1">{{ statusCounts.shipping }}</h3>
           </div>
           <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -57,7 +57,7 @@
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-600">Hoàn thành</p>
+            <p class="text-sm text-gray-600">{{$t('Admin.Orders.stats.complete')}}</p>
             <h3 class="text-2xl font-bold text-green-600 mt-1">{{ statusCounts.complete }}</h3>
           </div>
           <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -72,7 +72,7 @@
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-600">Đã hủy</p>
+            <p class="text-sm text-gray-600">{{$t('Admin.Orders.stats.cancelled')}}</p>
             <h3 class="text-2xl font-bold text-red-600 mt-1">{{ statusCounts.cancelled }}</h3>
           </div>
           <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
@@ -90,12 +90,12 @@
       <!-- Active Filters Display -->
       <div v-if="searchQuery || statusFilter || startDate || endDate" class="mb-4 pb-4 border-b border-gray-200">
         <div class="flex items-center gap-2 flex-wrap">
-          <span class="text-sm font-medium text-gray-700">Bộ lọc đang áp dụng:</span>
+          <span class="text-sm font-medium text-gray-700">{{$t('Admin.Orders.filters.activeFilters')}}</span>
 
           <!-- Search filter tag -->
           <span v-if="searchQuery"
             class="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-            <span>Khách hàng: "{{ searchQuery }}"</span>
+            <span>{{$t('Admin.Orders.filters.customer')}}: "{{ searchQuery }}"</span>
             <button @click="searchQuery = ''" class="hover:bg-blue-200 rounded-full p-0.5">
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd"
@@ -108,7 +108,7 @@
           <!-- Status filter tag -->
           <span v-if="statusFilter"
             class="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
-            <span>Trạng thái: {{ getStatusText(statusFilter) }}</span>
+            <span>{{$t('Admin.Orders.filters.status')}}: {{ getStatusText(statusFilter) }}</span>
             <button @click="statusFilter = ''" class="hover:bg-purple-200 rounded-full p-0.5">
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd"
@@ -122,9 +122,7 @@
           <span v-if="startDate || endDate"
             class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
             <span>
-              {{ startDate ? formatDateFilter(startDate) : '...' }}
-              →
-              {{ endDate ? formatDateFilter(endDate) : '...' }}
+              {{ startDate ? formatDateFilter(startDate) : '...' }} → {{ endDate ? formatDateFilter(endDate) : '...' }}
             </span>
             <button @click="startDate = ''; endDate = ''" class="hover:bg-green-200 rounded-full p-0.5">
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -144,9 +142,9 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            Tìm kiếm
+            {{$t('Admin.Orders.filters.searchLabel')}}
           </label>
-          <input type="text" placeholder="Tên, email, SĐT, mã đơn..." v-model="searchQuery"
+          <input type="text" :placeholder="$t('Admin.Orders.filters.searchPlaceholder')" v-model="searchQuery"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" />
         </div>
         <div>
@@ -155,17 +153,17 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
-            Trạng thái
+            {{$t('Admin.Orders.filters.statusLabel')}}
           </label>
           <select v-model="statusFilter"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
-            <option value="">Tất cả</option>
-            <option value="pending">Chờ xác nhận</option>
-            <option value="confirmed">Đã xác nhận</option>
-            <option value="shipping">Đang giao</option>
-            <option value="delivered">Đã nhận</option>
-            <option value="complete">Hoàn thành</option>
-            <option value="cancelled">Đã hủy</option>
+            <option value="">{{$t('Admin.Orders.filters.all')}}</option>
+            <option value="pending">{{$t('Admin.Orders.filters.pending')}}</option>
+            <option value="confirmed">{{$t('Admin.Orders.filters.confirmed')}}</option>
+            <option value="shipping">{{$t('Admin.Orders.filters.shipping')}}</option>
+            <option value="delivered">{{$t('Admin.Orders.filters.delivered')}}</option>
+            <option value="complete">{{$t('Admin.Orders.filters.complete')}}</option>
+            <option value="cancelled">{{$t('Admin.Orders.filters.cancelled')}}</option>
           </select>
         </div>
         <div>
@@ -174,7 +172,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            Từ ngày
+            {{$t('Admin.Orders.filters.fromDate')}}
           </label>
           <input type="date" v-model="startDate"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" />
@@ -185,7 +183,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            Đến ngày
+            {{$t('Admin.Orders.filters.toDate')}}
           </label>
           <input type="date" v-model="endDate"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" />
@@ -193,13 +191,13 @@
         <div class="flex items-end space-x-2">
           <button @click="applyFilters"
             class="flex-1 bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors font-medium">
-            Lọc
+            {{$t('Admin.Orders.filters.apply')}}
           </button>
           <button @click="clearFilters"
             class="px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-colors">
-            Xóa
+            {{$t('Admin.Orders.filters.clear')}}
           </button>
-          <button @click="exportOrders" title="Xuất CSV"
+          <button @click="exportOrders" :title="$t('Admin.Orders.filters.exportCsv')"
             class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -218,15 +216,13 @@
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="orders.length === 0" class="flex flex-col items-center justify-center py-12">
+        <div v-else-if="orders.length === 0" class="flex flex-col items-center justify-center py-12">
         <svg class="w-24 h-24 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">Không tìm thấy đơn hàng</h3>
-        <p class="text-gray-500 text-center max-w-md">
-          Không có đơn hàng nào phù hợp với tiêu chí lọc của bạn.
-        </p>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">{{$t('Admin.Orders.empty.title')}}</h3>
+          <p class="text-gray-500 text-center max-w-md">{{$t('Admin.Orders.empty.subtitle')}}</p>
       </div>
 
       <!-- Orders List -->
@@ -237,26 +233,24 @@
               <th class="px-6 py-3 text-left">
                 <input type="checkbox" class="rounded border-gray-300" />
               </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{$t('Admin.Orders.table.orderId')}}</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Mã đơn
+                {{$t('Admin.Orders.table.customer')}}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Khách hàng
+                {{$t('Admin.Orders.table.phone')}}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Số điện thoại
+                {{$t('Admin.Orders.table.date')}}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Ngày đặt
+                {{$t('Admin.Orders.table.products')}}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Sản phẩm
+                {{$t('Admin.Orders.table.status')}}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Trạng thái
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Hành động
+                {{$t('Admin.Orders.table.actions')}}
               </th>
             </tr>
           </thead>
@@ -281,7 +275,7 @@
                 {{ formatDate(order.created_at) }}
               </td>
               <td class="px-6 py-4 text-sm text-gray-900">
-                {{ order.products?.length || 0 }} sản phẩm
+                {{ order.products?.length || 0 }} {{$t('Admin.Orders.table.itemsSuffix')}}
               </td>
               <td class="px-6 py-4">
                 <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
@@ -291,7 +285,7 @@
               </td>
               <td class="px-6 py-4 text-sm">
                 <div class="flex items-center space-x-2">
-                  <button class="text-blue-600 hover:text-blue-900" @click="viewOrder(order)" title="Xem chi tiết">
+                  <button class="text-blue-600 hover:text-blue-900" @click="viewOrder(order)" :title="$t('Admin.Orders.table.view')">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -304,7 +298,7 @@
                   <!-- Giải thích: pending -> confirmed (Admin xác nhận) -->
                   <div class="relative inline-block text-left" v-if="order.status === 'pending'">
                     <button class="text-green-600 hover:text-green-900" @click="markAsConfirmed(order)"
-                      title="Xác nhận đơn hàng">
+                      :title="$t('Admin.Orders.table.confirm')">
                       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -315,7 +309,7 @@
                   <!-- Giải thích: confirmed -> shipping (Admin bắt đầu giao) -->
                   <div class="relative inline-block text-left" v-if="order.status === 'confirmed'">
                     <button class="text-blue-600 hover:text-blue-900" @click="markAsShipping(order)"
-                      title="Bắt đầu giao hàng">
+                      :title="$t('Admin.Orders.table.ship')">
                       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -328,21 +322,21 @@
                   <div class="relative inline-block text-left"
                     v-if="order.status !== 'complete' && order.status !== 'cancelled'">
                     <button class="text-green-600 hover:text-green-900" @click="markAsComplete(order)"
-                      title="Hoàn thành đơn hàng">
+                      :title="$t('Admin.Orders.table.complete')">
                       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                       </svg>
                     </button>
                   </div>
 
-                  <button class="text-red-600 hover:text-red-900" @click="markAsCancelled(order)" title="Hủy đơn"
+                  <button class="text-red-600 hover:text-red-900" @click="markAsCancelled(order)" :title="$t('Admin.Orders.table.cancel')"
                     v-if="order.status !== 'cancelled' && order.status !== 'complete'">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
 
-                  <button class="text-gray-600 hover:text-gray-900" @click="printOrder(order)" title="In đơn hàng">
+                  <button class="text-gray-600 hover:text-gray-900" @click="printOrder(order)" :title="$t('Admin.Orders.table.print')">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -359,14 +353,14 @@
       <div v-if="orders.length > 0"
         class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex items-center justify-between">
         <div class="text-sm text-gray-700">
-          Hiển thị <span class="font-medium">{{ startIndex + 1 }}</span> đến
-          <span class="font-medium">{{ endIndex }}</span> trong
-          tổng số <span class="font-medium">{{ totalOrders }}</span> đơn hàng
+          {{$t('Admin.Orders.pagination.showing')}} <span class="font-medium">{{ startIndex + 1 }}</span> {{$t('Admin.Orders.pagination.to')}}
+          <span class="font-medium">{{ endIndex }}</span> {{$t('Admin.Orders.pagination.of')}}
+          <span class="font-medium">{{ totalOrders }}</span> {{$t('Admin.Orders.pagination.orders')}}
         </div>
         <div class="flex items-center space-x-2">
           <button @click="prevPage" :disabled="currentPage === 1"
             class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
-            Trước
+            {{$t('Admin.Orders.pagination.prev')}}
           </button>
 
           <!-- Page numbers -->
@@ -379,7 +373,7 @@
 
           <button @click="nextPage" :disabled="currentPage === totalPages"
             class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
-            Sau
+            {{$t('Admin.Orders.pagination.next')}}
           </button>
         </div>
       </div>
@@ -396,12 +390,14 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { io } from 'socket.io-client';
 import AdminLayout from '@/layouts/admin/AdminLayout.vue';
 import OrderService from '@/api-services/OrderService';
 import OrderDetailModal from '@/components/admin/OrderDetailModal.vue';
 import OrderStatusUpdateModal from '@/components/admin/OrderStatusUpdateModal.vue';
 import { useToast } from '@/composables/useToast';
+const { t: $t } = useI18n();
 
 // Toast
 const toast = useToast();
@@ -545,11 +541,11 @@ const searchTimeout = ref(null);
 
 const getStatusText = (status) => {
   const statusMap = {
-    'pending': 'Chờ xác nhận',
-    'confirmed': 'Đã xác nhận',
-    'shipping': 'Đang giao',
-    'complete': 'Hoàn thành',
-    'cancelled': 'Đã hủy'
+    'pending': $t('Admin.Orders.statusMap.pending'),
+    'confirmed': $t('Admin.Orders.statusMap.confirmed'),
+    'shipping': $t('Admin.Orders.statusMap.shipping'),
+    'complete': $t('Admin.Orders.statusMap.complete'),
+    'cancelled': $t('Admin.Orders.statusMap.cancelled')
   };
   return statusMap[status] || status;
 };
