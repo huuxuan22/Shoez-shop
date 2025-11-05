@@ -2,67 +2,66 @@
     <section class="relative min-h-screen flex items-center justify-center hero-section">
         <!-- Background Image với overlay -->
         <div class="absolute inset-0 z-0">
-            <img 
-                src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2068&q=80"
-                alt="Nền giày thể thao cao cấp"
-                class="w-full h-full object-cover image-grayscale"
-            />
+            <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2068&q=80"
+                :alt="$t('HEROSECTION.bgAlt')" class="w-full h-full object-cover image-grayscale" />
             <!-- Gradient Overlay -->
             <div class="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/90"></div>
             <!-- Pattern Overlay -->
-            <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.1)_0%,_transparent_70%)]"></div>
+            <div
+                class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.1)_0%,_transparent_70%)]">
+            </div>
         </div>
 
         <div class="container mx-auto px-4 content-overlay">
             <div class="max-w-4xl mx-auto text-center">
-                <!-- Badge với style trắng đen -->
-                <div class="inline-block bg-white text-black text-sm px-6 py-2 rounded-full mb-8 font-alasassy tracking-wider border-2 border-gray-300 shadow-lg">
-                    GIẢM GIÁ ĐẾN 50%
+                <div
+                    class="inline-block bg-white text-black text-sm px-6 py-2 rounded-full mb-8 font-alasassy tracking-wider border-2 border-gray-300 shadow-lg">
+                    {{ $t('HEROSECTION.badge') }}
                 </div>
 
-                <!-- Tiêu đề chính -->
-                <h1 class="text-6xl md:text-8xl lg:text-9xl font-alasassy font-bold mb-6 text-white tracking-tighter leading-none">
-                    SHOEZ
+                <h1
+                    class="text-6xl md:text-8xl lg:text-9xl font-alasassy font-bold mb-6 text-white tracking-tighter leading-none">
+                    {{ $t('HEROSECTION.title1') }}
                 </h1>
-                
-                <!-- Sub Title -->
+
                 <h2 class="text-4xl md:text-5xl lg:text-6xl font-alasassy font-bold mb-4 text-gray-300 tracking-tight">
-                    SHOP
+                    {{ $t('HEROSECTION.title2') }}
                 </h2>
 
-                <!-- Mô tả -->
-                <p class="text-xl md:text-2xl lg:text-3xl mb-12 text-gray-300 font-alasassy tracking-wider max-w-2xl mx-auto">
-                    GIÀY THỂ THAO CHÍNH HÃNG CAO CẤP
+                <p
+                    class="text-xl md:text-2xl lg:text-3xl mb-12 text-gray-300 font-alasassy tracking-wider max-w-2xl mx-auto">
+                    {{ $t('HEROSECTION.subtitle') }}
                 </p>
 
-                <!-- Các nút hành động -->
                 <div class="flex flex-col sm:flex-row gap-6 justify-center mb-16">
                     <button
                         class="bg-white text-black px-10 py-4 rounded-xl font-alasassy font-bold hover:bg-gray-100 transition-all duration-300 shadow-2xl border-2 border-gray-300 tracking-widest text-lg transform hover:scale-105 hover:shadow-2xl"
                         @click="scrollToProducts">
-                        KHÁM PHÁ NGAY
+                        {{ $t('HEROSECTION.ctaExplore') }}
                     </button>
 
                     <button
                         class="border-2 border-white text-white px-10 py-4 rounded-xl font-alasassy font-bold hover:bg-white hover:text-black transition-all duration-300 tracking-widest text-lg transform hover:scale-105 backdrop-blur-sm"
                         @click="$router.push('/products')">
-                        XEM SẢN PHẨM →
+                        {{ $t('HEROSECTION.ctaViewProducts') }}
                     </button>
                 </div>
 
-                <!-- Thống kê -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 text-white max-w-2xl mx-auto">
                     <div class="stats-item">
                         <div class="text-3xl md:text-4xl font-bold font-alasassy tracking-wider mb-2">1000+</div>
-                        <div class="text-sm md:text-base font-alasassy tracking-wider opacity-90">SẢN PHẨM</div>
+                        <div class="text-sm md:text-base font-alasassy tracking-wider opacity-90">{{
+                            $t('HEROSECTION.statsProducts') }}</div>
                     </div>
                     <div class="stats-item">
                         <div class="text-3xl md:text-4xl font-bold font-alasassy tracking-wider mb-2">50K+</div>
-                        <div class="text-sm md:text-base font-alasassy tracking-wider opacity-90">KHÁCH HÀNG</div>
+                        <div class="text-sm md:text-base font-alasassy tracking-wider opacity-90">{{
+                            $t('HEROSECTION.statsCustomers') }}</div>
                     </div>
                     <div class="stats-item">
                         <div class="text-3xl md:text-4xl font-bold font-alasassy tracking-wider mb-2">99%</div>
-                        <div class="text-sm md:text-base font-alasassy tracking-wider opacity-90">HÀI LÒNG</div>
+                        <div class="text-sm md:text-base font-alasassy tracking-wider opacity-90">{{
+                            $t('HEROSECTION.statsSatisfaction') }}</div>
                     </div>
                 </div>
             </div>
@@ -119,9 +118,12 @@ const scrollToProducts = () => {
 }
 
 @keyframes imageFloat {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scale(1) translateY(0px);
     }
+
     50% {
         transform: scale(1.05) translateY(-10px);
     }
@@ -157,14 +159,14 @@ const scrollToProducts = () => {
     transform: translateY(-8px) scale(1.02);
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 
+    box-shadow:
         0 20px 40px rgba(0, 0, 0, 0.4),
         0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 /* Hiệu ứng glow cho tiêu đề */
 h1 {
-    text-shadow: 
+    text-shadow:
         0 0 20px rgba(255, 255, 255, 0.5),
         0 0 40px rgba(255, 255, 255, 0.3),
         0 0 80px rgba(255, 255, 255, 0.2);
@@ -177,13 +179,14 @@ h1 {
 
 @keyframes titleGlow {
     from {
-        text-shadow: 
+        text-shadow:
             0 0 20px rgba(255, 255, 255, 0.5),
             0 0 40px rgba(255, 255, 255, 0.3),
             0 0 80px rgba(255, 255, 255, 0.2);
     }
+
     to {
-        text-shadow: 
+        text-shadow:
             0 0 25px rgba(255, 255, 255, 0.6),
             0 0 50px rgba(255, 255, 255, 0.4),
             0 0 100px rgba(255, 255, 255, 0.3);
@@ -191,7 +194,7 @@ h1 {
 }
 
 h2 {
-    text-shadow: 
+    text-shadow:
         0 0 15px rgba(255, 255, 255, 0.4),
         0 0 30px rgba(255, 255, 255, 0.2);
 }
@@ -220,12 +223,19 @@ button:hover::before {
 
 /* Scroll indicator animation */
 @keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
         transform: translateY(0);
     }
+
     40% {
         transform: translateY(-10px);
     }
+
     60% {
         transform: translateY(-5px);
     }
@@ -241,19 +251,19 @@ button:hover::before {
         font-size: 4rem !important;
         line-height: 1;
     }
-    
+
     h2 {
         font-size: 2.5rem !important;
     }
-    
+
     .stats-item {
         padding: 1rem 0.5rem;
     }
-    
+
     .stats-item div:first-child {
         font-size: 1.75rem;
     }
-    
+
     button {
         padding: 0.75rem 1.5rem !important;
         font-size: 0.9rem !important;
@@ -264,15 +274,15 @@ button:hover::before {
     h1 {
         font-size: 3rem !important;
     }
-    
+
     h2 {
         font-size: 2rem !important;
     }
-    
+
     .stats-item {
         padding: 0.75rem 0.25rem;
     }
-    
+
     .stats-item div:first-child {
         font-size: 1.5rem;
     }
@@ -286,7 +296,7 @@ button:hover::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: 
+    background-image:
         radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
         radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
         radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
@@ -299,6 +309,7 @@ button:hover::before {
     from {
         transform: translateY(0px);
     }
+
     to {
         transform: translateY(-50px);
     }
