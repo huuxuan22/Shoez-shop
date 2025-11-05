@@ -1,8 +1,19 @@
-export const MultiLanguage = { 
+export const MultiLanguage = {
     VI: "vi",
     EN: "en",
     JA: "ja",
     EN_US: "en-US",
     EN_GB: "en-GB",
     EN_CA: "en-CA",
+    TITLE_SHOP: "EZSHOPPING",
+    TITLE_PRODUCTS: "Products",
+    TITLE_ABOUT: "About",
+    TITLE_NEWS: "News",
+    TITLE_CONTACT: "Contact",
+    TITLE_LOGIN: "Login",
+    TITLE_REGISTER: "Register",
+    TITLE_LOGOUT: "Logout",
+    TITLE_PROFILE: "Profile",
+    TITLE_SETTINGS: "Settings",
+    TITLE_HELP: "Help",
 };

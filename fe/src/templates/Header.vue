@@ -7,7 +7,7 @@
         <!-- Logo -->
         <router-link to="/"
           class="text-xl md:text-2xl font-bold text-black hover:text-gray-700 transition-colors font-alasassy cursor-pointer">
-          EzShopping
+          {{ shopTitle }}
         </router-link>
 
         <!-- Navigation Menu -->
@@ -17,32 +17,32 @@
             <router-link to="/"
               class="flex items-center space-x-1 text-gray-800 hover:text-black transition-colors font-medium"
               :class="{ 'text-black font-bold': $route.name === 'Home' }">
-              <img src="@/assets/icons/home.png" alt="Trang chủ" class="w-5 h-5">
-              <span>Trang chủ</span>
+              <img src="@/assets/icons/home.png" :alt="$t('Header.home')" class="w-5 h-5">
+              <span>{{ $t('Header.home') }}</span>
             </router-link>
             <router-link to="/products"
               class="flex items-center space-x-1 text-gray-800 hover:text-black transition-colors font-medium"
               :class="{ 'text-black font-bold': $route.name === 'Products' }">
               <img src="@/assets/icons/product.png" alt="Sản phẩm" class="w-5 h-5">
-              <span>Sản phẩm</span>
+              <span>{{ $t('Header.products') }}</span>
             </router-link>
             <router-link to="/about"
               class="flex items-center space-x-1 text-gray-800 hover:text-black transition-colors font-medium"
               :class="{ 'text-black font-bold': $route.name === 'About' }">
-              <img src="@/assets/icons/about.png" alt="Về chúng tôi" class="w-5 h-5">
-              <span>Về chúng tôi</span>
+              <img src="@/assets/icons/about.png" :alt="$t('Header.about')" class="w-5 h-5">
+              <span>{{ $t('Header.about') }}</span>
             </router-link>
             <router-link to="/contact"
               class="flex items-center space-x-1 text-gray-800 hover:text-black transition-colors font-medium"
               :class="{ 'text-black font-bold': $route.name === 'Contact' }">
-              <img src="@/assets/icons/contact.png" alt="Liên hệ" class="w-5 h-5">
-              <span>Liên hệ</span>
+              <img src="@/assets/icons/contact.png" :alt="$t('Header.contact')" class="w-5 h-5">
+              <span>{{ $t('Header.contact') }}</span>
             </router-link>
             <router-link :to="{ name: 'NewsDetail', params: { id: 1 } }"
               class="flex items-center space-x-1 text-gray-800 hover:text-black transition-colors font-medium"
               :class="{ 'text-black font-bold': $route.name === 'NewsDetail' }">
-              <img src="@/assets/icons/blog.svg" alt="Tin tức" class="w-5 h-5">
-              <span>Tin tức</span>
+              <img src="@/assets/icons/blog.svg" :alt="$t('Header.news')" class="w-5 h-5">
+              <span>{{ $t('Header.news') }}</span>
             </router-link>
           </div>
         </div>
@@ -83,12 +83,12 @@
           <!-- Auth Links - Chỉ hiển thị khi CHƯA đăng nhập -->
           <div v-if="!isAuthenticated" class="flex items-center space-x-2">
             <router-link to="/login" class="text-gray-800 hover:text-black transition-colors font-medium">
-              Đăng nhập
+              {{ $t('login') }}
             </router-link>
             <span class="text-gray-400">|</span>
             <router-link to="/register"
               class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors font-medium">
-              Đăng ký
+              {{ $t('register') }}
             </router-link>
           </div>
 
@@ -103,8 +103,8 @@
               </div>
 
               <div class="text-left">
-                <span class="block text-sm font-medium">Xin chào, {{ userName }}</span>
-                <span class="block text-xs text-gray-500">Tài khoản của tôi</span>
+                <span class="block text-sm font-medium">{{ $t('hello') }}, {{ userName }}</span>
+                <span class="block text-xs text-gray-500">{{ $t('Profile.myAccount') }}</span>
               </div>
 
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,7 +121,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                Hồ sơ cá nhân
+                {{ $t('Profile.profile') }}
               </router-link>
 
               <router-link to="/orders" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100 font-medium"
@@ -130,7 +130,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                Đơn hàng của tôi
+                {{ $t('Profile.myOrders') }}
                 <span v-if="orderCount > 0" class="ml-auto bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
                   {{ orderCount }}
                 </span>
@@ -144,10 +144,13 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-                Đăng xuất
+                {{ $t('logout') }}
               </button>
             </div>
           </div>
+
+          <!-- Language Switcher (always available) -->
+          <LanguageSwitcher />
 
           <!-- Mobile Menu Button -->
           <button @click="toggleMobileMenu" class="md:hidden text-gray-800 hover:text-black">
@@ -164,45 +167,50 @@
           <router-link to="/"
             class="flex items-center space-x-2 text-gray-800 hover:text-black transition-colors font-medium"
             @click="closeMenus" :class="{ 'text-black font-bold': $route.name === 'Home' }">
-            <img :src="home" alt="Trang chủ" class="w-5 h-5">
-            <span>Trang chủ</span>
+            <img :src="home" :alt="$t('Header.home')" class="w-5 h-5">
+            <span>{{ $t('Header.home') }}</span>
           </router-link>
           <router-link to="/products"
             class="flex items-center space-x-2 text-gray-800 hover:text-black transition-colors font-medium"
             @click="closeMenus" :class="{ 'text-black font-bold': $route.name === 'Products' }">
-            <img :src="home" alt="Sản phẩm" class="w-5 h-5">
-            <span>Sản phẩm</span>
+            <img :src="home" :alt="$t('Header.products')" class="w-5 h-5">
+            <span>{{ $t('Header.products') }}</span>
           </router-link>
           <router-link to="/about"
             class="flex items-center space-x-2 text-gray-800 hover:text-black transition-colors font-medium"
             @click="closeMenus" :class="{ 'text-black font-bold': $route.name === 'About' }">
-            <img :src="home" alt="Về chúng tôi" class="w-5 h-5">
-            <span>Về chúng tôi</span>
+            <img :src="home" :alt="$t('Header.about')" class="w-5 h-5">
+            <span>{{ $t('Header.about') }}</span>
           </router-link>
           <router-link to="/contact"
             class="flex items-center space-x-2 text-gray-800 hover:text-black transition-colors font-medium"
             @click="closeMenus" :class="{ 'text-black font-bold': $route.name === 'Contact' }">
-            <img :src="home" alt="Liên hệ" class="w-5 h-5">
-            <span>Liên hệ</span>
+            <img :src="home" :alt="$t('Header.contact')" class="w-5 h-5">
+            <span>{{ $t('Header.contact') }}</span>
           </router-link>
           <router-link :to="{ name: 'NewsDetail', params: { id: 1 } }"
             class="flex items-center space-x-2 text-gray-800 hover:text-black transition-colors font-medium"
             @click="closeMenus" :class="{ 'text-black font-bold': $route.name === 'NewsDetail' }">
             <img :src="blogIcon" alt="Tin tức" class="w-5 h-5">
-            <span>Tin tức</span>
+            <span>{{ $t('Header.news') }}</span>
           </router-link>
 
           <!-- Mobile Auth Links -->
           <div v-if="!isAuthenticated" class="flex flex-col space-y-2 pt-4 border-t border-gray-200">
             <router-link to="/login" class="text-gray-800 hover:text-black transition-colors font-medium"
               @click="closeMenus">
-              Đăng nhập
+              {{ $t('login') }}
             </router-link>
             <router-link to="/register"
               class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors font-medium text-center"
               @click="closeMenus">
-              Đăng ký
+              {{ $t('register') }}
             </router-link>
+          </div>
+
+          <!-- Mobile Language Switcher -->
+          <div class="pt-4 border-t border-gray-200">
+            <LanguageSwitcher />
           </div>
         </div>
       </div>
@@ -226,6 +234,8 @@ import { watch } from 'vue';
 import NotificationBell from '@/components/notifications/NotificationBell.vue';
 import ToastNotification from '@/components/notifications/ToastNotification.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
+import { MultiLanguage } from '@/common/enum';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -233,6 +243,7 @@ const cartStore = useCartStore();
 const orderStore = useOrderStore();
 const favouriteStore = useFavouriteStore();
 const notificationStore = useNotificationStore();
+const shopTitle = MultiLanguage.TITLE_SHOP;
 
 // Reactive data
 const showUserMenu = ref(false);
