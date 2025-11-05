@@ -3,15 +3,15 @@
     <!-- Page Header -->
     <div class="mb-8 flex items-center justify-between">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900">Quản lý sản phẩm</h1>
-        <p class="text-gray-600 mt-2">Danh sách tất cả sản phẩm</p>
+        <h1 class="text-3xl font-bold text-gray-900">{{$t('Admin.Products.title')}}</h1>
+        <p class="text-gray-600 mt-2">{{$t('Admin.Products.subtitle')}}</p>
       </div>
       <button @click="showAddProductModal = true"
         class="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2 cursor-pointer">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
-        <span>Thêm sản phẩm mới</span>
+        <span>{{$t('Admin.Products.addNew')}}</span>
       </button>
     </div>
 
@@ -19,15 +19,15 @@
     <div class="bg-white rounded-lg shadow p-6 mb-6">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Tìm kiếm</label>
-          <input type="text" v-model="filters.search" placeholder="Tên sản phẩm..."
+          <label class="block text-sm font-medium text-gray-700 mb-2">{{$t('Admin.Products.filters.searchLabel')}}</label>
+          <input type="text" v-model="filters.search" :placeholder="$t('Admin.Products.filters.searchPlaceholder')"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Danh mục</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">{{$t('Admin.Products.filters.category')}}</label>
           <select v-model="filters.category"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
-            <option value="">Tất cả</option>
+            <option value="">{{$t('Admin.Products.filters.all')}}</option>
             <option value="Sneaker">Sneaker</option>
             <option value="Running">Running</option>
             <option value="Basketball">Basketball</option>
@@ -35,44 +35,44 @@
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Thương hiệu</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">{{$t('Admin.Products.filters.brand')}}</label>
           <select v-model="filters.brand"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
-            <option value="">Tất cả</option>
+            <option value="">{{$t('Admin.Products.filters.all')}}</option>
             <option v-for="brand in brandOptions" :key="brand.id || brand.name" :value="brand.name">
               {{ brand.name }}
             </option>
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Trạng thái</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">{{$t('Admin.Products.filters.status')}}</label>
           <select v-model="filters.status"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
-            <option value="">Tất cả</option>
-            <option value="active">Đang bán</option>
-            <option value="inactive">Ngừng bán</option>
-            <option value="out-of-stock">Hết hàng</option>
+            <option value="">{{$t('Admin.Products.filters.all')}}</option>
+            <option value="active">{{$t('Admin.Products.filters.statusActive')}}</option>
+            <option value="inactive">{{$t('Admin.Products.filters.statusInactive')}}</option>
+            <option value="out-of-stock">{{$t('Admin.Products.filters.statusOOS')}}</option>
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Sắp xếp</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">{{$t('Admin.Products.filters.sort')}}</label>
           <select v-model="sortBy" @change="fetchProducts"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
-            <option value="created_at">Ngày tạo</option>
-            <option value="name">Tên sản phẩm</option>
-            <option value="price">Giá</option>
-            <option value="stock">Số lượng</option>
+            <option value="created_at">{{$t('Admin.Products.filters.sortCreated')}}</option>
+            <option value="name">{{$t('Admin.Products.filters.sortName')}}</option>
+            <option value="price">{{$t('Admin.Products.filters.sortPrice')}}</option>
+            <option value="stock">{{$t('Admin.Products.filters.sortStock')}}</option>
           </select>
         </div>
       </div>
 
       <div class="mt-4 flex items-center space-x-4">
         <div class="flex items-center space-x-2">
-          <label class="text-sm font-medium text-gray-700">Thứ tự:</label>
+          <label class="text-sm font-medium text-gray-700">{{$t('Admin.Products.filters.orderLabel')}}</label>
           <select v-model="sortOrder" @change="fetchProducts"
             class="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black">
-            <option value="desc">Mới nhất</option>
-            <option value="asc">Cũ nhất</option>
+            <option value="desc">{{$t('Admin.Products.filters.newest')}}</option>
+            <option value="asc">{{$t('Admin.Products.filters.oldest')}}</option>
           </select>
         </div>
       </div>
@@ -80,26 +80,26 @@
       <!-- Rating Filter -->
       <div class="mt-4 flex items-center space-x-4">
         <div class="flex items-center space-x-2">
-          <label class="text-sm font-medium text-gray-700">Đánh giá từ:</label>
+          <label class="text-sm font-medium text-gray-700">{{$t('Admin.Products.filters.ratingFrom')}}</label>
           <input type="number" v-model="filters.min_rating" placeholder="0" min="0" max="5" step="0.1"
             class="w-20 px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black" />
           <span class="text-sm text-gray-500">⭐</span>
         </div>
         <div class="flex items-center space-x-2">
-          <label class="text-sm font-medium text-gray-700">Đến:</label>
+          <label class="text-sm font-medium text-gray-700">{{$t('Admin.Products.filters.ratingTo')}}</label>
           <input type="number" v-model="filters.max_rating" placeholder="5" min="0" max="5" step="0.1"
             class="w-20 px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black" />
           <span class="text-sm text-gray-500">⭐</span>
         </div>
         <button @click="clearRatingFilter"
           class="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 underline cursor-pointer">
-          Xóa filter đánh giá
+          {{$t('Admin.Products.filters.clearRating')}}
         </button>
       </div>
 
       <!-- Rating Presets -->
       <div class="mt-2 flex items-center space-x-2">
-        <span class="text-sm text-gray-500">Nhanh:</span>
+        <span class="text-sm text-gray-500">{{$t('Admin.Products.filters.quick')}}</span>
         <button @click="setRatingFilter(4, 5)"
           class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200 cursor-pointer">
           ⭐⭐⭐⭐+ (4-5 sao)
@@ -129,33 +129,15 @@
               <th class="px-6 py-3 text-left">
                 <input type="checkbox" class="rounded border-gray-300" />
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Sản phẩm
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Danh mục
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Giá
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Giảm giá
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Tồn kho
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Đánh giá
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Trạng thái
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Ngày tạo
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Hành động
-              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{$t('Admin.Products.table.product')}}</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{$t('Admin.Products.table.category')}}</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{$t('Admin.Products.table.price')}}</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{$t('Admin.Products.table.discount')}}</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{$t('Admin.Products.table.stock')}}</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{$t('Admin.Products.table.rating')}}</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{$t('Admin.Products.table.status')}}</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{$t('Admin.Products.table.createdAt')}}</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{$t('Admin.Products.table.actions')}}</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
@@ -168,7 +150,7 @@
                   <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center overflow-hidden">
                     <img v-if="product.images && product.images.length > 0" :src="product.images[0]" :alt="product.name"
                       class="w-full h-full object-cover" />
-                    <span v-else class="text-xs text-gray-500">Ảnh</span>
+                    <span v-else class="text-xs text-gray-500">{{$t('Admin.Products.table.imageFallback')}}</span>
                   </div>
                   <div>
                     <p class="font-medium text-gray-900">{{ product.name }}</p>
@@ -191,11 +173,11 @@
                 <span v-if="product.discount > 0" class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">
                   -{{ product.discount }}%
                 </span>
-                <span v-else class="text-gray-400">Không</span>
+                <span v-else class="text-gray-400">{{$t('Admin.Products.table.noDiscount')}}</span>
               </td>
               <td class="px-6 py-4">
                 <div class="text-sm text-gray-900">
-                  {{ product.stock }} sản phẩm
+                  {{ product.stock }} {{$t('Admin.Products.table.itemsSuffix')}}
                 </div>
                 <div class="text-xs text-gray-500">
                   {{ getAvailableSizes(product.sizes) }} size
@@ -204,7 +186,7 @@
               <td class="px-6 py-4">
                 <div class="flex flex-col items-start space-y-1">
                   <span class="text-sm font-medium text-gray-900">{{ formatRating(product.rating) }}</span>
-                  <span class="text-xs text-gray-500">({{ product.totalReviews }} đánh giá)</span>
+                  <span class="text-xs text-gray-500">({{ product.totalReviews }} {{$t('Admin.Products.table.reviewsSuffix')}})</span>
                 </div>
               </td>
               <td class="px-6 py-4">
@@ -219,7 +201,7 @@
               <td class="px-6 py-4 text-sm">
                 <div class="flex items-center space-x-2">
                   <button @click="showProductDetail(product._id)"
-                    class="text-blue-600 hover:text-blue-900 cursor-pointer" title="Xem chi tiết">
+                    class="text-blue-600 hover:text-blue-900 cursor-pointer" :title="$t('Admin.Products.table.viewDetail')">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -228,14 +210,14 @@
                     </svg>
                   </button>
                   <button @click="editProduct(product)" class="text-gray-600 hover:text-gray-900 cursor-pointer"
-                    title="Chỉnh sửa">
+                    :title="$t('Admin.Products.table.edit')">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                   </button>
                   <button @click="showDeleteConfirmModal(product)"
-                    class="text-red-600 hover:text-red-900 cursor-pointer" title="Xóa">
+                    class="text-red-600 hover:text-red-900 cursor-pointer" :title="$t('Admin.Products.table.delete')">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -257,7 +239,7 @@
                 <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center overflow-hidden">
                   <img v-if="product.images && product.images.length > 0" :src="product.images[0]" :alt="product.name"
                     class="w-full h-full object-cover" />
-                  <span v-else class="text-xs text-gray-500">Ảnh</span>
+                  <span v-else class="text-xs text-gray-500">{{$t('Admin.Products.table.imageFallback')}}</span>
                 </div>
                 <div>
                   <h3 class="font-medium text-gray-900">{{ product.name }}</h3>
@@ -272,19 +254,19 @@
 
             <div class="grid grid-cols-2 gap-3 text-sm mb-3">
               <div>
-                <span class="text-gray-500">Danh mục:</span>
+                <span class="text-gray-500">{{$t('Admin.Products.table.category')}}:</span>
                 <span class="ml-1 font-medium">{{ product.category }}</span>
               </div>
               <div>
-                <span class="text-gray-500">Giá:</span>
+                <span class="text-gray-500">{{$t('Admin.Products.table.price')}}:</span>
                 <span class="ml-1 font-medium">{{ formatPrice(product.price) }}</span>
               </div>
               <div>
-                <span class="text-gray-500">Tồn kho:</span>
+                <span class="text-gray-500">{{$t('Admin.Products.table.stock')}}:</span>
                 <span class="ml-1 font-medium">{{ product.stock }}</span>
               </div>
               <div>
-                <span class="text-gray-500">Đánh giá:</span>
+                <span class="text-gray-500">{{$t('Admin.Products.table.rating')}}:</span>
                 <span class="ml-1 font-medium">{{ formatRating(product.rating) }}</span>
               </div>
             </div>
@@ -293,7 +275,7 @@
               <span class="text-xs text-gray-500">{{ formatDate(product.created_at) }}</span>
               <div class="flex items-center space-x-2">
                 <button @click="showProductDetail(product._id)"
-                  class="text-blue-600 hover:text-blue-900 cursor-pointer p-1" title="Xem chi tiết">
+                  class="text-blue-600 hover:text-blue-900 cursor-pointer p-1" :title="$t('Admin.Products.table.viewDetail')">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -302,14 +284,14 @@
                   </svg>
                 </button>
                 <button @click="editProduct(product)" class="text-gray-600 hover:text-gray-900 cursor-pointer p-1"
-                  title="Chỉnh sửa">
+                  :title="$t('Admin.Products.table.edit')">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
                 </button>
                 <button @click="showDeleteConfirmModal(product)"
-                  class="text-red-600 hover:text-red-900 cursor-pointer p-1" title="Xóa">
+                  class="text-red-600 hover:text-red-900 cursor-pointer p-1" :title="$t('Admin.Products.table.delete')">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -326,11 +308,11 @@
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
           <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
             <div class="text-sm text-gray-700">
-              Hiển thị <span class="font-medium">{{ products.length }}</span> trong tổng số <span class="font-medium">{{
-                totalProducts }}</span> sản phẩm
+              {{$t('Admin.Products.pagination.showing')}} <span class="font-medium">{{ products.length }}</span> {{$t('Admin.Products.pagination.ofTotal')}} <span class="font-medium">{{
+                totalProducts }}</span> {{$t('Admin.Products.pagination.products')}}
             </div>
             <div class="flex items-center space-x-2">
-              <label class="text-sm text-gray-700">Hiển thị:</label>
+              <label class="text-sm text-gray-700">{{$t('Admin.Products.pagination.perPage')}}</label>
               <select v-model="itemsPerPage" @change="fetchProducts"
                 class="border border-gray-300 rounded-lg px-3 py-1 text-sm">
                 <option value="5">5</option>
@@ -343,7 +325,7 @@
           <div class="flex items-center justify-center lg:justify-end space-x-2">
             <button @click="prevPage" :disabled="currentPage === 1"
               class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
-              Trước
+              {{$t('Admin.Products.pagination.prev')}}
             </button>
 
             <!-- Page numbers - hide some on mobile -->
@@ -360,7 +342,7 @@
 
             <button @click="nextPage" :disabled="currentPage === totalPages"
               class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
-              Sau
+              {{$t('Admin.Products.pagination.next')}}
             </button>
           </div>
         </div>
@@ -390,6 +372,7 @@
 
 <script setup>
 import { watch, onMounted, ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import AdminLayout from '@/layouts/admin/AdminLayout.vue';
 import ProductDetailModal from '@/components/admin/ProductDetailModal.vue';
 import ProductFormModal from '@/components/admin/ProductFormModal.vue';
@@ -397,6 +380,7 @@ import ConfirmModal from '@/components/ConfirmModal.vue';
 import ProductService from "@/api-services/ProductService";
 import BrandService from "@/api-services/BrandService";
 import ToastNotification from '@/components/ToastNotification.vue';
+const { t: $t } = useI18n();
 // Khi thêm sản phẩm thành công từ modal
 const onProductCreated = () => {
   fetchProducts();
@@ -443,8 +427,8 @@ const brandOptions = ref([]);
 
 // Computed property for delete confirm message
 const deleteConfirmMessage = computed(() => {
-  if (!productToDelete.value) return 'Bạn có chắc chắn muốn xóa sản phẩm này?';
-  return `Bạn có chắc chắn muốn xóa sản phẩm "${productToDelete.value.name}"? Hành động này không thể hoàn tác.`;
+  if (!productToDelete.value) return $t('Admin.Products.confirm.deleteTitle');
+  return $t('Admin.Products.confirm.deleteNamed', { name: productToDelete.value.name });
 });
 
 const handleProductSuccess = (data) => {

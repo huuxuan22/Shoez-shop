@@ -11,14 +11,14 @@
             </svg>
           </div>
           <div>
-            <h1 class="text-2xl font-semibold text-gray-900">Thương hiệu</h1>
-            <p class="text-gray-600 mt-1">Quản lý thương hiệu sản phẩm của cửa hàng</p>
+            <h1 class="text-2xl font-semibold text-gray-900">{{$t('Admin.Brands.title')}}</h1>
+            <p class="text-gray-600 mt-1">{{$t('Admin.Brands.subtitle')}}</p>
           </div>
         </div>
       </div>
       <div class="flex items-center gap-3">
         <div class="relative w-80">
-          <input v-model="keyword" type="text" placeholder="Tìm theo tên thương hiệu..."
+          <input v-model="keyword" type="text" :placeholder="$t('Admin.Brands.searchPlaceholder')"
             class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/70 bg-white" />
           <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor"
             viewBox="0 0 24 24">
@@ -31,7 +31,7 @@
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          Thêm thương hiệu
+          {{$t('Admin.Brands.add')}}
         </button>
       </div>
     </div>
@@ -41,7 +41,7 @@
       <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-600 mb-1">Tổng thương hiệu</p>
+            <p class="text-sm text-gray-600 mb-1">{{$t('Admin.Brands.total')}}</p>
             <h3 class="text-3xl font-bold text-black">{{ brands.length }}</h3>
           </div>
           <div class="w-12 h-12 bg-black rounded-xl flex items-center justify-center">
@@ -55,7 +55,7 @@
       <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-600 mb-1">Đang hoạt động</p>
+            <p class="text-sm text-gray-600 mb-1">{{$t('Admin.Brands.active')}}</p>
             <h3 class="text-3xl font-bold text-black">{{ activeCount }}</h3>
           </div>
           <div class="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center">
@@ -69,7 +69,7 @@
       <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-600 mb-1">Đã vô hiệu hóa</p>
+            <p class="text-sm text-gray-600 mb-1">{{$t('Admin.Brands.inactive')}}</p>
             <h3 class="text-3xl font-bold text-black">{{ inactiveCount }}</h3>
           </div>
           <div class="w-12 h-12 bg-gray-400 rounded-xl flex items-center justify-center">
@@ -121,7 +121,7 @@
                   <span
                     :class="brand.is_active !== false ? 'bg-black text-white' : 'bg-gray-400 text-white'"
                     class="px-3 py-1 rounded-full text-xs font-semibold">
-                    {{ brand.is_active !== false ? 'Hoạt động' : 'Vô hiệu hóa' }}
+                    {{ brand.is_active !== false ? $t('Admin.Brands.statusActive') : $t('Admin.Brands.statusInactive') }}
                   </span>
                 </div>
                 <p v-if="brand.description" class="text-gray-600 text-sm">{{ brand.description }}</p>
@@ -135,11 +135,11 @@
             <div class="flex items-center gap-2">
               <button @click="editBrand(brand)"
                 class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors font-medium">
-                Sửa
+                {{$t('Admin.Brands.edit')}}
               </button>
               <button @click="confirmDelete(brand.id)"
                 class="px-4 py-2 border border-black bg-white text-black rounded-lg hover:bg-black hover:text-white transition-colors font-medium">
-                Xoá
+                {{$t('Admin.Brands.delete')}}
               </button>
               <button @click="toggleActive(brand)"
                 :class="[
@@ -148,7 +148,7 @@
                     ? 'border border-gray-300 text-gray-700 hover:bg-gray-100'
                     : 'bg-black text-white hover:bg-gray-800'
                 ]">
-                {{ brand.is_active !== false ? 'Vô hiệu hóa' : 'Kích hoạt' }}
+                {{ brand.is_active !== false ? $t('Admin.Brands.toggleDeactivate') : $t('Admin.Brands.toggleActivate') }}
               </button>
             </div>
           </div>
@@ -163,11 +163,11 @@
               d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
           </svg>
         </div>
-        <p class="text-gray-600 text-lg font-medium mb-2">Chưa có thương hiệu nào</p>
-        <p class="text-gray-500 text-sm mb-4">Thêm thương hiệu đầu tiên để bắt đầu</p>
+        <p class="text-gray-600 text-lg font-medium mb-2">{{$t('Admin.Brands.emptyTitle')}}</p>
+        <p class="text-gray-500 text-sm mb-4">{{$t('Admin.Brands.emptySubtitle')}}</p>
         <button @click="showAddModal = true"
           class="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium">
-          Thêm thương hiệu
+          {{$t('Admin.Brands.add')}}
         </button>
       </div>
     </div>
@@ -181,7 +181,7 @@
         <!-- Modal Header - Fixed -->
         <div class="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
           <h2 class="text-2xl font-bold text-gray-900">
-            {{ showEditModal ? 'Sửa thương hiệu' : 'Thêm thương hiệu mới' }}
+            {{ showEditModal ? $t('Admin.Brands.modalEditTitle') : $t('Admin.Brands.modalAddTitle') }}
           </h2>
           <button @click="closeModal" class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -195,7 +195,7 @@
           <form @submit.prevent="saveBrand" class="space-y-6">
           <div>
             <label class="block text-sm font-semibold text-gray-800 mb-2">
-              Tên thương hiệu <span class="text-red-500">*</span>
+              {{$t('Admin.Brands.nameLabel')}} <span class="text-red-500">*</span>
             </label>
             <input 
               v-model.trim="formData.name" 
@@ -205,18 +205,18 @@
                 'w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-black transition-all text-gray-900 placeholder-gray-400',
                 !formData.name || !formData.name.trim() ? 'border-red-300' : 'border-gray-200 focus:border-black'
               ]"
-              placeholder="Nhập tên thương hiệu"
+              :placeholder="$t('Admin.Brands.namePlaceholder')"
               @blur="validateName"
             />
-            <p v-if="nameError" class="mt-1 text-sm text-red-600">{{ nameError }}</p>
+            <p v-if="nameError" class="mt-1 text-sm text-red-600">{{$t('Admin.Brands.nameRequired')}}</p>
           </div>
 
           <div>
-            <label class="block text-sm font-semibold text-gray-800 mb-3">Logo</label>
+            <label class="block text-sm font-semibold text-gray-800 mb-3">{{$t('Admin.Brands.logoLabel')}}</label>
             
             <!-- File Upload -->
             <div class="mb-4">
-              <label class="block text-xs font-medium text-gray-600 mb-2.5">Upload ảnh (tùy chọn)</label>
+              <label class="block text-xs font-medium text-gray-600 mb-2.5">{{$t('Admin.Brands.logoUploadLabel')}}</label>
               <div class="relative">
                 <input 
                   ref="logoFileInput"
@@ -234,7 +234,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
                   <span class="text-sm font-medium text-gray-600 group-hover:text-black transition-colors">
-                    {{ logoFile ? logoFile.name : 'Chọn file ảnh' }}
+                    {{ logoFile ? logoFile.name : $t('Admin.Brands.logoSelectFile') }}
                   </span>
                 </label>
               </div>
@@ -251,7 +251,7 @@
                     type="button" 
                     @click="clearLogoFile"
                     class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
-                    title="Xóa ảnh"
+                    :title="$t('Admin.Brands.logoRemove')"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -264,27 +264,27 @@
             <!-- Divider -->
             <div class="flex items-center my-4">
               <div class="flex-1 border-t border-gray-200"></div>
-              <span class="px-3 text-xs text-gray-500 font-medium">HOẶC</span>
+              <span class="px-3 text-xs text-gray-500 font-medium">{{$t('Admin.Brands.logoOr')}}</span>
               <div class="flex-1 border-t border-gray-200"></div>
             </div>
             
             <!-- Logo URL (alternative) -->
             <div>
-              <label class="block text-xs font-medium text-gray-600 mb-2.5">Nhập URL logo</label>
+              <label class="block text-xs font-medium text-gray-600 mb-2.5">{{$t('Admin.Brands.logoUrlLabel')}}</label>
               <input 
                 v-model="formData.logo" 
                 type="url"
                 class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition-all text-sm text-gray-900 placeholder-gray-400"
-                placeholder="https://example.com/logo.png" 
+                :placeholder="$t('Admin.Brands.logoUrlPlaceholder')" 
               />
             </div>
           </div>
 
           <div>
-            <label class="block text-sm font-semibold text-gray-800 mb-2">Mô tả</label>
+            <label class="block text-sm font-semibold text-gray-800 mb-2">{{$t('Admin.Brands.descLabel')}}</label>
             <textarea v-model="formData.description" rows="4"
               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition-all text-gray-900 placeholder-gray-400 resize-none"
-              placeholder="Nhập mô tả thương hiệu (tùy chọn)"></textarea>
+              :placeholder="$t('Admin.Brands.descPlaceholder')"></textarea>
           </div>
 
           <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
@@ -295,7 +295,7 @@
               class="w-5 h-5 border-2 border-gray-300 rounded text-black focus:ring-2 focus:ring-black focus:ring-offset-2 cursor-pointer transition-all" 
             />
             <label for="is_active" class="text-sm font-medium text-gray-800 cursor-pointer flex-1">
-              Kích hoạt thương hiệu
+              {{$t('Admin.Brands.activeLabel')}}
             </label>
           </div>
           </form>
@@ -305,11 +305,11 @@
         <div class="flex justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
           <button type="button" @click="closeModal"
             class="px-6 py-2.5 rounded-xl border-2 border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 font-semibold transition-all duration-200">
-            Huỷ
+            {{$t('Admin.Brands.cancel')}}
           </button>
           <button type="button" @click="saveBrand"
             class="px-6 py-2.5 rounded-xl bg-black text-white hover:bg-gray-800 font-semibold transition-all duration-200 shadow-lg hover:shadow-xl">
-            {{ showEditModal ? 'Cập nhật' : 'Thêm mới' }}
+            {{ showEditModal ? $t('Admin.Brands.update') : $t('Admin.Brands.create') }}
           </button>
         </div>
       </div>
@@ -335,11 +335,11 @@
         <div class="flex justify-center gap-4">
           <button @click="confirm.visible = false"
             class="px-8 py-3 rounded-full border-2 border-black text-black bg-white hover:bg-gray-50 font-semibold transition-all duration-200 min-w-[120px]">
-            Huỷ
+            {{$t('Admin.Brands.cancel')}}
           </button>
           <button @click="confirm.onOk"
             class="px-8 py-3 rounded-full bg-black text-white hover:bg-gray-800 font-semibold transition-all duration-200 min-w-[120px]">
-            Xác nhận
+            {{$t('Admin.Brands.confirmTitle')}}
           </button>
         </div>
       </div>
@@ -349,10 +349,12 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AdminLayout from '@/layouts/admin/AdminLayout.vue'
 import BrandService from '@/api-services/BrandService'
 import { useToast } from '@/composables/useToast'
 
+const { t: $t } = useI18n()
 const toast = useToast()
 
 const brands = ref([])
@@ -406,7 +408,7 @@ const loadBrands = async () => {
       }
     }
   } catch (error) {
-    toast.error('Không thể tải danh sách thương hiệu')
+    toast.error($t('Admin.Brands.loadFailed'))
   } finally {
     loading.value = false
   }
@@ -438,14 +440,14 @@ const handleLogoFileChange = (event) => {
   if (file) {
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast.error('File phải là hình ảnh')
+      toast.error($t('Admin.Brands.fileMustBeImage'))
       event.target.value = ''
       return
     }
     
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Kích thước file không được vượt quá 5MB')
+      toast.error($t('Admin.Brands.fileSizeExceeded'))
       event.target.value = ''
       return
     }
@@ -489,8 +491,8 @@ const saveBrand = async () => {
     // Validate form trước khi gửi
     const trimmedName = formData.name?.trim() || ''
     if (!trimmedName) {
-      toast.error('Tên thương hiệu là bắt buộc')
-      nameError.value = 'Tên thương hiệu là bắt buộc'
+      toast.error($t('Admin.Brands.nameRequired'))
+      nameError.value = $t('Admin.Brands.nameRequired')
       return
     }
     
@@ -506,7 +508,7 @@ const saveBrand = async () => {
       response = await BrandService.update(editingId.value, formData, logoFile.value)
       // Kiểm tra response thành công
       if (response && (response.message || response.data)) {
-        toast.success('Cập nhật thương hiệu thành công!')
+        toast.success($t('Admin.Brands.updateSuccess'))
         // Load lại danh sách trước
         await loadBrands()
         // Kiểm tra brand đã có trong danh sách chưa
@@ -527,7 +529,7 @@ const saveBrand = async () => {
       // Thêm thương hiệu mới
       response = await BrandService.create(formData, logoFile.value)
       if (response && (response.message || response.data)) {
-        toast.success('Thêm thương hiệu thành công!')
+        toast.success($t('Admin.Brands.createSuccess'))
         
         const createdBrandData = response.data?.data || response.data
         const newBrandId = createdBrandData?.id || createdBrandData?._id
@@ -570,26 +572,26 @@ const saveBrand = async () => {
       error?.response?.data?.detail ||
       error?.response?.data?.message ||
       error?.message ||
-      'Thao tác thất bại'
+      $t('Admin.Brands.actionFailed')
     )
     // Không đóng modal nếu có lỗi để user có thể sửa lại
   }
 }
 
 const confirmDelete = (id) => {
-  confirm.message = 'Bạn có chắc muốn xoá thương hiệu này?'
+  confirm.message = $t('Admin.Brands.confirmDeleteMessage')
   confirm.visible = true
   confirm.onOk = async () => {
     confirm.visible = false
     try {
       await BrandService.delete(id)
-      toast.success('Đã xoá thương hiệu thành công!')
+      toast.success($t('Admin.Brands.deleteSuccess'))
       await loadBrands()
     } catch (error) {
       toast.error(
         error?.response?.data?.detail ||
         error?.response?.data?.message ||
-        'Xoá thương hiệu thất bại'
+        $t('Admin.Brands.actionFailed')
       )
     }
   }
@@ -599,13 +601,13 @@ const toggleActive = async (brand) => {
   try {
     const currentActive = brand.is_active !== false
     await BrandService.update(brand.id, { is_active: !currentActive })
-    toast.success(currentActive ? 'Đã vô hiệu hóa thương hiệu!' : 'Đã kích hoạt thương hiệu!')
+    toast.success(currentActive ? $t('Admin.Brands.toggleSuccessDeactivate') : $t('Admin.Brands.toggleSuccessActivate'))
     await loadBrands()
   } catch (error) {
     toast.error(
       error?.response?.data?.detail ||
       error?.response?.data?.message ||
-      'Thao tác thất bại'
+      $t('Admin.Brands.actionFailed')
     )
   }
 }
