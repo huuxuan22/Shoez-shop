@@ -11,11 +11,11 @@
               d="M12.1 21.35l-.1.1-.1-.1C7.14 17.24 4 14.39 4 10.5 4 8 6 6 8.5 6c1.54 0 3.04.99 3.57 2.36h.87C13.46 6.99 14.96 6 16.5 6 19 6 21 8 21 10.5c0 3.89-3.14 6.74-8.9 10.85z" />
           </svg>
         </div>
-        <h2 class="text-xl font-semibold mb-2">Bạn chưa có sản phẩm yêu thích</h2>
-        <p class="text-gray-500 mb-6">Hãy thêm vài sản phẩm để tiện xem lại và mua nhanh hơn.</p>
+        <h2 class="text-xl font-semibold mb-2">{{ $t('Views.Favourite.emptyTitle') }}</h2>
+        <p class="text-gray-500 mb-6">{{ $t('Views.Favourite.emptyDescription') }}</p>
         <router-link to="/products"
           class="inline-flex items-center gap-2 bg-black text-white px-5 py-2.5 rounded-lg hover:bg-gray-800 transition">
-          Khám phá sản phẩm
+          {{ $t('Views.Favourite.explore') }}
         </router-link>
       </div>
 
@@ -37,7 +37,7 @@
               class="w-full h-full object-contain transition-transform" />
             <button @click="removeFavourite(item._id || item.id)"
               class="absolute top-3 right-3 w-10 h-10 rounded-full bg-white/95 hover:bg-white shadow flex items-center justify-center"
-              title="Xóa khỏi yêu thích">
+              :title="$t('Views.Favourite.removeFromFavourite')">
               <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24">
                 <path
                   d="M12.1 21.35l-.1.1-.1-.1C7.14 17.24 4 14.39 4 10.5 4 8 6 6 8.5 6c1.54 0 3.04.99 3.57 2.36h.87C13.46 6.99 14.96 6 16.5 6 19 6 21 8 21 10.5c0 3.89-3.14 6.74-8.9 10.85z" />
@@ -47,14 +47,14 @@
           <div class="p-4">
             <p class="text-xs text-gray-500 uppercase tracking-wide">{{ item.brand }}</p>
             <h3 class="mt-1 text-base font-semibold text-black line-clamp-2 min-h-[44px]">{{ item.name }}</h3>
-            <p class="mt-2 text-sm text-gray-600 line-clamp-3">{{ item.description || 'Chưa có mô tả' }}</p>
+            <p class="mt-2 text-sm text-gray-600 line-clamp-3">{{ item.description || $t('Views.Favourite.noDescription') }}</p>
             <div class="mt-2 grid grid-cols-2 gap-2 text-xs text-gray-500">
-              <div v-if="item.category"><span class="text-gray-600">Loại:</span> {{ item.category }}</div>
+              <div v-if="item.category"><span class="text-gray-600">{{ $t('Views.Favourite.category') }}</span> {{ item.category }}</div>
               <div v-if="item.colors && item.colors.length">
-                <span class="text-gray-600">Màu:</span> {{ item.colors.length }}
+                <span class="text-gray-600">{{ $t('Views.Favourite.color') }}</span> {{ item.colors.length }}
               </div>
               <div v-if="item.sizes && item.sizes.length">
-                <span class="text-gray-600">Size:</span>
+                <span class="text-gray-600">{{ $t('Views.Favourite.size') }}</span>
                 {{Array.isArray(item.sizes) ? (item.sizes[0]?.size !== undefined ? item.sizes.map(s => s.size).join(',')
                   : item.sizes.join(', ')) : ''}}
               </div>
@@ -62,7 +62,7 @@
             <div class="mt-3 flex items-center justify-between">
               <p class="text-lg font-bold text-black">{{ formatPrice(item.price) }}</p>
               <router-link :to="`/products/${item._id || item.id}`"
-                class="text-sm font-medium text-black/80 hover:text-black">Chi tiết</router-link>
+                class="text-sm font-medium text-black/80 hover:text-black">{{ $t('Views.Favourite.details') }}</router-link>
             </div>
           </div>
         </article>
@@ -78,6 +78,9 @@ import Footer from '@/templates/Footer.vue'
 import { useFavouriteStore } from '@/stores/favourite'
 import { useAuthStore } from '@/stores/auth'
 import { onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const authStore = useAuthStore()
 const favouriteStore = useFavouriteStore()

@@ -11,12 +11,16 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
     url: { type: String, default: 'https://www.tiktok.com/@your_account' },
-    title: { type: String, default: 'Theo dõi TikTok' }
+    title: { type: String, default: null }
 })
 
+const title = computed(() => props.title || t('Contact.tiktok'))
 const targetUrl = computed(() => props.url || 'https://www.tiktok.com')
 </script>
 

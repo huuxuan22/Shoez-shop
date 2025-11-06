@@ -2,9 +2,9 @@
     <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <div class="mb-4 lg:mb-0">
-                <h1 class="text-2xl font-bold text-gray-900">Đơn hàng của tôi</h1>
+                <h1 class="text-2xl font-bold text-gray-900">{{ $t('Orders.Header.title') }}</h1>
                 <p class="text-gray-600 mt-1">
-                    Tổng số: <span class="font-semibold">{{ totalOrders }} đơn hàng</span>
+                    {{ $t('Orders.Header.totalOrders') }} <span class="font-semibold">{{ totalOrders }} {{ $t('Orders.Header.ordersSuffix') }}</span>
                 </p>
             </div>
 
@@ -27,6 +27,11 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps({
     totalOrders: {
         type: Number,
@@ -40,12 +45,12 @@ defineProps({
 
 defineEmits(['filter-change'])
 
-const filters = [
-    { value: 'all', label: 'Tất cả' },
-    { value: 'pending', label: 'Chờ xác nhận' },
-    { value: 'confirmed', label: 'Đã xác nhận' },
-    { value: 'shipping', label: 'Đang giao' },
-    { value: 'complete', label: 'Hoàn thành' },
-    { value: 'cancelled', label: 'Đã hủy' }
-]
+const filters = computed(() => [
+    { value: 'all', label: t('Orders.Header.filters.all') },
+    { value: 'pending', label: t('Orders.Header.filters.pending') },
+    { value: 'confirmed', label: t('Orders.Header.filters.confirmed') },
+    { value: 'shipping', label: t('Orders.Header.filters.shipping') },
+    { value: 'complete', label: t('Orders.Header.filters.complete') },
+    { value: 'cancelled', label: t('Orders.Header.filters.cancelled') }
+])
 </script>

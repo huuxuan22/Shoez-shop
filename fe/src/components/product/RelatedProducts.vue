@@ -1,6 +1,6 @@
 <template>
     <div class="mt-12">
-        <h2 class="text-3xl font-bold mb-8 text-gray-800">Sản phẩm liên quan</h2>
+        <h2 class="text-3xl font-bold mb-8 text-gray-800">{{ $t('Product.RelatedProducts.title') }}</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div v-for="relatedProduct in relatedProducts" :key="relatedProduct.id"
                 @click="$emit('product-click', relatedProduct.id)"

@@ -1,6 +1,6 @@
 <template>
   <div class="language-switcher">
-    <select aria-label="Language selector" v-model="currentLang" @change="onSelectChange" class="lang-select">
+    <select :aria-label="$t('Shared.LanguageSwitcher.label')" v-model="currentLang" @change="onSelectChange" class="lang-select">
       <option v-for="lang in availableLanguages" :key="lang.value" :value="lang.value">
         {{ lang.label }}
       </option>
@@ -10,22 +10,21 @@
 </template>
 
 <script setup>
-import { ref, watchEffect } from "vue";
+import { ref, computed, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
-import { MultiLanguage } from "@/common/enum.js";
 import { changeLanguage } from "@/utils/i18n-helper";
 
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 
-// Danh sách ngôn ngữ hỗ trợ
-const availableLanguages = [
-  { value: MultiLanguage.VI, label: "Tiếng Việt" },
-  { value: MultiLanguage.EN, label: "English" },
-  { value: MultiLanguage.JA, label: "日本語" },
-];
+// Danh sách ngôn ngữ hỗ trợ (computed để reactive với i18n)
+const availableLanguages = computed(() => [
+  { value: "vi", label: t('Shared.LanguageSwitcher.vietnamese') },
+  { value: "en", label: t('Shared.LanguageSwitcher.english') },
+  { value: "ja", label: t('Shared.LanguageSwitcher.japanese') },
+]);
 
 // Ngôn ngữ hiện tại
-const currentLang = ref(localStorage.getItem("language") || MultiLanguage.VI);
+const currentLang = ref(localStorage.getItem("language") || "vi");
 
 // Theo dõi thay đổi ngôn ngữ
 watchEffect(() => {

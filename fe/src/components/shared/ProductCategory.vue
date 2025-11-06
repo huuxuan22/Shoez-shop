@@ -39,7 +39,7 @@
 
                     <!-- Colors -->
                     <div class="flex items-center gap-1 mb-3">
-                        <span class="text-xs text-gray-500">Màu:</span>
+                        <span class="text-xs text-gray-500">{{ $t('Shared.ProductCategory.color') }}</span>
                         <div class="flex gap-1">
                             <span v-for="color in product.colors.slice(0, 3)" :key="color"
                                 class="text-xs bg-gray-100 px-2 py-1 rounded">
@@ -53,7 +53,7 @@
 
                     <!-- Sizes -->
                     <div class="flex items-center gap-1 mb-4">
-                        <span class="text-xs text-gray-500">Size:</span>
+                        <span class="text-xs text-gray-500">{{ $t('Shared.ProductCategory.size') }}</span>
                         <div class="flex gap-1 flex-wrap">
                             <span v-for="size in product.sizes.slice(0, 4)" :key="size"
                                 class="text-xs bg-gray-100 px-2 py-1 rounded">
@@ -76,7 +76,7 @@
                                 <path
                                     d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                             </svg>
-                            <span>{{ isFavourited(product) ? 'Đã thích' : 'Yêu thích' }}</span>
+                            <span>{{ isFavourited(product) ? $t('Shared.ProductCategory.liked') : $t('Shared.ProductCategory.favourite') }}</span>
                         </button>
                         <button @click.stop="handleBuyNow(product)"
                             class="flex-1 bg-black text-white px-3 py-2 rounded-lg hover:bg-gray-800 transition-all text-sm font-semibold flex items-center justify-center gap-1">
@@ -84,7 +84,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
-                            <span>Mua ngay</span>
+                            <span>{{ $t('Shared.ProductCategory.buyNow') }}</span>
                         </button>
                     </div>
                 </div>
@@ -92,18 +92,21 @@
         </div>
 
         <!-- Login Required Modal -->
-        <ConfirmModal :show="showLoginModal" :message="loginModalMessage" confirm-text="Đăng nhập" cancel-text="Đóng"
+        <ConfirmModal :show="showLoginModal" :message="loginModalMessage" :confirm-text="$t('Shared.ProductCategory.login')" :cancel-text="$t('Shared.ProductCategory.close')"
             @confirm="handleLoginModalConfirm" @cancel="handleLoginModalCancel" />
     </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useFavouriteStore } from '@/stores/favourite'
 import { useNotificationStore } from '@/stores/notification'
 import ConfirmModal from '@/components/ConfirmModal.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
     products: {
@@ -149,7 +152,7 @@ const isFavourited = (product) => {
 
 const toggleFavourite = async (product) => {
     if (!isAuthenticated()) {
-        loginModalMessage.value = 'Bạn chưa đăng nhập. Vui lòng đăng nhập để thêm sản phẩm vào yêu thích!';
+        loginModalMessage.value = t('Shared.ProductCategory.loginRequiredFavourite');
         showLoginModal.value = true;
         return;
     }
@@ -165,7 +168,7 @@ const toggleFavourite = async (product) => {
 const handleBuyNow = (product) => {
     // Kiểm tra đăng nhập
     if (!isAuthenticated()) {
-        loginModalMessage.value = 'Bạn chưa đăng nhập. Vui lòng đăng nhập để mua sản phẩm!';
+        loginModalMessage.value = t('Shared.ProductCategory.loginRequiredBuy');
         showLoginModal.value = true;
         return;
     }

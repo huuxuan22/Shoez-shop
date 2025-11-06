@@ -1,29 +1,29 @@
 <template>
     <div class="p-6">
         <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold text-black">Đổi mật khẩu</h2>
+            <h2 class="text-xl font-bold text-black">{{ $t('Profile.Password.title') }}</h2>
         </div>
 
         <form @submit.prevent="handleSubmit" class="space-y-6 max-w-2xl">
             <!-- Current Password -->
-            <InputField label="Mật khẩu hiện tại" name="currentPassword" type="password"
-                v-model="formData.currentPassword" placeholder="Nhập mật khẩu hiện tại" :required="true"
+            <InputField :label="$t('Profile.Password.currentPassword')" name="currentPassword" type="password"
+                v-model="formData.currentPassword" :placeholder="$t('Profile.Password.currentPasswordPlaceholder')" :required="true"
                 :error-message="errors.currentPassword" />
 
             <!-- New Password -->
-            <InputField label="Mật khẩu mới" name="newPassword" type="password" v-model="formData.newPassword"
-                placeholder="Nhập mật khẩu mới" :required="true" :error-message="errors.newPassword"
-                hint="Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số" />
+            <InputField :label="$t('Profile.Password.newPassword')" name="newPassword" type="password" v-model="formData.newPassword"
+                :placeholder="$t('Profile.Password.newPasswordPlaceholder')" :required="true" :error-message="errors.newPassword"
+                :hint="$t('Profile.Password.passwordHint')" />
 
             <!-- Confirm Password -->
-            <InputField label="Xác nhận mật khẩu mới" name="confirmPassword" type="password"
-                v-model="formData.confirmPassword" placeholder="Nhập lại mật khẩu mới" :required="true"
+            <InputField :label="$t('Profile.Password.confirmPassword')" name="confirmPassword" type="password"
+                v-model="formData.confirmPassword" :placeholder="$t('Profile.Password.confirmPasswordPlaceholder')" :required="true"
                 :error-message="errors.confirmPassword" />
 
             <!-- Password Strength Indicator -->
             <div v-if="formData.newPassword" class="p-4 bg-gray-50 rounded-lg">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-700">Độ mạnh mật khẩu:</span>
+                    <span class="text-sm font-medium text-gray-700">{{ $t('Profile.Password.strength') }}</span>
                     <span :class="passwordStrengthClass">{{ passwordStrengthText }}</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
@@ -34,19 +34,19 @@
 
             <!-- Security Tips -->
             <div class="p-4 bg-blue-50 rounded-lg">
-                <h4 class="font-semibold text-blue-800 mb-2">Mẹo bảo mật:</h4>
+                <h4 class="font-semibold text-blue-800 mb-2">{{ $t('Profile.Password.securityTips') }}</h4>
                 <ul class="text-sm text-blue-700 space-y-1">
-                    <li>• Sử dụng mật khẩu dài ít nhất 8 ký tự</li>
-                    <li>• Kết hợp chữ hoa, chữ thường, số và ký tự đặc biệt</li>
-                    <li>• Không sử dụng thông tin cá nhân làm mật khẩu</li>
-                    <li>• Đổi mật khẩu định kỳ 3-6 tháng một lần</li>
+                    <li>• {{ $t('Profile.Password.tip1') }}</li>
+                    <li>• {{ $t('Profile.Password.tip2') }}</li>
+                    <li>• {{ $t('Profile.Password.tip3') }}</li>
+                    <li>• {{ $t('Profile.Password.tip4') }}</li>
                 </ul>
             </div>
 
             <!-- Action Buttons -->
             <div class="flex justify-end gap-3 pt-6 border-t border-gray-200">
                 <Button type="button" variant="outline" @click="resetForm" :disabled="isLoading">
-                    Hủy
+                    {{ $t('Profile.Password.cancel') }}
                 </Button>
                 <Button type="submit" variant="primary" :disabled="isLoading || !isFormValid">
                     <span v-if="isLoading" class="flex items-center gap-2">
@@ -54,10 +54,10 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
-                        Đang đổi mật khẩu...
+                        {{ $t('Profile.Password.changing') }}
                     </span>
                     <span v-else>
-                        Đổi mật khẩu
+                        {{ $t('Profile.Password.changePassword') }}
                     </span>
                 </Button>
             </div>
@@ -67,8 +67,11 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import InputField from './../FormInput.vue';
 import Button from './../Button.vue';
+
+const { t } = useI18n();
 
 const props = defineProps({
     isLoading: Boolean
@@ -120,10 +123,10 @@ const passwordStrength = computed(() => {
 
 const passwordStrengthText = computed(() => {
     const strength = passwordStrength.value;
-    if (strength < 40) return 'Yếu';
-    if (strength < 70) return 'Trung bình';
-    if (strength < 90) return 'Mạnh';
-    return 'Rất mạnh';
+    if (strength < 40) return t('Profile.Password.strengthWeak');
+    if (strength < 70) return t('Profile.Password.strengthMedium');
+    if (strength < 90) return t('Profile.Password.strengthStrong');
+    return t('Profile.Password.strengthVeryStrong');
 });
 
 const passwordStrengthClass = computed(() => {
@@ -151,30 +154,30 @@ const validateForm = () => {
 
     // Current password validation
     if (!formData.currentPassword) {
-        errors.currentPassword = 'Vui lòng nhập mật khẩu hiện tại';
+        errors.currentPassword = t('Profile.Password.errors.currentPasswordRequired');
         isValid = false;
     }
 
     // New password validation
     if (!formData.newPassword) {
-        errors.newPassword = 'Vui lòng nhập mật khẩu mới';
+        errors.newPassword = t('Profile.Password.errors.newPasswordRequired');
         isValid = false;
     } else if (formData.newPassword.length < 8) {
-        errors.newPassword = 'Mật khẩu phải có ít nhất 8 ký tự';
+        errors.newPassword = t('Profile.Password.errors.newPasswordMinLength');
         isValid = false;
     }
     // 🔹 Kiểm tra trùng với mật khẩu hiện tại
     else if (formData.newPassword === formData.currentPassword) {
-        errors.newPassword = 'Mật khẩu mới không được trùng với mật khẩu hiện tại';
+        errors.newPassword = t('Profile.Password.errors.newPasswordSameAsCurrent');
         isValid = false;
     }
 
     // Confirm password validation
     if (!formData.confirmPassword) {
-        errors.confirmPassword = 'Vui lòng xác nhận mật khẩu mới';
+        errors.confirmPassword = t('Profile.Password.errors.confirmPasswordRequired');
         isValid = false;
     } else if (formData.newPassword !== formData.confirmPassword) {
-        errors.confirmPassword = 'Mật khẩu xác nhận không khớp';
+        errors.confirmPassword = t('Profile.Password.errors.confirmPasswordMismatch');
         isValid = false;
     }
 

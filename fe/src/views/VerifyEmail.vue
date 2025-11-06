@@ -21,11 +21,11 @@
                                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
                     </div>
-                    <h2 class="text-3xl font-bold text-gray-900">Xác thực Email</h2>
+                    <h2 class="text-3xl font-bold text-gray-900">{{ $t('Views.VerifyEmail.title') }}</h2>
                     <p class="mt-2 text-sm text-gray-600">
-                        Chúng tôi đã gửi mã xác thực đến email
+                        {{ $t('Views.VerifyEmail.sentTo') }}
                     </p>
-                    <p class="mt-1 text-sm font-semibold text-gray-800">{{ email || 'email của bạn' }}</p>
+                    <p class="mt-1 text-sm font-semibold text-gray-800">{{ email || $t('Views.VerifyEmail.email') }}</p>
                 </div>
 
                 <!-- Form xác thực -->
@@ -33,14 +33,14 @@
                     <!-- Mã xác thực -->
                     <div>
                         <label for="code" class="block text-sm font-medium text-gray-700 mb-2">
-                            Nhập mã xác thực 6 chữ số
+                            {{ $t('Views.VerifyEmail.enterCode') }}
                         </label>
                         <Field name="code" type="text" id="code" maxlength="6" autocomplete="off"
                             class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-800 focus:ring-gray-800 text-center text-2xl font-bold tracking-widest sm:text-sm px-4 py-3 border"
                             placeholder="000000" @input="handleCodeInput" v-model="code" />
                         <ErrorMessage name="code" class="text-red-600 text-sm mt-1 block" />
                         <p v-if="code.length === 6 && code.length > 0" class="text-sm text-gray-500 mt-2">
-                            Đang kiểm tra...
+                            {{ $t('Views.VerifyEmail.checking') }}
                         </p>
                     </div>
 
@@ -49,18 +49,18 @@
 
                     <!-- Submit Button -->
                     <div>
-                        <FormButton :label="isVerifying ? 'Đang xác thực...' : 'Xác thực Email'" type="submit"
+                        <FormButton :label="isVerifying ? $t('Views.VerifyEmail.verifying') : $t('Views.VerifyEmail.verifyButton')" type="submit"
                             variant="black" class="w-full" :disabled="isVerifying || code.length !== 6" />
                     </div>
 
                     <!-- Resend code -->
                     <div class="text-center">
                         <p class="text-sm text-gray-600">
-                            Chưa nhận được mã?
+                            {{ $t('Views.VerifyEmail.noCode') }}
                         </p>
                         <button type="button" @click="resendCode" :disabled="isResending || resendCooldown > 0"
                             class="mt-2 text-sm font-medium text-gray-800 hover:text-black disabled:text-gray-400 disabled:cursor-not-allowed">
-                            {{ resendCooldown > 0 ? `Gửi lại sau ${resendCooldown}s` : 'Gửi lại mã' }}
+                            {{ resendCooldown > 0 ? $t('Views.VerifyEmail.resendAfter', { seconds: resendCooldown }) : $t('Views.VerifyEmail.resend') }}
                         </button>
                     </div>
                 </Form>
@@ -69,9 +69,9 @@
             <!-- Footer -->
             <div class="text-center">
                 <p class="text-sm text-gray-600">
-                    Quay lại
+                    {{ $t('Views.VerifyEmail.backToRegister') }}
                     <router-link to="/register" class="font-medium text-gray-800 hover:text-black">
-                        Đăng ký
+                        {{ $t('Views.VerifyEmail.register') }}
                     </router-link>
                 </p>
             </div>
@@ -81,6 +81,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
+import { useI18n } from 'vue-i18n';
 import FormButton from "../components/FormButton.vue";
 import ToastNotification from '@/components/ToastNotification.vue';
 import { useAuthStore } from "@/stores/auth";
@@ -88,6 +89,8 @@ import { useRouter, useRoute } from "vue-router";
 import { Form, Field, ErrorMessage } from 'vee-validate';
 import * as yup from 'yup';
 import { verifyEmailApi, resendVerificationCodeApi } from "@/api-services/AuthService";
+
+const { t } = useI18n();
 
 const router = useRouter();
 const route = useRoute();
@@ -127,13 +130,13 @@ function showToast(message, type = 'info') {
 const schema = yup.object({
     email: yup
         .string()
-        .required("Email là bắt buộc")
-        .email("Email không hợp lệ"),
+        .required(t('Views.VerifyEmail.emailRequired'))
+        .email(t('Views.VerifyEmail.emailInvalid')),
     code: yup
         .string()
-        .required("Vui lòng nhập mã xác thực")
-        .length(6, "Mã xác thực phải có 6 chữ số")
-        .matches(/^\d+$/, "Mã xác thực chỉ chứa số"),
+        .required(t('Views.VerifyEmail.codeRequired'))
+        .length(6, t('Views.VerifyEmail.codeLength'))
+        .matches(/^\d+$/, t('Views.VerifyEmail.codeNumeric')),
 });
 
 // Handle code input - chỉ cho phép số
@@ -146,7 +149,7 @@ const handleCodeInput = (event) => {
 // Submit handler
 const onSubmit = async (values) => {
     if (code.value.length !== 6) {
-        showToast('Vui lòng nhập đủ 6 chữ số', 'error');
+        showToast(t('Views.VerifyEmail.enterAllDigits'), 'error');
         return;
     }
 
@@ -168,13 +171,13 @@ const onSubmit = async (values) => {
             localStorage.setItem("user", JSON.stringify(response.data.user_principal));
         }
 
-        showToast(response.data?.message || 'Xác thực thành công!', 'success');
+        showToast(response.data?.message || t('Views.VerifyEmail.success'), 'success');
 
         setTimeout(() => {
             router.push('/');
         }, 1500);
     } catch (error) {
-        const errorMessage = error.response?.data?.detail || error.message || 'Xác thực thất bại!';
+        const errorMessage = error.response?.data?.detail || error.message || t('Views.VerifyEmail.error');
         showToast(errorMessage, 'error');
     } finally {
         isVerifying.value = false;
@@ -184,7 +187,7 @@ const onSubmit = async (values) => {
 // Resend code
 const resendCode = async () => {
     if (!email.value) {
-        showToast('Không tìm thấy email. Vui lòng đăng ký lại.', 'error');
+        showToast(t('Views.VerifyEmail.emailNotFound'), 'error');
         router.push('/register');
         return;
     }
@@ -192,7 +195,7 @@ const resendCode = async () => {
     isResending.value = true;
     try {
         await resendVerificationCodeApi({ email: email.value });
-        showToast('Đã gửi lại mã xác thực!', 'success');
+        showToast(t('Views.VerifyEmail.resendSuccess'), 'success');
 
         // Bắt đầu đếm ngược 60 giây
         resendCooldown.value = 60;
@@ -204,7 +207,7 @@ const resendCode = async () => {
             }
         }, 1000);
     } catch (error) {
-        const errorMessage = error.response?.data?.detail || error.message || 'Gửi lại mã thất bại!';
+        const errorMessage = error.response?.data?.detail || error.message || t('Views.VerifyEmail.resendError');
         showToast(errorMessage, 'error');
     } finally {
         isResending.value = false;
@@ -214,7 +217,7 @@ const resendCode = async () => {
 onMounted(() => {
     // Nếu không có email, redirect về trang đăng ký
     if (!email.value) {
-        showToast('Vui lòng đăng ký để nhận mã xác thực', 'error');
+        showToast(t('Views.VerifyEmail.pleaseRegister'), 'error');
         setTimeout(() => {
             router.push('/register');
         }, 2000);

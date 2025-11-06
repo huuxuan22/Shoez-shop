@@ -37,8 +37,9 @@
 
                 <div class="ml-4 flex-shrink-0 flex">
                     <button @click="$emit('close')" type="button"
-                        class="inline-flex rounded-md bg-zinc-900 text-gray-400 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-zinc-900">
-                        <span class="sr-only">Close</span>
+                        class="inline-flex rounded-md bg-zinc-900 text-gray-400 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-zinc-900"
+                        :aria-label="$t('Shared.ToastNotification.close')">
+                        <span class="sr-only">{{ $t('Shared.ToastNotification.close') }}</span>
                         <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path
                                 d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
@@ -51,6 +52,10 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 // Định nghĩa props cho component
 defineProps({
     message: {

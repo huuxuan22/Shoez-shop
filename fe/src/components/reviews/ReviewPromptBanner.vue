@@ -14,10 +14,10 @@
                         </div>
                         <div>
                             <h3 class="font-bold text-gray-900 text-lg">
-                                Bạn có {{ pendingReviews.length }} sản phẩm chưa đánh giá!
+                                {{ $t('Reviews.PromptBanner.title', { count: pendingReviews.length }) }}
                             </h3>
                             <p class="text-sm text-gray-600">
-                                Hãy chia sẻ trải nghiệm của bạn để giúp người khác lựa chọn đúng sản phẩm
+                                {{ $t('Reviews.PromptBanner.description') }}
                             </p>
                         </div>
                     </div>
@@ -25,11 +25,11 @@
                     <div class="flex items-center gap-3">
                         <button @click="handleRemindLater"
                             class="px-4 py-2 text-gray-700 hover:text-gray-900 font-medium">
-                            Để sau
+                            {{ $t('Reviews.PromptBanner.later') }}
                         </button>
                         <button @click="handleReviewNow"
                             class="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors font-semibold">
-                            Đánh giá ngay
+                            {{ $t('Reviews.PromptBanner.reviewNow') }}
                         </button>
                         <button @click="dismissBanner" class="p-2 text-gray-400 hover:text-gray-600">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -47,9 +47,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import ReviewService from '@/api-services/ReviewService'
+
+const { t } = useI18n()
 
 const router = useRouter()
 const authStore = useAuthStore()

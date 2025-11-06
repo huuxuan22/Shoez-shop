@@ -2,7 +2,7 @@
     <section class="py-12 bg-white border-t border-gray-200">
         <div class="container mx-auto px-4">
             <div class="text-center mb-8">
-                <h2 class="text-2xl md:text-3xl font-bold text-black">Đánh giá</h2>
+                <h2 class="text-2xl md:text-3xl font-bold text-black">{{ $t('Home.Testimonials.title') }}</h2>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">

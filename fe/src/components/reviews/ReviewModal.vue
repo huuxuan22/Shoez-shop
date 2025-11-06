@@ -11,7 +11,7 @@
 
                     <!-- Header -->
                     <div class="bg-black px-6 py-4">
-                        <h3 class="text-lg font-bold text-white">Đánh giá sản phẩm</h3>
+                        <h3 class="text-lg font-bold text-white">{{ $t('Reviews.Modal.title') }}</h3>
                     </div>
 
                     <!-- Body -->
@@ -21,13 +21,13 @@
                             <img :src="product.image" :alt="product.name" class="w-20 h-20 object-cover rounded-lg" />
                             <div>
                                 <h4 class="font-semibold text-gray-900">{{ product.name }}</h4>
-                                <p class="text-sm text-gray-600">Size: {{ product.size }} - Màu: {{ product.color }}</p>
+                                <p class="text-sm text-gray-600">{{ $t('Reviews.Modal.size') }} {{ product.size }} - {{ $t('Reviews.Modal.color') }} {{ product.color }}</p>
                             </div>
                         </div>
 
                         <!-- Rating Stars -->
                         <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Đánh giá của bạn *</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('Reviews.Modal.yourRating') }}</label>
                             <div class="flex gap-1">
                                 <button v-for="star in 5" :key="star" @click="selectedRating = star"
                                     class="text-4xl transition-colors"
@@ -35,28 +35,28 @@
                                     ★
                                 </button>
                             </div>
-                            <p v-if="!selectedRating" class="text-sm text-red-500 mt-2">Vui lòng chọn số sao</p>
+                            <p v-if="!selectedRating" class="text-sm text-red-500 mt-2">{{ $t('Reviews.Modal.selectStars') }}</p>
                         </div>
 
                         <!-- Comment -->
                         <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Nhận xét của bạn *
+                                {{ $t('Reviews.Modal.yourComment') }}
                             </label>
-                            <textarea v-model="comment" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm..."
+                            <textarea v-model="comment" :placeholder="$t('Reviews.Modal.commentPlaceholder')"
                                 rows="4"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
                             </textarea>
-                            <p class="text-xs text-gray-500 mt-1">Tối thiểu 10 ký tự</p>
+                            <p class="text-xs text-gray-500 mt-1">{{ $t('Reviews.Modal.minChars') }}</p>
                             <p v-if="comment.length > 0 && comment.length < 10" class="text-sm text-red-500 mt-1">
-                                Cần ít nhất {{ 10 - comment.length }} ký tự nữa
+                                {{ $t('Reviews.Modal.needMoreChars', { count: 10 - comment.length }) }}
                             </p>
                         </div>
 
                         <!-- Image/Video Upload -->
                         <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Thêm hình ảnh hoặc video (tùy chọn)
+                                {{ $t('Reviews.Modal.addMedia') }}
                             </label>
                             <input ref="fileInput" type="file" accept="image/*,video/*" multiple class="hidden"
                                 @change="handleFileUpload" />
@@ -66,9 +66,9 @@
                                     stroke-width="2">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
                                 </svg>
-                                Chọn ảnh/video
+                                {{ $t('Reviews.Modal.selectMedia') }}
                             </button>
-                            <p class="text-xs text-gray-500 mt-1">Tối đa 5 tệp (ảnh/video)</p>
+                            <p class="text-xs text-gray-500 mt-1">{{ $t('Reviews.Modal.maxFiles') }}</p>
 
                             <!-- Preview Grid -->
                             <div v-if="uploadedFiles.length > 0" class="mt-4 grid grid-cols-5 gap-3">
@@ -92,7 +92,7 @@
                                         </div>
                                         <div v-if="item.type.startsWith('video/')"
                                             class="absolute top-1 right-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">
-                                            Video
+                                            {{ $t('Reviews.Modal.video') }}
                                         </div>
                                     </div>
                                 </div>
@@ -109,11 +109,11 @@
                     <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3">
                         <button @click="closeModal"
                             class="px-6 py-2 border-2 border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-                            Hủy
+                            {{ $t('Reviews.Modal.cancel') }}
                         </button>
                         <button @click="submitReview" :disabled="!canSubmit" @keyup.enter="submitReview"
                             class="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
-                            Gửi đánh giá
+                            {{ $t('Reviews.Modal.submit') }}
                         </button>
                     </div>
                 </div>
@@ -124,8 +124,11 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import ReviewService from '@/api-services/ReviewService';
 import { useToast } from '@/composables/useToast';
+
+const { t } = useI18n();
 // Use ReviewService to upload media instead of updating product images
 
 const props = defineProps({
@@ -206,7 +209,7 @@ const uploadFiles = async () => {
         return result.images || [];
     } catch (err) {
         console.error('Upload images error:', err);
-        throw new Error('Không thể upload ảnh/video. Vui lòng thử lại.');
+        throw new Error(t('Reviews.Modal.uploadError'));
     }
 };
 
@@ -234,11 +237,11 @@ const submitReview = async () => {
         };
 
         await ReviewService.create(reviewData);
-        toast.success('Cảm ơn bạn đã đánh giá!');
+        toast.success(t('Reviews.Modal.success'));
         emit('submitted');
         closeModal();
     } catch (err) {
-        error.value = err.response?.data?.detail || err.message || 'Có lỗi xảy ra khi gửi đánh giá';
+        error.value = err.response?.data?.detail || err.message || t('Reviews.Modal.submitError');
         toast.error(error.value);
     } finally {
         loading.value = false;

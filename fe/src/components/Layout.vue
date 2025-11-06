@@ -4,26 +4,26 @@
     <header class="bg-white shadow-md sticky top-0 z-50">
       <nav class="container mx-auto px-4 py-4">
         <div class="flex items-center justify-between">
-          <router-link to="/" class="text-2xl font-bold text-blue-600 hover:text-blue-700">
-            Shoez Shop
+            <router-link to="/" class="text-2xl font-bold text-blue-600 hover:text-blue-700">
+            {{ shopTitle }}
           </router-link>
           <!-- Navigation Menu -->
           <div class="hidden md:flex items-center space-x-6">
             <router-link to="/" class="text-gray-700 hover:text-blue-600 transition-colors"
               :class="{ 'text-blue-600 font-semibold': $route.name === 'Home' }">
-              Trang chủ
+              {{ $t('Shared.Layout.header.home') }}
             </router-link>
             <router-link to="/products" class="text-gray-700 hover:text-blue-600 transition-colors"
               :class="{ 'text-blue-600 font-semibold': $route.name === 'Products' }">
-              Sản phẩm
+              {{ $t('Shared.Layout.header.products') }}
             </router-link>
             <router-link to="/about" class="text-gray-700 hover:text-blue-600 transition-colors"
               :class="{ 'text-blue-600 font-semibold': $route.name === 'About' }">
-              Về chúng tôi
+              {{ $t('Shared.Layout.header.about') }}
             </router-link>
             <router-link to="/contact" class="text-gray-700 hover:text-blue-600 transition-colors"
               :class="{ 'text-blue-600 font-semibold': $route.name === 'Contact' }">
-              Liên hệ
+              {{ $t('Shared.Layout.header.contact') }}
             </router-link>
           </div>
 
@@ -40,12 +40,12 @@
             <!-- Auth Links -->
             <div v-if="!isAuthenticated" class="flex items-center space-x-2">
               <router-link to="/login" class="text-gray-700 hover:text-blue-600 transition-colors">
-                Đăng nhập
+                {{ $t('Shared.Layout.header.login') }}
               </router-link>
               <span class="text-gray-400">|</span>
               <router-link to="/register"
                 class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                Đăng ký
+                {{ $t('Shared.Layout.header.register') }}
               </router-link>
             </div>
 
@@ -53,7 +53,7 @@
             <div v-else class="relative">
               <button @click="showUserMenu = !showUserMenu"
                 class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors">
-                <span>Xin chào, {{ userName }}</span>
+                <span>{{ $t('Shared.Layout.header.greeting') }}, {{ userName }}</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
@@ -63,10 +63,10 @@
               <div v-if="showUserMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border">
                 <router-link to="/profile" class="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                   @click="showUserMenu = true">
-                  Hồ sơ
+                  {{ $t('Shared.Layout.header.profile') }}
                 </router-link>
                 <button @click="handleLogout" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
-                  Đăng xuất
+                  {{ $t('Shared.Layout.header.logout') }}
                 </button>
               </div>
             </div>
@@ -95,9 +95,9 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <!-- Company Info -->
           <div>
-            <h3 class="text-xl font-bold mb-4">Shoez Shop</h3>
+            <h3 class="text-xl font-bold mb-4">{{ companyName }}</h3>
             <p class="text-gray-300 mb-4">
-              Cửa hàng giày thể thao chính hãng với đa dạng thương hiệu nổi tiếng thế giới.
+              {{ $t('Shared.Layout.footer.companyDescription') }}
             </p>
             <div class="flex space-x-4">
               <a href="#" class="text-gray-300 hover:text-white">
@@ -117,40 +117,40 @@
 
           <!-- Quick Links -->
           <div>
-            <h4 class="text-lg font-semibold mb-4">Liên kết nhanh</h4>
+            <h4 class="text-lg font-semibold mb-4">{{ $t('Shared.Layout.footer.quickLinks') }}</h4>
             <ul class="space-y-2">
-              <li><router-link to="/" class="text-gray-300 hover:text-white">Trang chủ</router-link></li>
-              <li><router-link to="/products" class="text-gray-300 hover:text-white">Sản phẩm</router-link></li>
-              <li><router-link to="/about" class="text-gray-300 hover:text-white">Về chúng tôi</router-link></li>
-              <li><router-link to="/contact" class="text-gray-300 hover:text-white">Liên hệ</router-link></li>
+              <li><router-link to="/" class="text-gray-300 hover:text-white">{{ $t('Shared.Layout.header.home') }}</router-link></li>
+              <li><router-link to="/products" class="text-gray-300 hover:text-white">{{ $t('Shared.Layout.header.products') }}</router-link></li>
+              <li><router-link to="/about" class="text-gray-300 hover:text-white">{{ $t('Shared.Layout.header.about') }}</router-link></li>
+              <li><router-link to="/contact" class="text-gray-300 hover:text-white">{{ $t('Shared.Layout.header.contact') }}</router-link></li>
             </ul>
           </div>
 
           <!-- Customer Service -->
           <div>
-            <h4 class="text-lg font-semibold mb-4">Hỗ trợ khách hàng</h4>
+            <h4 class="text-lg font-semibold mb-4">{{ $t('Shared.Layout.footer.customerService') }}</h4>
             <ul class="space-y-2">
-              <li><a href="#" class="text-gray-300 hover:text-white">Chính sách đổi trả</a></li>
-              <li><a href="#" class="text-gray-300 hover:text-white">Hướng dẫn mua hàng</a></li>
-              <li><a href="#" class="text-gray-300 hover:text-white">Bảo hành sản phẩm</a></li>
+              <li><a href="#" class="text-gray-300 hover:text-white">{{ $t('Shared.Layout.footer.returnPolicy') }}</a></li>
+              <li><a href="#" class="text-gray-300 hover:text-white">{{ $t('Shared.Layout.footer.purchaseGuide') }}</a></li>
+              <li><a href="#" class="text-gray-300 hover:text-white">{{ $t('Shared.Layout.footer.warranty') }}</a></li>
               <li><a href="#" class="text-gray-300 hover:text-white">FAQ</a></li>
             </ul>
           </div>
 
           <!-- Contact Info -->
           <div>
-            <h4 class="text-lg font-semibold mb-4">Thông tin liên hệ</h4>
+            <h4 class="text-lg font-semibold mb-4">{{ $t('Shared.Layout.footer.contactInfo') }}</h4>
             <div class="space-y-2 text-gray-300">
               <p>📍 123 Đường ABC, Quận 1, TP.HCM</p>
               <p>📞 (028) 1234 5678</p>
               <p>✉️ info@shoezshop.com</p>
-              <p>🕒 8:00 - 22:00 (Thứ 2 - Chủ nhật)</p>
+              <p>🕒 {{ $t('Shared.Layout.footer.workingHours') }}</p>
             </div>
           </div>
         </div>
 
         <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
-          <p>&copy; 2025 Shoez Shop. All rights reserved.</p>
+          <p>{{ $t('Shared.Layout.footer.copyright') }}</p>
         </div>
       </div>
     </footer>
@@ -160,6 +160,13 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { BrandConstants } from '@/common/enum';
+
+const shopTitle = BrandConstants.TITLE_SHOP;
+const companyName = BrandConstants.COMPANY_NAME;
+
+const { t } = useI18n();
 
 const router = useRouter();
 

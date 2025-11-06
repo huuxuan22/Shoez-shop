@@ -29,7 +29,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    <span class="text-xs font-medium">Đổi ảnh</span>
+                    <span class="text-xs font-medium">{{ $t('Profile.Avatar.changePhoto') }}</span>
                 </div>
             </label>
         </div>
@@ -43,8 +43,7 @@
         <!-- Upload Guidelines -->
         <div class="mt-4 p-3 bg-blue-50 rounded-lg">
             <p class="text-xs text-blue-700 text-left">
-                <strong>Lưu ý:</strong> Ảnh đại diện nên có định dạng JPG, PNG hoặc GIF.
-                Kích thước tối đa 5MB.
+                <strong>{{ $t('Profile.Avatar.note') }}</strong> {{ $t('Profile.Avatar.noteText') }}
             </p>
         </div>
     </div>
@@ -52,6 +51,9 @@
 
 <script setup>
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 // Props nhận từ parent
 const props = defineProps({
@@ -84,13 +86,13 @@ const handleFileSelect = (event) => {
     // Kiểm tra định dạng file
     const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
     if (!validTypes.includes(file.type)) {
-        alert('Chỉ chấp nhận file ảnh (JPG, PNG, GIF)');
+        alert(t('Profile.Avatar.invalidFormat'));
         return;
     }
 
     // Kiểm tra dung lượng file (5MB)
     if (file.size > 5 * 1024 * 1024) {
-        alert('Kích thước file không được vượt quá 5MB');
+        alert(t('Profile.Avatar.fileSizeExceeded'));
         return;
     }
 

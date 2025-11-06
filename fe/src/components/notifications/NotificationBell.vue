@@ -20,17 +20,17 @@
                 class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-96 overflow-hidden flex flex-col">
                 <!-- Header -->
                 <div class="p-4 border-b border-gray-200 flex items-center justify-between">
-                    <h3 class="font-semibold text-gray-900">Thông báo</h3>
+                    <h3 class="font-semibold text-gray-900">{{ $t('Notifications.Bell.title') }}</h3>
                     <button v-if="unreadCount > 0" @click="markAllAsRead"
                         class="text-sm text-blue-600 hover:text-blue-800">
-                        Đánh dấu đã đọc
+                        {{ $t('Notifications.Bell.markAllAsRead') }}
                     </button>
                 </div>
 
                 <!-- Notifications List -->
                 <div class="overflow-y-auto">
                     <div v-if="notifications.length === 0" class="p-8 text-center text-gray-500">
-                        Không có thông báo
+                        {{ $t('Notifications.Bell.noNotifications') }}
                     </div>
 
                     <div v-for="notification in notifications" :key="notification.id" @click="handleClick(notification)"
@@ -82,7 +82,7 @@
                 <!-- Footer -->
                 <div v-if="notifications.length > 0" class="p-4 border-t border-gray-200 text-center">
                     <button @click="viewAll" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                        Xem tất cả
+                        {{ $t('Notifications.Bell.viewAll') }}
                     </button>
                 </div>
             </div>
@@ -108,7 +108,10 @@
  */
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useNotificationStore } from '@/stores/notification';
+
+const { t } = useI18n();
 
 const router = useRouter();
 const notificationStore = useNotificationStore();
@@ -172,12 +175,12 @@ const formatTime = (timestamp) => {
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
 
-    if (seconds < 60) return 'Vừa xong';
-    if (minutes < 60) return `${minutes} phút trước`;
-    if (hours < 24) return `${hours} giờ trước`;
-    if (days < 7) return `${days} ngày trước`;
+    if (seconds < 60) return t('Notifications.Bell.timeAgo.justNow');
+    if (minutes < 60) return t('Notifications.Bell.timeAgo.minutesAgo', { count: minutes });
+    if (hours < 24) return t('Notifications.Bell.timeAgo.hoursAgo', { count: hours });
+    if (days < 7) return t('Notifications.Bell.timeAgo.daysAgo', { count: days });
 
-    return date.toLocaleDateString('vi-VN');
+    return date.toLocaleDateString();
 };
 
 /**

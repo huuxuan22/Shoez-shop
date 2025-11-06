@@ -141,7 +141,10 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+
+const { t } = useI18n();
 
 const router = useRouter();
 
@@ -188,7 +191,7 @@ const quickView = (productId) => {
 
 // Add to cart
 const addToCart = (product) => {
-  alert(`Đã thêm "${product.name}" vào giỏ hàng!`);
+  alert(t('Shared.ProductCategory.addedToCart', { productName: product.name }));
 };
 
 // Format price

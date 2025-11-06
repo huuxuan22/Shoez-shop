@@ -3,7 +3,7 @@
         <!-- Header -->
         <div class="flex items-center justify-between mb-8">
             <div>
-                <h2 class="text-3xl font-bold text-gray-900 font-script">Đánh giá sản phẩm</h2>
+                <h2 class="text-3xl font-bold text-gray-900 font-script">{{ $t('Product.Reviews.title') }}</h2>
                 <div class="flex items-center space-x-4 mt-2">
                     <!-- Rating Summary -->
                     <div class="text-center">
@@ -11,7 +11,7 @@
                         <div class="flex items-center justify-center mt-1">
                             <StarRating :rating="averageRating" :size="20" />
                         </div>
-                        <div class="text-gray-600 text-sm mt-1">{{ totalReviews }} đánh giá</div>
+                        <div class="text-gray-600 text-sm mt-1">{{ totalReviews }} {{ $t('Product.Reviews.reviews') }}</div>
                     </div>
 
                     <!-- Rating Distribution -->
@@ -32,18 +32,18 @@
 
             <button v-if="canReview" @click="showReviewModal = true"
                 class="bg-gradient-to-r from-gray-900 to-black text-white px-6 py-3 rounded-2xl font-semibold hover:from-gray-800 hover:to-gray-900 transform hover:-translate-y-1 transition-all duration-300 shadow-lg">
-                ✍️ Viết đánh giá
+                {{ $t('Product.Reviews.writeReview') }}
             </button>
         </div>
 
         <!-- Filters and Sort -->
         <div class="flex items-center justify-between mb-6 pb-6 border-b border-gray-200">
             <div class="flex items-center space-x-4">
-                <span class="text-gray-700 font-medium">Lọc theo:</span>
+                <span class="text-gray-700 font-medium">{{ $t('Product.Reviews.filterBy') }}</span>
                 <button @click="filterByRating(0)"
                     :class="filterRating === 0 ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
                     class="px-4 py-2 rounded-lg font-semibold transition-all duration-200">
-                    Tất cả
+                    {{ $t('Product.Reviews.all') }}
                 </button>
                 <button v-for="i in 5" :key="i" @click="filterByRating(6 - i)"
                     :class="filterRating === (6 - i) ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
@@ -53,13 +53,13 @@
             </div>
 
             <div class="flex items-center space-x-2">
-                <span class="text-gray-700 font-medium">Sắp xếp:</span>
+                <span class="text-gray-700 font-medium">{{ $t('Product.Reviews.sortBy') }}</span>
                 <select v-model="sortBy" @change="handleSortChange"
                     class="border border-gray-300 rounded-lg px-4 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-gray-900">
-                    <option value="newest">Mới nhất</option>
-                    <option value="oldest">Cũ nhất</option>
-                    <option value="highest">Rating cao</option>
-                    <option value="lowest">Rating thấp</option>
+                    <option value="newest">{{ $t('Product.Reviews.newest') }}</option>
+                    <option value="oldest">{{ $t('Product.Reviews.oldest') }}</option>
+                    <option value="highest">{{ $t('Product.Reviews.highestRating') }}</option>
+                    <option value="lowest">{{ $t('Product.Reviews.lowestRating') }}</option>
                 </select>
             </div>
         </div>
@@ -67,7 +67,7 @@
         <!-- Active Filter Badge -->
         <div v-if="filterRating !== 0" class="mb-4">
             <div class="inline-flex items-center space-x-2 bg-gray-100 rounded-full px-4 py-2">
-                <span class="text-gray-700 font-medium">Đang hiển thị: {{ filteredReviews.length }} đánh giá</span>
+                <span class="text-gray-700 font-medium">{{ $t('Product.Reviews.showing') }} {{ filteredReviews.length }} {{ $t('Product.Reviews.reviews') }}</span>
                 <button @click="filterByRating(0)" class="ml-2 text-gray-500 hover:text-gray-900 transition-colors">
                     ✕
                 </button>
@@ -83,7 +83,7 @@
         <div v-if="totalPages > 1" class="mt-8 flex justify-center items-center space-x-2">
             <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1"
                 class="px-4 py-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors font-medium">
-                ← Trước
+                {{ $t('Product.Reviews.previous') }}
             </button>
 
             <div class="flex space-x-1">
@@ -96,7 +96,7 @@
 
             <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages"
                 class="px-4 py-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors font-medium">
-                Sau →
+                {{ $t('Product.Reviews.next') }}
             </button>
         </div>
 
@@ -106,16 +106,16 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
                     d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
             </svg>
-            <h3 class="mt-4 text-lg font-semibold text-gray-900">Không tìm thấy đánh giá</h3>
+            <h3 class="mt-4 text-lg font-semibold text-gray-900">{{ $t('Product.Reviews.notFound') }}</h3>
             <p class="mt-2 text-gray-600" v-if="filterRating !== 0">
-                Không có đánh giá {{ filterRating }} sao nào
+                {{ $t('Product.Reviews.noReviewsForRating') }} {{ filterRating }} {{ $t('Product.Reviews.rating') }}
             </p>
             <p class="mt-2 text-gray-600" v-else>
-                Chưa có đánh giá nào cho sản phẩm này
+                {{ $t('Product.Reviews.noReviewsYet') }}
             </p>
             <button v-if="canReview && filterRating === 0" @click="showReviewModal = true"
                 class="mt-4 bg-gray-900 text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-800 transition-colors">
-                Viết đánh giá đầu tiên
+                {{ $t('Product.Reviews.writeFirstReview') }}
             </button>
         </div>
 
@@ -127,9 +127,12 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import ProductReviewCard from './ProductReviewCard.vue'
 import ReviewModal from './ReviewModal.vue'
 import StarRating from '../shared/StarRating.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
     product: {

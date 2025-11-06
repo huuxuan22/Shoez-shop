@@ -1,5 +1,6 @@
 <template>
-    <div class="space-y-6">
+    <div class="space-y-6" :aria-label="$t('Orders.Loading.text')" role="status">
+        <span class="sr-only">{{ $t('Orders.Loading.text') }}</span>
         <div v-for="n in 3" :key="n" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 animate-pulse">
             <!-- Header Skeleton -->
             <div class="flex justify-between items-center mb-4">
@@ -35,5 +36,8 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 // Loading skeleton component
 </script>

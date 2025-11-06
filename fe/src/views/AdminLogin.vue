@@ -34,8 +34,8 @@
                 d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
           </div>
-          <h1 class="text-2xl font-bold text-white mb-1">Admin Portal</h1>
-          <p class="text-gray-300 text-sm">Shoez Management System</p>
+          <h1 class="text-2xl font-bold text-white mb-1">{{ $t('AdminLogin.title') }}</h1>
+          <p class="text-gray-300 text-sm">{{ $t('AdminLogin.subtitle') }}</p>
         </div>
 
         <!-- Login Form -->
@@ -43,7 +43,7 @@
           <!-- Email Field -->
           <div>
             <label class="block text-sm font-medium text-gray-200 mb-1">
-              Email hoặc Tên đăng nhập
+              {{ $t('AdminLogin.emailLabel') }}
             </label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -54,14 +54,14 @@
               </div>
               <input v-model="loginForm.email" type="text" required
                 class="w-full pl-9 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all text-sm"
-                placeholder="admin@shoez.com" />
+                :placeholder="$t('AdminLogin.emailPlaceholder')" />
             </div>
           </div>
 
           <!-- Password Field -->
           <div>
             <label class="block text-sm font-medium text-gray-200 mb-1">
-              Mật khẩu
+              {{ $t('AdminLogin.passwordLabel') }}
             </label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -96,7 +96,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
               </svg>
-              Đăng nhập
+              {{ $t('AdminLogin.loginButton') }}
             </span>
             <span v-else class="flex items-center justify-center">
               <svg class="animate-spin h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24">
@@ -105,7 +105,7 @@
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                 </path>
               </svg>
-              Đang xử lý...
+              {{ $t('AdminLogin.processing') }}
             </span>
           </button>
         </form>
@@ -116,7 +116,7 @@
             <div class="w-full border-t border-white/20"></div>
           </div>
           <div class="relative flex justify-center text-xs">
-            <span class="px-2 bg-transparent text-gray-400">hoặc</span>
+            <span class="px-2 bg-transparent text-gray-400">{{ $t('AdminLogin.or') }}</span>
           </div>
         </div>
 
@@ -127,7 +127,7 @@
             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Đăng nhập với tài khoản khách hàng
+            {{ $t('AdminLogin.customerLoginLink') }}
           </div>
         </router-link>
 
@@ -140,8 +140,7 @@
                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             <p class="text-xs text-yellow-200">
-              Đây là khu vực quản trị hệ thống. Chỉ dành cho người quản lý được ủy quyền. Mọi hành động đều được ghi
-              nhận.
+              {{ $t('AdminLogin.securityNotice') }}
             </p>
           </div>
         </div>
@@ -150,7 +149,7 @@
       <!-- Footer -->
       <div class="text-center mt-4">
         <p class="text-gray-400 text-xs">
-          © 2025 Shoez Shop. All rights reserved.
+          {{ $t('AdminLogin.copyright') }}
         </p>
       </div>
     </div>
@@ -159,10 +158,12 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import ToastNotification from '@/components/ToastNotification.vue';
 
+const { t } = useI18n();
 const router = useRouter();
 const authStore = useAuthStore();
 
@@ -194,7 +195,7 @@ const showToast = (message, type = 'success') => {
 
 const handleLogin = async () => {
   if (!loginForm.email || !loginForm.password) {
-    showToast('Vui lòng nhập đầy đủ thông tin', 'error');
+    showToast(t('AdminLogin.messages.fillAllFields'), 'error');
     return;
   }
   isLoading.value = true;
@@ -205,18 +206,18 @@ const handleLogin = async () => {
     });
 
     if (response.user_principal.role !== 'ADMIN') {
-      showToast('Bạn không có quyền truy cập vào khu vực quản trị', 'error');
+      showToast(t('AdminLogin.messages.noPermission'), 'error');
       await authStore.logout();
       isLoading.value = false;
       return;
     }
-    showToast('Đăng nhập thành công! Đang chuyển hướng...', 'success');
+    showToast(t('AdminLogin.messages.success'), 'success');
     setTimeout(() => {
       router.push('/admin');
     }, 1000);
 
   } catch (error) {
-    const errorMessage = error.response?.data?.detail || 'Email hoặc mật khẩu không đúng';
+    const errorMessage = error.response?.data?.detail || t('AdminLogin.messages.invalidCredentials');
     showToast(errorMessage, 'error');
   } finally {
     isLoading.value = false;

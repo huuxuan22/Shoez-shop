@@ -14,13 +14,12 @@
                     <div class="max-w-4xl mx-auto text-center">
                         <h1
                             class="text-6xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                            LIÊN HỆ
+                            {{ $t('ContactTemplate.title') }}
                         </h1>
                         <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mb-8 rounded-full">
                         </div>
                         <p class="text-xl text-gray-300 leading-relaxed font-light">
-                            Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn. Hãy liên hệ với chúng tôi
-                            để được tư vấn và giải đáp mọi thắc mắc.
+                            {{ $t('ContactTemplate.subtitle') }}
                         </p>
                     </div>
                 </div>
@@ -37,7 +36,7 @@
                             <div class="absolute -bottom-4 -right-4 w-8 h-8 border-b-2 border-r-2 border-gray-900">
                             </div>
 
-                            <h2 class="text-4xl font-bold text-gray-900 mb-12 font-serif">THÔNG TIN LIÊN HỆ</h2>
+                            <h2 class="text-4xl font-bold text-gray-900 mb-12 font-serif">{{ $t('ContactTemplate.contactInfo') }}</h2>
 
                             <div class="space-y-8">
                                 <!-- Address -->
@@ -264,11 +263,11 @@
                 <div class="container mx-auto px-4 text-center relative z-10">
                     <h2
                         class="text-5xl font-bold mb-8 font-serif bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                        CẦN HỖ TRỢ NGAY?
+                        {{ $t('ContactTemplate.needSupportNow') }}
                     </h2>
                     <div class="w-32 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mb-12 rounded-full"></div>
                     <p class="text-xl text-gray-300 mb-12 max-w-2xl mx-auto font-light leading-relaxed">
-                        Đội ngũ chăm sóc khách hàng của chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7
+                        {{ $t('ContactTemplate.supportTeam') }}
                     </p>
                     <div class="space-x-6">
                         <a href="tel:19006750"
@@ -288,6 +287,9 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const form = ref({
     name: '',
@@ -297,7 +299,7 @@ const form = ref({
 
 const submitForm = () => {
     // Xử lý gửi form ở đây
-    alert('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất có thể.')
+    alert(t('ContactTemplate.thankYouContact'))
 
     // Reset form
     form.value = {

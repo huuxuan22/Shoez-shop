@@ -11,25 +11,25 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="font-semibold text-gray-900">Đánh giá đơn hàng</h3>
-                    <p class="text-sm text-gray-600">Bạn đã nhận được hàng?</p>
+                    <h3 class="font-semibold text-gray-900">{{ $t('Orders.ReviewRequest.title') }}</h3>
+                    <p class="text-sm text-gray-600">{{ $t('Orders.ReviewRequest.subtitle') }}</p>
                 </div>
             </div>
 
             <!-- Message -->
             <p class="text-gray-700 text-sm mb-4">
-                Chia sẻ trải nghiệm của bạn để giúp người khác lựa chọn tốt hơn
+                {{ $t('Orders.ReviewRequest.message') }}
             </p>
 
             <!-- Actions -->
             <div class="flex space-x-3">
                 <button @click="hideRequest"
                     class="flex-1 border border-gray-300 text-gray-700 py-2 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
-                    Để sau
+                    {{ $t('Orders.ReviewRequest.later') }}
                 </button>
                 <button @click="goToReview"
                     class="flex-1 bg-gradient-to-r from-gray-900 to-black text-white py-2 rounded-xl text-sm font-medium hover:from-gray-800 hover:to-gray-900 transition-all duration-300">
-                    Đánh giá ngay
+                    {{ $t('Orders.ReviewRequest.reviewNow') }}
                 </button>
             </div>
 
@@ -45,6 +45,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const router = useRouter()
 const showRequest = ref(false)

@@ -5,11 +5,11 @@
                 <div
                     class="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin">
                 </div>
-                <p class="text-gray-600">Đang xử lý đăng nhập...</p>
+                <p class="text-gray-600">{{ $t('OAuthCallback.processing') }}</p>
             </div>
             <div v-else-if="error" class="space-y-4">
                 <p class="text-red-600">{{ error }}</p>
-                <button @click="closeWindow" class="px-4 py-2 bg-gray-600 text-white rounded">Đóng</button>
+                <button @click="closeWindow" class="px-4 py-2 bg-gray-600 text-white rounded">{{ $t('OAuthCallback.close') }}</button>
             </div>
         </div>
     </div>
@@ -18,7 +18,10 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { hydrateFromOAuthRedirect } from '@/api-services/AuthService';
+
+const { t } = useI18n();
 
 const route = useRoute();
 const loading = ref(true);
@@ -54,7 +57,7 @@ onMounted(async () => {
             throw new Error('OAuth callback failed');
         }
     } catch (err) {
-        error.value = err.message || 'Có lỗi xảy ra khi đăng nhập';
+        error.value = err.message || t('OAuthCallback.error');
         loading.value = false;
     }
 });

@@ -2,7 +2,7 @@
     <div class="flex justify-center mt-8">
         <nav class="flex items-center space-x-2">
             <!-- Previous Button -->
-            <button @click="handlePageChange(currentPage - 1)" :disabled="currentPage === 1" :class="[
+            <button @click="handlePageChange(currentPage - 1)" :disabled="currentPage === 1" :aria-label="$t('Orders.Pagination.previousPage')" :class="[
                 'px-3 py-2 rounded-lg border text-sm font-medium transition-colors',
                 currentPage === 1
                     ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
@@ -14,7 +14,7 @@
             </button>
 
             <!-- Page Numbers -->
-            <button v-for="page in visiblePages" :key="page" @click="handlePageChange(page)" :class="[
+            <button v-for="page in visiblePages" :key="page" @click="handlePageChange(page)" :aria-label="$t('Orders.Pagination.goToPage', { page })" :class="[
                 'px-4 py-2 rounded-lg border text-sm font-medium transition-colors',
                 currentPage === page
                     ? 'bg-black text-white border-black'
@@ -24,7 +24,7 @@
             </button>
 
             <!-- Next Button -->
-            <button @click="handlePageChange(currentPage + 1)" :disabled="currentPage === totalPages" :class="[
+            <button @click="handlePageChange(currentPage + 1)" :disabled="currentPage === totalPages" :aria-label="$t('Orders.Pagination.nextPage')" :class="[
                 'px-3 py-2 rounded-lg border text-sm font-medium transition-colors',
                 currentPage === totalPages
                     ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
@@ -40,6 +40,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
     currentPage: {

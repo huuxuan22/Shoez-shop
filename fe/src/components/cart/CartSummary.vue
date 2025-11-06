@@ -1,27 +1,27 @@
 <template>
     <div class="bg-white border border-gray-200 rounded-lg p-6 sticky top-4">
-        <h2 class="text-xl font-bold text-black mb-6">Tóm tắt đơn hàng</h2>
+        <h2 class="text-xl font-bold text-black mb-6">{{ $t('Cart.Summary.title') }}</h2>
 
         <div class="space-y-3">
             <div class="flex justify-between text-gray-600">
-                <span>Tạm tính ({{ totalItems }} sản phẩm)</span>
+                <span>{{ $t('Cart.Summary.subtotal') }} ({{ totalItems }} {{ $t('Cart.Summary.itemsSuffix') }})</span>
                 <span>{{ formatPrice(subtotal) }}</span>
             </div>
 
             <div class="flex justify-between text-gray-600">
-                <span>Phí vận chuyển</span>
-                <span>{{ shippingFee > 0 ? formatPrice(shippingFee) : 'Miễn phí' }}</span>
+                <span>{{ $t('Cart.Summary.shippingFee') }}</span>
+                <span>{{ shippingFee > 0 ? formatPrice(shippingFee) : $t('Cart.Summary.shippingFree') }}</span>
             </div>
 
             <div class="flex justify-between text-gray-600">
-                <span>Giảm giá</span>
+                <span>{{ $t('Cart.Summary.discount') }}</span>
                 <span class="text-green-600">-{{ formatPrice(discount) }}</span>
             </div>
 
             <Divider />
 
             <div class="flex justify-between text-lg font-bold text-black">
-                <span>Tổng cộng</span>
+                <span>{{ $t('Cart.Summary.total') }}</span>
                 <span>{{ formatPrice(total) }}</span>
             </div>
         </div>
@@ -29,12 +29,12 @@
         <div class="mt-6 space-y-2">
             <button @click="$emit('checkout-selected')" :disabled="selectedCount === 0"
                 class="w-full bg-black text-white px-4 py-3 rounded-lg disabled:opacity-50">
-                Thanh toán ({{ selectedCount }})
+                {{ $t('Cart.Summary.checkout') }} ({{ selectedCount }})
             </button>
 
             <div class="text-center">
                 <button class="text-gray-600 hover:text-black transition-colors text-sm">
-                    ← Tiếp tục mua sắm
+                    {{ $t('Cart.Summary.continueShopping') }}
                 </button>
             </div>
         </div>
@@ -43,8 +43,11 @@
 
 <script setup>
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import Button from '../Button.vue';
 import Divider from '../Divider.vue';
+
+const { t } = useI18n();
 
 const props = defineProps({
     cartItems: Array,

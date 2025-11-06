@@ -46,63 +46,63 @@
     <div class="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12">
       <div class="w-full max-w-md space-y-6">
         <div class="text-center">
-          <h1 class="text-3xl font-bold text-gray-900">Đăng ký</h1>
-          <p class="mt-2 text-gray-600">Tạo tài khoản mới để trải nghiệm</p>
+          <h1 class="text-3xl font-bold text-gray-900">{{ $t('Register.title') }}</h1>
+          <p class="mt-2 text-gray-600">{{ $t('Register.subtitle') }}</p>
         </div>
 
-        <Form @submit="onSubmit" :validation-schema="schema" class="mt-6 space-y-4">
+        <Form @submit="onSubmit" :validation-schema="schema.value" class="mt-6 space-y-4">
           <!-- Họ và tên -->
           <div>
             <label for="full_name" class="block text-sm font-medium text-gray-700 mb-1">
-              Họ và tên
+              {{ $t('Register.fullNameLabel') }}
             </label>
             <Field name="full_name" type="text" id="full_name"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
-              placeholder="Nhập họ và tên" />
+              :placeholder="$t('Register.fullNamePlaceholder')" />
             <ErrorMessage name="full_name" class="text-red-500 text-sm mt-1 block" />
           </div>
 
           <!-- Email -->
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
-              Email
+              {{ $t('Register.emailLabel') }}
             </label>
             <Field name="email" type="email" id="email"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
-              placeholder="Nhập email" />
+              :placeholder="$t('Register.emailPlaceholder')" />
             <ErrorMessage name="email" class="text-red-500 text-sm mt-1 block" />
           </div>
 
           <!-- Mật khẩu -->
           <div>
             <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
-              Mật khẩu
+              {{ $t('Register.passwordLabel') }}
             </label>
             <Field name="password" type="password" id="password"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
-              placeholder="Nhập mật khẩu" />
+              :placeholder="$t('Register.passwordPlaceholder')" />
             <ErrorMessage name="password" class="text-red-500 text-sm mt-1 block" />
           </div>
 
           <!-- Số điện thoại -->
           <div>
             <label for="numberphone" class="block text-sm font-medium text-gray-700 mb-1">
-              Số điện thoại
+              {{ $t('Register.phoneLabel') }}
             </label>
             <Field name="numberphone" type="tel" id="numberphone"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
-              placeholder="Nhập số điện thoại (VD: 0912345678)" />
+              :placeholder="$t('Register.phonePlaceholder')" />
             <ErrorMessage name="numberphone" class="text-red-500 text-sm mt-1 block" />
           </div>
 
           <div>
-            <FormButton label="Đăng ký" type="submit" variant="black" class="w-full" />
+            <FormButton :label="$t('Register.registerButton')" type="submit" variant="black" class="w-full" />
           </div>
         </Form>
 
         <p class="text-center text-sm text-gray-500">
-          Đã có tài khoản?
-          <a href="/login" class="font-medium text-black-600 hover:text-gray-500">Đăng nhập ngay</a>
+          {{ $t('Register.hasAccount') }}
+          <a href="/login" class="font-medium text-black-600 hover:text-gray-500">{{ $t('Register.loginLink') }}</a>
         </p>
       </div>
     </div>
@@ -110,7 +110,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
+import { useI18n } from 'vue-i18n';
 import FormButton from "../components/FormButton.vue";
 import ToastNotification from '@/components/ToastNotification.vue';
 import { useAuthStore } from "@/stores/auth";
@@ -118,6 +119,7 @@ import { useRouter } from "vue-router";
 import { Form, Field, ErrorMessage } from 'vee-validate';
 import * as yup from 'yup';
 
+const { t } = useI18n();
 const router = useRouter();
 const authStore = useAuthStore();
 
@@ -143,35 +145,35 @@ function showToast(message, type = 'info') {
   }, 3000);
 }
 
-// Validation schema với yup
-const schema = yup.object({
+// Validation schema với yup - sử dụng computed để reactive với i18n
+const schema = computed(() => yup.object({
   full_name: yup
     .string()
-    .required("Vui lòng nhập họ và tên")
-    .min(2, "Họ và tên phải có ít nhất 2 ký tự")
-    .max(64, "Họ và tên không được quá 64 ký tự"),
+    .required(t('Register.validation.fullNameRequired'))
+    .min(2, t('Register.validation.fullNameMin'))
+    .max(64, t('Register.validation.fullNameMax')),
 
   email: yup
     .string()
-    .required("Vui lòng nhập email")
-    .email("Email không hợp lệ")
-    .min(6, "Email phải từ 6 đến 64 ký tự")
-    .max(64, "Email phải từ 6 đến 64 ký tự"),
+    .required(t('Register.validation.emailRequired'))
+    .email(t('Register.validation.emailInvalid'))
+    .min(6, t('Register.validation.emailMin'))
+    .max(64, t('Register.validation.emailMax')),
 
   password: yup
     .string()
-    .required("Vui lòng nhập mật khẩu")
-    .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
-    .max(64, "Mật khẩu không được quá 64 ký tự"),
+    .required(t('Register.validation.passwordRequired'))
+    .min(6, t('Register.validation.passwordMin'))
+    .max(64, t('Register.validation.passwordMax')),
 
   numberphone: yup
     .string()
-    .required("Vui lòng nhập số điện thoại")
+    .required(t('Register.validation.phoneRequired'))
     .matches(
       /^(0|\+84)\d{9}$/,
-      "Số điện thoại không hợp lệ (VD: 0912345678 hoặc +84912345678)"
+      t('Register.validation.phoneInvalid')
     ),
-});
+}));
 
 const currentSlide = ref(0);
 
@@ -234,7 +236,7 @@ const onSubmit = async (values) => {
     debugger;
     console.log(result);
 
-    showToast(result.data?.message || 'Đã gửi mã xác thực đến email của bạn!', 'success');
+    showToast(result.data?.message || t('Register.messages.success'), 'success');
 
     // Redirect đến trang xác thực email với email trong query
     setTimeout(() => {
@@ -244,7 +246,7 @@ const onSubmit = async (values) => {
       });
     }, 1500);
   } catch (error) {
-    const errorMessage = error.response?.data?.detail || error.message || 'Đăng ký thất bại!';
+    const errorMessage = error.response?.data?.detail || error.message || t('Register.messages.error');
     showToast(errorMessage, 'error');
   }
 };

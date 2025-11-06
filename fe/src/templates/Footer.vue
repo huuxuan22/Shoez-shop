@@ -4,9 +4,9 @@
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
         <!-- Company Info -->
         <div>
-          <h3 class="text-xl font-bold mb-4">Shoez Shop</h3>
+          <h3 class="text-xl font-bold mb-4">{{ companyName }}</h3>
           <p class="text-gray-300 mb-4">
-            Cửa hàng giày thể thao chính hãng với đa dạng thương hiệu nổi tiếng thế giới.
+            {{ $t('Home.Footer.companyDescription') }}
           </p>
           <div class="flex space-x-4">
             <a href="#" class="text-gray-300 hover:text-white transition-colors">
@@ -32,26 +32,26 @@
 
         <!-- Quick Links -->
         <div>
-          <h4 class="text-lg font-semibold mb-4">Liên kết nhanh</h4>
+          <h4 class="text-lg font-semibold mb-4">{{ $t('Home.Footer.quickLinks') }}</h4>
           <ul class="space-y-2">
             <li>
               <router-link to="/" class="text-gray-300 hover:text-white transition-colors" @click="scrollToTop">
-                Trang chủ
+                {{ $t('Home.Footer.home') }}
               </router-link>
             </li>
             <li>
               <router-link to="/products" class="text-gray-300 hover:text-white transition-colors" @click="scrollToTop">
-                Sản phẩm
+                {{ $t('Home.Footer.products') }}
               </router-link>
             </li>
             <li>
               <router-link to="/about" class="text-gray-300 hover:text-white transition-colors" @click="scrollToTop">
-                Về chúng tôi
+                {{ $t('Home.Footer.about') }}
               </router-link>
             </li>
             <li>
               <router-link to="/contact" class="text-gray-300 hover:text-white transition-colors" @click="scrollToTop">
-                Liên hệ
+                {{ $t('Home.Footer.contact') }}
               </router-link>
             </li>
           </ul>
@@ -59,26 +59,26 @@
 
         <!-- Customer Service -->
         <div>
-          <h4 class="text-lg font-semibold mb-4">Hỗ trợ khách hàng</h4>
+          <h4 class="text-lg font-semibold mb-4">{{ $t('Home.Footer.customerService') }}</h4>
           <ul class="space-y-2">
             <li>
               <router-link to="/policy/returns" class="text-gray-300 hover:text-white transition-colors" @click="scrollToTop">
-                Chính sách đổi trả
+                {{ $t('Home.Footer.returnPolicy') }}
               </router-link>
             </li>
             <li>
               <router-link to="/guide/purchase" class="text-gray-300 hover:text-white transition-colors" @click="scrollToTop">
-                Hướng dẫn mua hàng
+                {{ $t('Home.Footer.purchaseGuide') }}
               </router-link>
             </li>
             <li>
               <router-link to="/policy/warranty" class="text-gray-300 hover:text-white transition-colors" @click="scrollToTop">
-                Bảo hành sản phẩm
+                {{ $t('Home.Footer.warranty') }}
               </router-link>
             </li>
             <li>
               <router-link to="/faq" class="text-gray-300 hover:text-white transition-colors" @click="scrollToTop">
-                FAQ
+                {{ $t('Home.Footer.faq') }}
               </router-link>
             </li>
           </ul>
@@ -86,30 +86,30 @@
 
         <!-- Contact Info -->
         <div>
-          <h4 class="text-lg font-semibold mb-4">Thông tin liên hệ</h4>
+          <h4 class="text-lg font-semibold mb-4">{{ $t('Home.Footer.contactInfo') }}</h4>
           <div class="space-y-2 text-gray-300">
             <p class="flex items-center">
               <span class="mr-2">📍</span>
-              123 Đường ABC, Quận 1, TP.HCM
+              {{ $t('Home.Footer.address') }}
             </p>
             <p class="flex items-center">
               <span class="mr-2">📞</span>
-              (028) 1234 5678
+              {{ $t('Home.Footer.phone') }}
             </p>
             <p class="flex items-center">
               <span class="mr-2">✉️</span>
-              info@shoezshop.com
+              {{ $t('Home.Footer.email') }}
             </p>
             <p class="flex items-center">
               <span class="mr-2">🕒</span>
-              8:00 - 22:00 (Thứ 2 - Chủ nhật)
+              {{ $t('Home.Footer.hours') }}
             </p>
           </div>
         </div>
       </div>
 
       <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
-        <p>&copy; {{ currentYear }} Shoez Shop. All rights reserved.</p>
+        <p>{{ $t('Home.Footer.copyright', { year: currentYear }) }}</p>
       </div>
     </div>
   </footer>
@@ -117,8 +117,13 @@
 
 <script setup>
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { BrandConstants } from '@/common/enum';
 
+const companyName = BrandConstants.COMPANY_NAME;
+
+const { t } = useI18n();
 const router = useRouter();
 
 // Computed properties

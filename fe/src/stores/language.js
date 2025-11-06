@@ -1,9 +1,8 @@
 import { defineStore } from "pinia";
-import { MultiLanguage } from "@/common/enum";
 
 export const useLanguageStore = defineStore("language", {
   state: () => ({
-    currentLanguage: localStorage.getItem("language") || MultiLanguage.VI,
+    currentLanguage: localStorage.getItem("language") || "vi",
   }),
   actions: {
     setLanguage(lang) {

@@ -10,7 +10,7 @@
                         <OrderStatusBadge :status="order.status" />
                     </div>
                     <p class="text-gray-600 text-sm mt-1">
-                        Đặt ngày: {{ formatDate(order.created_at || order.createdAt) }}
+                        {{ $t('Orders.Card.orderDate') }} {{ formatDate(order.created_at || order.createdAt) }}
                     </p>
                 </div>
 
@@ -33,8 +33,7 @@
                     <div class="flex-1 min-w-0">
                         <h4 class="font-medium text-gray-900 truncate">{{ item.name || item.productName }}</h4>
                         <p class="text-gray-600 text-sm">
-                            {{ item.brand ? `${item.brand} - ` : '' }}Size: {{ item.size }}, Màu: {{ item.color }}, Số
-                            lượng: {{ item.quantity }}
+                            {{ item.brand ? `${item.brand} - ` : '' }}{{ $t('Orders.Card.size') }} {{ item.size }}, {{ $t('Orders.Card.color') }} {{ item.color }}, {{ $t('Orders.Card.quantity') }} {{ item.quantity }}
                         </p>
                     </div>
                     <div class="text-right flex-shrink-0">
@@ -49,11 +48,11 @@
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                 <div class="mb-4 lg:mb-0">
                     <p class="text-sm text-gray-600">
-                        <span class="font-medium">Địa chỉ giao hàng:</span>
+                        <span class="font-medium">{{ $t('Orders.Card.shippingAddress') }}</span>
                         {{ getShippingAddress(order) }}
                     </p>
                     <p v-if="order.trackingNumber" class="text-sm text-gray-600 mt-1">
-                        <span class="font-medium">Mã theo dõi:</span>
+                        <span class="font-medium">{{ $t('Orders.Card.trackingNumber') }}</span>
                         {{ order.trackingNumber }}
                     </p>
                 </div>
@@ -61,17 +60,17 @@
                 <div class="flex flex-wrap gap-2">
                     <button @click="$emit('view-detail', order.id || order._id)"
                         class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
-                        Xem chi tiết
+                        {{ $t('Orders.Card.viewDetail') }}
                     </button>
 
                     <button v-if="canCancelOrder" @click="$emit('cancel-order', order.id || order._id)"
                         class="px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium">
-                        Hủy đơn hàng
+                        {{ $t('Orders.Card.cancelOrder') }}
                     </button>
 
                     <button v-if="canReorder" @click="$emit('reorder', order.id || order._id)"
                         class="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium">
-                        Mua lại
+                        {{ $t('Orders.Card.reorder') }}
                     </button>
                 </div>
             </div>
@@ -81,7 +80,10 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import OrderStatusBadge from './OrderStatusBadge.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
     order: {
@@ -118,10 +120,10 @@ const formatDate = (date) => {
 
 const getPaymentMethodText = (method) => {
     const methods = {
-        credit_card: 'Thẻ tín dụng',
-        cod: 'Thanh toán khi nhận hàng',
-        bank_transfer: 'Chuyển khoản ngân hàng',
-        momo: 'Ví MoMo'
+        credit_card: t('Orders.Card.paymentMethods.creditCard'),
+        cod: t('Orders.Card.paymentMethods.cod'),
+        bank_transfer: t('Orders.Card.paymentMethods.bankTransfer'),
+        momo: t('Orders.Card.paymentMethods.momo')
     }
     return methods[method] || method
 }

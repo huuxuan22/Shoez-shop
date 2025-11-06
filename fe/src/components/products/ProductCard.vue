@@ -48,14 +48,14 @@
             <path
               d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
           </svg>
-          <span>{{ isFavourited ? 'Đã thích' : 'Yêu thích' }}</span>
+          <span>{{ isFavourited ? $t('Products.Card.liked') : $t('Products.Card.favourite') }}</span>
         </button>
         <button @click.stop="$emit('buy-now', product)"
           class="flex-1 bg-black text-white px-3 py-2 rounded-lg hover:bg-gray-800 transition-all text-sm font-semibold flex items-center justify-center gap-1">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          <span>Mua ngay</span>
+          <span>{{ $t('Products.Card.buyNow') }}</span>
         </button>
       </div>
     </div>
@@ -64,8 +64,11 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useFavouriteStore } from '@/stores/favourite'
 import { useNotificationStore } from '@/stores/notification'
+
+const { t } = useI18n()
 const props = defineProps({
   product: {
     type: Object,

@@ -20,12 +20,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
-                    Mua sắm ngay
+                    {{ $t('Orders.Empty.shopNow') }}
                 </router-link>
 
                 <button v-if="filter !== 'all'" @click="$emit('reset-filter')"
                     class="ml-4 inline-flex items-center px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
-                    Xem tất cả đơn hàng
+                    {{ $t('Orders.Empty.viewAllOrders') }}
                 </button>
             </div>
         </div>
@@ -34,6 +34,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
     filter: {
@@ -45,26 +48,10 @@ const props = defineProps({
 defineEmits(['reset-filter'])
 
 const emptyTitle = computed(() => {
-    const titles = {
-        all: 'Chưa có đơn hàng nào',
-        pending: 'Không có đơn hàng chờ xác nhận',
-        confirmed: 'Không có đơn hàng đã xác nhận',
-        shipping: 'Không có đơn hàng đang giao',
-        complete: 'Không có đơn hàng hoàn thành',
-        cancelled: 'Không có đơn hàng đã hủy'
-    }
-    return titles[props.filter] || titles.all
+    return t(`Orders.Empty.titles.${props.filter}`) || t('Orders.Empty.titles.all')
 })
 
 const emptyDescription = computed(() => {
-    const descriptions = {
-        all: 'Hãy bắt đầu mua sắm và đơn hàng đầu tiên của bạn sẽ xuất hiện ở đây.',
-        pending: 'Tất cả đơn hàng của bạn đã được xử lý hoặc chưa có đơn hàng nào ở trạng thái này.',
-        confirmed: 'Không có đơn hàng nào đã được xác nhận.',
-        shipping: 'Không có đơn hàng nào đang được giao.',
-        complete: 'Bạn chưa có đơn hàng nào đã hoàn thành.',
-        cancelled: 'Bạn chưa hủy đơn hàng nào.'
-    }
-    return descriptions[props.filter] || descriptions.all
+    return t(`Orders.Empty.descriptions.${props.filter}`) || t('Orders.Empty.descriptions.all')
 })
 </script>

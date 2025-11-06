@@ -3,14 +3,14 @@
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
                 <router-link to="/" class="text-gray-700 hover:text-black transition-colors">
-                    Trang chủ
+                    {{ $t('Product.Breadcrumb.home') }}
                 </router-link>
             </li>
             <li>
                 <div class="flex items-center">
                     <span class="mx-2 text-gray-400">/</span>
                     <router-link to="/products" class="text-gray-700 hover:text-black transition-colors">
-                        Sản phẩm
+                        {{ $t('Product.Breadcrumb.products') }}
                     </router-link>
                 </div>
             </li>

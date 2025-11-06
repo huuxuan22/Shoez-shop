@@ -15,11 +15,11 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm leading-tight opacity-90">Hỗ trợ khách hàng</p>
-                            <p class="text-xs leading-tight opacity-80">Online</p>
+                            <p class="text-sm leading-tight opacity-90">{{ $t('Shared.MessengerChatWidget.customerSupport') }}</p>
+                            <p class="text-xs leading-tight opacity-80">{{ $t('Shared.MessengerChatWidget.online') }}</p>
                         </div>
                     </div>
-                    <button class="p-1 rounded hover:bg-white/20" @click="open = false" title="Đóng">
+                    <button class="p-1 rounded hover:bg-white/20" @click="open = false" :title="$t('Shared.MessengerChatWidget.close')">
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -50,13 +50,13 @@
 
                 <!-- Input -->
                 <form class="flex items-center gap-2 p-3 border-t bg-white" @submit.prevent="send">
-                    <input v-model="draft" type="text" placeholder="Nhập tin nhắn..."
+                    <input v-model="draft" type="text" :placeholder="$t('Shared.MessengerChatWidget.messagePlaceholder')"
                         class="flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
                         @keydown.enter.exact.prevent="send" />
                     <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="onFileChange" />
                     <button type="button"
                         class="w-10 h-10 rounded-full bg-white border border-gray-300 text-black flex items-center justify-center hover:bg-black hover:text-white"
-                        @click="triggerFile" title="Gửi ảnh">
+                        @click="triggerFile" :title="$t('Shared.MessengerChatWidget.sendImage')">
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                             <path
                                 d="M16.5 6.5v8.25a4.75 4.75 0 1 1-9.5 0V7.75a3.25 3.25 0 1 1 6.5 0v6.75a1.75 1.75 0 1 1-3.5 0V8.5h1.5v6a.25.25 0 1 0 .5 0V7.75a4.75 4.75 0 1 0-9.5 0v7a6.25 6.25 0 1 0 12.5 0V6.5h1.5Z" />
@@ -75,7 +75,7 @@
         <!-- Floating trigger button -->
         <button type="button"
             class="w-12 h-12 rounded-full bg-white shadow-lg border border-gray-300 flex items-center justify-center hover:bg-black hover:text-white"
-            title="Mở chat hỗ trợ" @click="open = !open">
+            :title="$t('Shared.MessengerChatWidget.openChat')" @click="open = !open">
             <!-- Messenger icon -->
             <svg class="w-7 h-7 text-black" viewBox="0 0 24 24" fill="currentColor">
                 <path
@@ -86,12 +86,15 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const open = ref(false)
 const draft = ref('')
+const welcomeMessage = computed(() => t('Shared.MessengerChatWidget.welcomeMessage'))
 const messages = ref([
-    { type: 'text', from: 'admin', text: 'Xin chào! Mình có thể hỗ trợ gì cho bạn?', time: 'now' }
+    { type: 'text', from: 'admin', text: welcomeMessage.value, time: 'now' }
 ])
 
 const scrollArea = ref(null)
@@ -104,7 +107,7 @@ function send() {
     draft.value = ''
     // Fake admin reply for UI demo
     setTimeout(() => {
-        messages.value.push({ type: 'text', from: 'admin', text: 'Cảm ơn bạn! Admin sẽ phản hồi sớm nhất.', time: new Date().toLocaleTimeString() })
+        messages.value.push({ type: 'text', from: 'admin', text: t('Shared.MessengerChatWidget.thankYouMessage'), time: new Date().toLocaleTimeString() })
     }, 600)
 }
 
@@ -118,7 +121,7 @@ function onFileChange(e) {
     const url = URL.createObjectURL(file)
     messages.value.push({ type: 'image', from: 'user', imageUrl: url, time: new Date().toLocaleTimeString() })
     setTimeout(() => {
-        messages.value.push({ type: 'text', from: 'admin', text: 'Đã nhận được hình ảnh của bạn.', time: new Date().toLocaleTimeString() })
+        messages.value.push({ type: 'text', from: 'admin', text: t('Shared.MessengerChatWidget.imageReceived'), time: new Date().toLocaleTimeString() })
     }, 500)
     e.target.value = ''
 }

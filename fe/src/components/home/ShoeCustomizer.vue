@@ -4,10 +4,10 @@
             <!-- Header bên trái -->
             <div class="text-left mb-16 max-w-2xl">
                 <h2 class="text-4xl md:text-5xl font-bold text-black mb-4">
-                    Thiết kế giày của riêng bạn
+                    {{ $t('Home.ShoeCustomizer.title') }}
                 </h2>
                 <p class="text-xl text-gray-600">
-                    Tùy chỉnh màu sắc, chất liệu và tạo đôi giày độc nhất cho phong cách cá nhân
+                    {{ $t('Home.ShoeCustomizer.subtitle') }}
                 </p>
             </div>
 
@@ -16,7 +16,7 @@
                 <div class="space-y-8 order-2 lg:order-1">
                     <!-- Shoe Model Selection -->
                     <div>
-                        <h3 class="text-lg font-semibold mb-4">Chọn kiểu giày</h3>
+                        <h3 class="text-lg font-semibold mb-4">{{ $t('Home.ShoeCustomizer.selectModel') }}</h3>
                         <div class="grid grid-cols-2 gap-4">
                             <button v-for="model in shoeModels" :key="model.id" @click="selectModel(model)"
                                 class="p-4 border-2 rounded-xl text-left hover:border-black transition group"
@@ -29,7 +29,7 @@
 
                     <!-- Color Customization -->
                     <div class="pt-6">
-                        <h3 class="text-lg font-semibold mb-4">Tùy chỉnh màu sắc</h3>
+                        <h3 class="text-lg font-semibold mb-4">{{ $t('Home.ShoeCustomizer.customizeColors') }}</h3>
                         <div class="space-y-4">
                             <div v-for="part in customizableParts" :key="part.id"
                                 class="flex items-center justify-between py-2">
@@ -47,18 +47,18 @@
 
                     <!-- Material Selection -->
                     <div class="pt-6">
-                        <h3 class="text-lg font-semibold mb-4">Chất liệu</h3>
+                        <h3 class="text-lg font-semibold mb-4">{{ $t('Home.ShoeCustomizer.material') }}</h3>
                         <div class="flex flex-wrap gap-3">
-                            <button v-for="material in materials" :key="material" @click="currentMaterial = material"
+                            <button v-for="material in materials" :key="material.key" @click="currentMaterial = material.key"
                                 class="px-4 py-2 border-2 rounded-lg hover:border-black transition font-medium"
-                                :class="{ 'border-black bg-black text-white': currentMaterial === material, 'border-gray-200 text-gray-700': currentMaterial !== material }">
-                                {{ material }}
+                                :class="{ 'border-black bg-black text-white': currentMaterial === material.key, 'border-gray-200 text-gray-700': currentMaterial !== material.key }">
+                                {{ material.label }}
                             </button>
                         </div>
                         <div class="flex space-x-4 pt-8">
                             <button @click="saveDesign"
                                 class="flex-1 bg-black text-white py-4 rounded-lg hover:bg-gray-800 transition font-medium text-lg">
-                                💾 Lưu thiết kế
+                                {{ $t('Home.ShoeCustomizer.saveDesign') }}
                             </button>
                         </div>
                     </div>
@@ -100,20 +100,20 @@
                         <button @click="toggle3DMode"
                             class="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white border-2 border-transparent flex items-center justify-center hover:from-purple-600 hover:to-pink-600 transition font-medium"
                             :class="{ 'ring-2 ring-purple-300': is3DMode }">
-                            {{ is3DMode ? '2D' : '3D' }}
+                            {{ is3DMode ? $t('Home.ShoeCustomizer.mode2D') : $t('Home.ShoeCustomizer.mode3D') }}
                         </button>
                     </div>
 
                     <!-- Hướng dẫn 3D -->
                     <div v-if="is3DMode" class="text-center mt-4">
-                        <p class="text-sm text-gray-500">✨ Di chuột để xoay giày 3D</p>
+                        <p class="text-sm text-gray-500">{{ $t('Home.VideoHero.hover3D') }}</p>
                     </div>
                 </div>
             </div>
 
             <!-- Design Gallery với hiệu ứng trượt -->
             <div class="mt-20">
-                <h3 class="text-3xl font-bold text-center mb-12 text-gray-900">Thiết kế nổi bật từ cộng đồng</h3>
+                <h3 class="text-3xl font-bold text-center mb-12 text-gray-900">{{ $t('Home.ShoeCustomizer.communityDesigns') }}</h3>
 
                 <!-- Container cho slider -->
                 <div class="relative overflow-hidden">
@@ -213,7 +213,7 @@
                                                 <div
                                                     class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000">
                                                 </div>
-                                                <span class="relative">SỬ DỤNG</span>
+                                                <span class="relative">{{ $t('Home.ShoeCustomizer.useDesign') }}</span>
                                             </button>
                                         </div>
                                     </div>
@@ -258,7 +258,7 @@
                 <div class="text-center mt-12">
                     <button
                         class="bg-transparent border-2 border-gray-300 text-gray-700 px-8 py-3 rounded-xl hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 font-medium transform hover:scale-105 active:scale-95">
-                        Xem thêm thiết kế ↓
+                        {{ $t('Home.ShoeCustomizer.viewMore') }}
                     </button>
                 </div>
             </div>
@@ -268,11 +268,14 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // Current customization state
 const currentModel = ref({})
 const currentFixedAngle = ref(0)
-const currentMaterial = ref('Da lộn')
+const currentMaterial = ref(null)
 const customParts = reactive([])
 const is3DMode = ref(true)
 
@@ -326,34 +329,38 @@ const shoeModels = [
     }
 ]
 
-const customizableParts = [
+const customizableParts = computed(() => [
     {
         id: 'upper',
-        name: 'Thân giày',
+        name: t('Home.ShoeCustomizer.parts.upper'),
         image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
         colors: ['#000000', '#FFFFFF', '#FF0000', '#0000FF', '#00FF00', '#FFFF00']
     },
     {
         id: 'sole',
-        name: 'Đế giày',
+        name: t('Home.ShoeCustomizer.parts.sole'),
         image: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
         colors: ['#2C2C2C', '#FFFFFF', '#FFA500', '#800080', '#A52A2A', '#FFC0CB']
     },
     {
         id: 'laces',
-        name: 'Dây giày',
+        name: t('Home.ShoeCustomizer.parts.laces'),
         image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
         colors: ['#000000', '#FFFFFF', '#FF0000', '#0000FF', '#FFFF00', '#FF69B4']
     },
     {
         id: 'logo',
-        name: 'Logo',
+        name: t('Home.ShoeCustomizer.parts.logo'),
         image: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
         colors: ['#000000', '#FFFFFF', '#FF0000', '#0000FF', '#FFD700', '#00FF00']
     }
-]
+])
 
-const materials = ['Da lộn', 'Da thật', 'Vải canvas', 'Knit', 'Mesh']
+const materialKeys = ['suede', 'leather', 'canvas', 'knit', 'mesh']
+const materials = computed(() => materialKeys.map(key => ({
+    key,
+    label: t(`Home.ShoeCustomizer.materials.${key}`)
+})))
 
 const featuredDesigns = [
     {
@@ -483,6 +490,8 @@ const stopAutoSlide = () => {
 
 // Initialize with first model
 currentModel.value = shoeModels[0]
+// Initialize currentMaterial with first material key
+currentMaterial.value = materialKeys[0]
 
 // Methods
 const selectModel = (model) => {
@@ -546,12 +555,12 @@ const saveDesign = () => {
         material: currentMaterial.value,
         timestamp: new Date().toISOString()
     }
-    alert('🎉 Thiết kế đã được lưu! Bạn có thể xem trong mục "Thiết kế của tôi"')
+    alert(t('Home.ShoeCustomizer.saveSuccess'))
 }
 
 const resetDesign = () => {
     customParts.splice(0, customParts.length)
-    currentMaterial.value = 'Da lộn'
+    currentMaterial.value = materialKeys[0]
     currentFixedAngle.value = 0
     is3DMode.value = true
 }
