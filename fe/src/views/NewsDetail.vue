@@ -7,7 +7,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
-        Quay lại
+        {{ $t('Home.NewsDetail.back') }}
       </button>
 
       <div v-if="newsItem">
@@ -23,7 +23,7 @@
               stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
-            {{ newsItem.author || 'Tác giả: Myshoes Team' }}
+            {{ newsItem.author || $t('Home.NewsDetail.author') }}
           </span>
           <span class="text-sm text-gray-600 flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -31,12 +31,12 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M15 10l4.553-2.276A2 2 0 0021 6.382V5a2 2 0 00-2-2H5a2 2 0 00-2 2v1.382a2 2 0 00.447 1.342L8 10m7 0v10a2 2 0 01-2 2H9a2 2 0 01-2-2V10m10 0h-4m0 0V4m0 6h-4" />
             </svg>
-            {{ newsItem.views || randomViews }} lượt xem
+            {{ newsItem.views || randomViews }} {{ $t('Home.NewsDetail.views') }}
           </span>
         </div>
 
         <!-- Title -->
-        <h1 class="text-4xl font-bold mb-6 leading-tight text-gray-900">{{ newsItem.title }}</h1>
+        <h1 class="text-4xl font-bold mb-6 leading-tight text-gray-900">{{ getNewsTitle(newsItem.id) || newsItem.title }}</h1>
 
         <!-- Featured image -->
         <div class="relative mb-8 overflow-hidden bg-gray-100">
@@ -46,11 +46,11 @@
 
         <!-- Additional images gallery -->
         <div v-if="additionalImages.length" class="mb-8">
-          <h3 class="text-xl font-semibold mb-4 text-gray-900">Hình ảnh liên quan</h3>
+          <h3 class="text-xl font-semibold mb-4 text-gray-900">{{ $t('Home.NewsDetail.relatedImages') }}</h3>
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div v-for="(img, index) in additionalImages" :key="index"
               class="overflow-hidden bg-gray-100 cursor-pointer" @click="openImageGallery(index)">
-              <img :src="img" :alt="`Hình ảnh ${index + 1}`"
+              <img :src="img" :alt="$t('Home.NewsDetail.imageIndex', { index: index + 1 })"
                 class="w-full h-32 object-cover hover:scale-105 transition-transform duration-300" />
             </div>
           </div>
@@ -58,7 +58,7 @@
 
         <!-- Table of contents -->
         <div v-if="toc.length" class="mb-8 bg-gray-50 p-6 text-base">
-          <div class="font-semibold mb-3 text-gray-800 text-lg">Mục lục</div>
+          <div class="font-semibold mb-3 text-gray-800 text-lg">{{ $t('Home.NewsDetail.tableOfContents') }}</div>
           <ul class="space-y-2">
             <li v-for="item in toc" :key="item.text" class="flex items-start">
               <span class="text-gray-500 mr-2 mt-1">•</span>
@@ -76,7 +76,7 @@
 
               <!-- Content image for each section -->
               <div v-if="sectionImages[idx]" class="my-6 overflow-hidden bg-gray-100">
-                <img :src="sectionImages[idx]" :alt="`Hình ảnh cho ${section.heading}`"
+                <img :src="sectionImages[idx]" :alt="$t('Home.NewsDetail.imageForSection', { section: section.heading })"
                   class="w-full h-64 object-cover" />
               </div>
 
@@ -84,13 +84,13 @@
             </div>
           </template>
           <template v-else>
-            <div class="text-content">{{ newsItem.content }}</div>
+            <div class="text-content">{{ articleContent }}</div>
           </template>
         </div>
 
         <!-- Share section -->
         <div class="flex items-center gap-4 mb-10 py-6">
-          <span class="text-gray-600 text-base font-medium">Chia sẻ:</span>
+          <span class="text-gray-600 text-base font-medium">{{ $t('Home.NewsDetail.share') }}</span>
           <button @click="share('facebook')"
             class="w-10 h-10 flex items-center justify-center bg-gray-100 text-gray-700 hover:bg-black hover:text-white transition-colors duration-300"
             aria-label="Share to Facebook">
@@ -119,27 +119,26 @@
 
         <!-- Comments section -->
         <div class="mt-12 pt-10">
-          <h2 class="text-2xl font-semibold mb-6 text-gray-900">Bình luận</h2>
+          <h2 class="text-2xl font-semibold mb-6 text-gray-900">{{ $t('Home.NewsDetail.comments') }}</h2>
           <div class="mb-6">
             <textarea v-model="commentText" rows="4"
               class="w-full p-4 focus:ring-2 focus:ring-black focus:border-transparent transition-all"
-              placeholder="Nhập bình luận của bạn..."></textarea>
+              :placeholder="$t('Home.NewsDetail.enterComment')"></textarea>
             <button @click="submitComment"
-              class="mt-3 px-6 py-2.5 bg-black text-white hover:bg-gray-800 transition-colors font-medium">Gửi bình
-              luận</button>
+              class="mt-3 px-6 py-2.5 bg-black text-white hover:bg-gray-800 transition-colors font-medium">{{ $t('Home.NewsDetail.submitComment') }}</button>
           </div>
           <div v-if="comments.length" class="space-y-4">
             <div v-for="(cmt, idx) in comments" :key="idx" class="p-4 bg-gray-50">
-              <div class="font-medium text-gray-900 text-lg">Khách</div>
+              <div class="font-medium text-gray-900 text-lg">{{ $t('Home.NewsDetail.guest') }}</div>
               <div class="text-gray-700 mt-2 text-base">{{ cmt }}</div>
             </div>
           </div>
-          <div v-else class="text-gray-500 text-base py-4 text-center">Chưa có bình luận nào.</div>
+          <div v-else class="text-gray-500 text-base py-4 text-center">{{ $t('Home.NewsDetail.noComments') }}</div>
         </div>
 
         <!-- Related articles -->
         <div v-if="relatedNews.length" class="mt-12 pt-10">
-          <h2 class="text-2xl font-semibold mb-6 text-gray-900">Bài viết liên quan</h2>
+          <h2 class="text-2xl font-semibold mb-6 text-gray-900">{{ $t('Home.NewsDetail.relatedArticles') }}</h2>
           <div class="grid grid-cols-3 gap-4">
             <div v-for="item in relatedNews" :key="item.id"
               class="flex flex-col bg-white overflow-hidden hover:shadow-lg transition-all duration-300">
@@ -147,7 +146,7 @@
               <div class="p-5 flex-1 flex flex-col">
                 <router-link :to="{ name: 'NewsDetail', params: { id: item.id } }"
                   class="font-semibold text-gray-900 hover:text-black transition-colors text-lg mb-2 line-clamp-2">{{
-                    item.title
+                    getNewsTitle(item.id) || item.title
                   }}</router-link>
                 <div class="text-sm text-gray-500 mt-auto pt-3">{{ item.date }}</div>
               </div>
@@ -156,7 +155,7 @@
         </div>
       </div>
 
-      <div v-else class="text-center text-gray-500 py-16 text-xl">Bài báo không tồn tại.</div>
+      <div v-else class="text-center text-gray-500 py-16 text-xl">{{ $t('Home.NewsDetail.articleNotFound') }}</div>
     </div>
     <Footer />
 
@@ -165,7 +164,7 @@
       @click="closeImageGallery">
       <div class="relative max-w-4xl max-h-full">
         <button @click="closeImageGallery" class="absolute top-4 right-4 text-white text-2xl z-10">×</button>
-        <img :src="galleryImages[galleryCurrentIndex]" :alt="`Hình ảnh ${galleryCurrentIndex + 1}`"
+        <img :src="galleryImages[galleryCurrentIndex]" :alt="$t('Home.NewsDetail.imageIndex', { index: galleryCurrentIndex + 1 })"
           class="max-w-full max-h-screen object-contain" />
         <button v-if="galleryCurrentIndex > 0" @click.stop="prevImage"
           class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white text-2xl">‹</button>
@@ -178,9 +177,13 @@
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { BrandNames, TechnologyNames, ProductNames, TechnicalTerms } from '@/common/enum.js';
 import Header from '@/templates/Header.vue';
 import Footer from '@/templates/Footer.vue';
+
+const { t } = useI18n();
 
 // Import images from assets
 import blog1 from '@/assets/images/blog/blog1.png';
@@ -671,6 +674,119 @@ Myshoes.vn hiện đang có chương trình ưu đãi đặc biệt cho các m�
 const newsItem = ref(newsList.find(n => n.id === route.params.id));
 const relatedNews = ref(newsList.filter(n => n.id !== route.params.id).slice(0, 3));
 
+// Helpers and computed content need to be defined BEFORE any usage below
+// Helper function to get translated news title
+function getNewsTitle(articleId) {
+  try {
+    return t(`Home.NewsSection.articles.${articleId}.title`) || '';
+  } catch {
+    return '';
+  }
+}
+
+// Helper function to replace enum placeholders in content
+function replaceEnumPlaceholders(content) {
+  if (!content) return '';
+
+  const enumMap = {
+    '{{BRAND_NIKE}}': BrandNames.NIKE,
+    '{{BRAND_ADIDAS}}': BrandNames.ADIDAS,
+    '{{BRAND_NEW_BALANCE}}': BrandNames.NEW_BALANCE,
+    '{{BRAND_ASICS}}': BrandNames.ASICS,
+    '{{BRAND_SAUCONY}}': BrandNames.SAUCONY,
+    '{{BRAND_TIMBERLAND}}': BrandNames.TIMBERLAND,
+    '{{BRAND_DR_MARTENS}}': BrandNames.DR_MARTENS,
+    '{{BRAND_UGG}}': BrandNames.UGG,
+    '{{BRAND_SOREL}}': BrandNames.SOREL,
+    '{{BRAND_ECCO}}': BrandNames.ECCO,
+    '{{BRAND_CONVERSE}}': BrandNames.CONVERSE,
+    '{{BRAND_PUMA}}': BrandNames.PUMA,
+    '{{BRAND_VEJA}}': BrandNames.VEJA,
+
+    '{{TECH_ZOOM_X}}': TechnologyNames.ZOOM_X,
+    '{{TECH_LIGHTSTRIKE_PRO}}': TechnologyNames.LIGHTSTRIKE_PRO,
+    '{{TECH_FUELCELL}}': TechnologyNames.FUELCELL,
+    '{{TECH_FLYTEFOAM_BLAST_TURBO}}': TechnologyNames.FLYTEFOAM_BLAST_TURBO,
+    '{{TECH_GUIDESOLE}}': TechnologyNames.GUIDESOLE,
+    '{{TECH_PWRRUN_HG}}': TechnologyNames.PWRRUN_HG,
+    '{{TECH_SPEEDROLL}}': TechnologyNames.SPEEDROLL,
+    '{{TECH_BOOST}}': TechnologyNames.BOOST,
+    '{{TECH_REACT}}': TechnologyNames.REACT,
+    '{{TECH_ENCAP}}': TechnologyNames.ENCAP,
+    '{{TECH_AIR_MAX}}': TechnologyNames.AIR_MAX,
+    '{{TECH_CLOUDFOAM}}': TechnologyNames.CLOUDFOAM,
+    '{{TECH_TREADLITE}}': TechnologyNames.TREADLITE,
+    '{{TECH_AIR_SOLE}}': TechnologyNames.AIR_SOLE,
+    '{{TECH_PRIMAKNIT}}': TechnologyNames.PRIMAKNIT,
+    '{{TECH_L_FOAM}}': TechnologyNames.L_FOAM,
+    '{{TECH_GORE_TEX}}': TechnologyNames.GORE_TEX,
+    '{{TECH_THINSULATE}}': TechnologyNames.THINSULATE,
+    '{{TECH_PRIMALOFT}}': TechnologyNames.PRIMALOFT,
+    '{{TECH_ENERGY_RODS}}': TechnologyNames.ENERGY_RODS,
+    '{{TECH_CARBON_FIBER_PLATE}}': TechnologyNames.CARBON_FIBER_PLATE,
+    '{{TECH_ENGINEERED_MESH}}': TechnologyNames.ENGINEERED_MESH,
+
+    '{{PRODUCT_ALPHAFLY_3}}': ProductNames.ALPHAFLY_3,
+    '{{PRODUCT_ADIZERO_PRIME_X_2}}': ProductNames.ADIZERO_PRIME_X_2,
+    '{{PRODUCT_FUELCELL_SUPERCOMP_ELITE_V4}}': ProductNames.FUELCELL_SUPERCOMP_ELITE_V4,
+    '{{PRODUCT_METASPEED_SKY}}': ProductNames.METASPEED_SKY,
+    '{{PRODUCT_ENDORPHIN_PRO_4}}': ProductNames.ENDORPHIN_PRO_4,
+    '{{PRODUCT_AIR_FORCE_1}}': ProductNames.AIR_FORCE_1,
+    '{{PRODUCT_ULTRABOOST_LIGHT}}': ProductNames.ULTRABOOST_LIGHT,
+    '{{PRODUCT_NB_990V6}}': ProductNames.NB_990V6,
+    '{{PRODUCT_CAMPO_LEATHER}}': ProductNames.CAMPO_LEATHER,
+    '{{PRODUCT_CHUCK_70}}': ProductNames.CHUCK_70,
+    '{{PRODUCT_STAN_SMITH}}': ProductNames.STAN_SMITH,
+    '{{PRODUCT_NB_574}}': ProductNames.NB_574,
+    '{{PRODUCT_RS_X_ECHO}}': ProductNames.RS_X_ECHO,
+    '{{PRODUCT_SIX_INCH_PREMIUM_BOOT}}': ProductNames.SIX_INCH_PREMIUM_BOOT,
+    '{{PRODUCT_WINTER_GRIP}}': ProductNames.WINTER_GRIP,
+    '{{PRODUCT_CLASSIC_ULTRA_MINI}}': ProductNames.CLASSIC_ULTRA_MINI,
+    '{{PRODUCT_CARIBOU_BOOT}}': ProductNames.CARIBOU_BOOT,
+    '{{PRODUCT_SOFT_7_WINTER}}': ProductNames.SOFT_7_WINTER,
+
+    '{{TECH_MIDSOLE}}': TechnicalTerms.MIDSOLE,
+    '{{TECH_OUTSOLE}}': TechnicalTerms.OUTSOLE,
+    '{{TECH_UPPER}}': TechnicalTerms.UPPER,
+    '{{TECH_RACING_SHOES}}': TechnicalTerms.RACING_SHOES,
+    '{{TECH_TRAINING_SHOES}}': TechnicalTerms.TRAINING_SHOES,
+    '{{TECH_ROAD_RUNNING}}': TechnicalTerms.ROAD_RUNNING,
+    '{{TECH_TRAIL_RUNNING}}': TechnicalTerms.TRAIL_RUNNING,
+    '{{TECH_TRACK}}': TechnicalTerms.TRACK,
+    '{{TECH_NEUTRAL}}': TechnicalTerms.NEUTRAL,
+    '{{TECH_OVERPRONATION}}': TechnicalTerms.OVERPRONATION,
+    '{{TECH_UNDERPRONATION}}': TechnicalTerms.UNDERPRONATION,
+    '{{TECH_MARATHON}}': TechnicalTerms.MARATHON,
+    '{{TECH_QUALITY_CONTROL}}': TechnicalTerms.QUALITY_CONTROL,
+    '{{TECH_QC}}': TechnicalTerms.QC,
+  };
+
+  let result = content;
+  for (const [placeholder, value] of Object.entries(enumMap)) {
+    result = result.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), value);
+  }
+  return result;
+}
+
+function getNewsContent(articleId) {
+  try {
+    const translatedContent = t(`Home.NewsDetail.articleContent.${articleId}`);
+    if (translatedContent && translatedContent !== `Home.NewsDetail.articleContent.${articleId}`) {
+      return replaceEnumPlaceholders(translatedContent);
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+// Computed article content used by TOC builder below
+const articleContent = computed(() => {
+  if (!newsItem.value) return '';
+  const translated = getNewsContent(newsItem.value.id);
+  return translated || (newsItem.value.content || '');
+});
+
 // Theo dõi id trên route để cập nhật lại newsItem và relatedNews khi chuyển bài
 watch(() => route.params.id, (newId) => {
   newsItem.value = newsList.find(n => n.id === newId);
@@ -684,18 +800,19 @@ const contentSections = ref([]);
 function updateTocAndSections() {
   toc.value = [];
   contentSections.value = [];
-  if (newsItem.value && newsItem.value.content) {
+  const contentToParse = articleContent.value || (newsItem.value?.content || '');
+  if (newsItem.value && contentToParse) {
     const regex = /([IVXLCDM]+\.) (.+)/g;
     let lastIndex = 0;
     let match;
     let idx = 0;
-    while ((match = regex.exec(newsItem.value.content)) !== null) {
+    while ((match = regex.exec(contentToParse)) !== null) {
       if (idx > 0) {
         const prev = toc.value[idx - 1];
         contentSections.value.push({
           anchor: prev.anchor,
           heading: prev.text,
-          body: newsItem.value.content.slice(lastIndex, match.index).replace(/^[\n]+|[\n]+$/g, '')
+          body: contentToParse.slice(lastIndex, match.index).replace(/^[\n]+|[\n]+$/g, '')
         });
       }
       const anchor = `section-${idx}`;
@@ -708,7 +825,7 @@ function updateTocAndSections() {
       contentSections.value.push({
         anchor: prev.anchor,
         heading: prev.text,
-        body: newsItem.value.content.slice(lastIndex).replace(/^[\n]+|[\n]+$/g, '')
+        body: contentToParse.slice(lastIndex).replace(/^[\n]+|[\n]+$/g, '')
       });
     }
   }
@@ -741,7 +858,7 @@ function share(type) {
     window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}`);
   } else if (type === 'copy') {
     navigator.clipboard.writeText(url);
-    alert('Đã copy liên kết bài viết!');
+    alert(t('Home.NewsDetail.linkCopied'));
   }
 }
 </script>

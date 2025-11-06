@@ -53,9 +53,9 @@
                                         </svg>
                                     </div>
                                     <div>
-                                        <h3 class="text-xl font-semibold text-gray-900 mb-2 tracking-wide">ĐỊA CHỈ</h3>
-                                        <p class="text-gray-600 font-light text-lg">Tầng 6, 266 Đội Cần, Hà Nội</p>
-                                        <p class="text-gray-600 font-light text-lg">P. Uối Cần, Phân Kế Bình</p>
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-2 tracking-wide">{{ $t('ContactTemplate.address') }}</h3>
+                                        <p class="text-gray-600 font-light text-lg">{{ $t('ContactTemplate.addressLine1') }}</p>
+                                        <p class="text-gray-600 font-light text-lg">{{ $t('ContactTemplate.addressLine2') }}</p>
                                     </div>
                                 </div>
 
@@ -71,7 +71,7 @@
                                         </svg>
                                     </div>
                                     <div>
-                                        <h3 class="text-xl font-semibold text-gray-900 mb-2 tracking-wide">ĐIỆN THOẠI
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-2 tracking-wide">{{ $t('ContactTemplate.phone') }}
                                         </h3>
                                         <p class="text-gray-600 font-light text-lg">1900 6750</p>
                                     </div>
@@ -89,14 +89,14 @@
                                         </svg>
                                     </div>
                                     <div>
-                                        <h3 class="text-xl font-semibold text-gray-900 mb-2 tracking-wide">EMAIL</h3>
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-2 tracking-wide">{{ $t('ContactTemplate.email') }}</h3>
                                         <p class="text-gray-600 font-light text-lg">heliocafein@gmail.com</p>
                                     </div>
                                 </div>
 
                                 <div class="mt-12 pt-8 border-t border-gray-200">
-                                    <h3 class="text-xl font-semibold text-gray-900 mb-6 tracking-wide">THEO DÕI CHÚNG
-                                        TÔI</h3>
+                                    <h3 class="text-xl font-semibold text-gray-900 mb-6 tracking-wide">{{ $t('ContactTemplate.followUs') }}
+                                    </h3>
                                     <div class="flex space-x-4">
                                         <a href="#"
                                             class="w-12 h-12 bg-[#1877F2] rounded-2xl flex items-center justify-center text-white hover:bg-[#166FE5] hover:transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl">
@@ -143,45 +143,45 @@
                                 <div class="absolute -bottom-4 -left-4 w-8 h-8 border-b-2 border-l-2 border-gray-900">
                                 </div>
 
-                                <h2 class="text-4xl font-bold text-gray-900 mb-12 font-serif">GỬI TIN NHẮN CHO CHÚNG TÔI
+                                <h2 class="text-4xl font-bold text-gray-900 mb-12 font-serif">{{ $t('ContactTemplate.sendMessage') }}
                                 </h2>
 
                                 <form @submit.prevent="submitForm" class="space-y-8">
                                     <!-- Name -->
                                     <div class="group">
                                         <label for="name"
-                                            class="block text-sm font-medium text-gray-700 mb-3 tracking-wide">Họ tên
+                                            class="block text-sm font-medium text-gray-700 mb-3 tracking-wide">{{ $t('ContactTemplate.fullName') }}
                                             *</label>
                                         <input type="text" id="name" v-model="form.name" required
                                             class="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all duration-300 bg-white/80 backdrop-blur-sm placeholder-gray-400 text-lg font-light group-hover:border-gray-300"
-                                            placeholder="Nhập họ tên *">
+                                            :placeholder="$t('ContactTemplate.fullNamePlaceholder')">
                                     </div>
 
                                     <!-- Email -->
                                     <div class="group">
                                         <label for="email"
-                                            class="block text-sm font-medium text-gray-700 mb-3 tracking-wide">Email
+                                            class="block text-sm font-medium text-gray-700 mb-3 tracking-wide">{{ $t('ContactTemplate.emailLabel') }}
                                             *</label>
                                         <input type="email" id="email" v-model="form.email" required
                                             class="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all duration-300 bg-white/80 backdrop-blur-sm placeholder-gray-400 text-lg font-light group-hover:border-gray-300"
-                                            placeholder="Nhập Email *">
+                                            :placeholder="$t('ContactTemplate.emailPlaceholder')">
                                     </div>
 
                                     <!-- Content -->
                                     <div class="group">
                                         <label for="content"
-                                            class="block text-sm font-medium text-gray-700 mb-3 tracking-wide">Nội dung
+                                            class="block text-sm font-medium text-gray-700 mb-3 tracking-wide">{{ $t('ContactTemplate.content') }}
                                             *</label>
                                         <textarea id="content" rows="6" v-model="form.content" required
                                             class="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all duration-300 bg-white/80 backdrop-blur-sm placeholder-gray-400 text-lg font-light resize-none group-hover:border-gray-300"
-                                            placeholder="Lời nhắn"></textarea>
+                                            :placeholder="$t('ContactTemplate.messagePlaceholder')"></textarea>
                                     </div>
 
                                     <!-- Submit Button -->
                                     <div>
                                         <button type="submit"
                                             class="w-full bg-gradient-to-r from-gray-900 to-black text-white py-4 px-8 rounded-2xl font-semibold text-lg hover:from-gray-800 hover:to-gray-900 transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl">
-                                            GỬI TIN NHẮN
+                                            {{ $t('ContactTemplate.sendButton') }}
                                         </button>
                                     </div>
                                 </form>
@@ -194,7 +194,7 @@
             <!-- Additional Locations -->
             <section class="py-20 bg-gradient-to-b from-white to-gray-50">
                 <div class="container mx-auto px-4">
-                    <h2 class="text-4xl font-bold text-gray-900 text-center mb-16 font-serif">CÁC CHI NHÁNH KHÁC</h2>
+                    <h2 class="text-4xl font-bold text-gray-900 text-center mb-16 font-serif">{{ $t('ContactTemplate.otherBranches') }}</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                         <!-- Location 1 -->
@@ -209,9 +209,9 @@
                                         d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                             </div>
-                            <h3 class="text-2xl font-semibold text-gray-900 mb-4">Cung thể Hạo Quận Ngựa</h3>
-                            <p class="text-gray-600 mb-2 text-lg font-light">Tổ 6B, Lúc quá</p>
-                            <p class="text-gray-600 text-lg font-light">Hà Nội</p>
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-4">{{ $t('ContactTemplate.location1Name') }}</h3>
+                            <p class="text-gray-600 mb-2 text-lg font-light">{{ $t('ContactTemplate.location1Address') }}</p>
+                            <p class="text-gray-600 text-lg font-light">{{ $t('ContactTemplate.location1City') }}</p>
                         </div>
 
                         <!-- Location 2 -->
@@ -226,9 +226,9 @@
                                         d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                             </div>
-                            <h3 class="text-2xl font-semibold text-gray-900 mb-4">HỒ DÂM TRÒN</h3>
-                            <p class="text-gray-600 mb-2 text-lg font-light">Tổ 1B</p>
-                            <p class="text-gray-600 text-lg font-light">Hà Nội</p>
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-4">{{ $t('ContactTemplate.location2Name') }}</h3>
+                            <p class="text-gray-600 mb-2 text-lg font-light">{{ $t('ContactTemplate.location2Address') }}</p>
+                            <p class="text-gray-600 text-lg font-light">{{ $t('ContactTemplate.location2City') }}</p>
                         </div>
 
                         <!-- Location 3 -->
@@ -243,9 +243,9 @@
                                         d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                             </div>
-                            <h3 class="text-2xl font-semibold text-gray-900 mb-4">Bảo lạng Chiến thăng B-52</h3>
-                            <p class="text-gray-600 mb-2 text-lg font-light">P. Đội Cần</p>
-                            <p class="text-gray-900 text-lg font-light">Hà Nội</p>
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-4">{{ $t('ContactTemplate.location3Name') }}</h3>
+                            <p class="text-gray-600 mb-2 text-lg font-light">{{ $t('ContactTemplate.location3Address') }}</p>
+                            <p class="text-gray-900 text-lg font-light">{{ $t('ContactTemplate.location3City') }}</p>
                         </div>
                     </div>
                 </div>
@@ -272,11 +272,11 @@
                     <div class="space-x-6">
                         <a href="tel:19006750"
                             class="bg-gradient-to-r from-white to-gray-100 text-gray-900 px-10 py-4 rounded-2xl font-semibold text-lg hover:from-gray-100 hover:to-white transform hover:-translate-y-1 transition-all duration-300 shadow-2xl hover:shadow-3xl inline-block">
-                            📞 GỌI NGAY: 1900 6750
+                            📞 {{ $t('ContactTemplate.callNow') }}: 1900 6750
                         </a>
                         <a href="mailto:heliocafein@gmail.com"
                             class="border-2 border-white text-white px-10 py-4 rounded-2xl font-semibold text-lg hover:bg-white hover:text-gray-900 transform hover:-translate-y-1 transition-all duration-300 shadow-2xl hover:shadow-3xl inline-block">
-                            ✉️ GỬI EMAIL
+                            ✉️ {{ $t('ContactTemplate.sendEmail') }}
                         </a>
                     </div>
                 </div>

@@ -124,9 +124,15 @@ const filterByBrand = (brandName) => {
 }
 
 const handleImageError = (event, brandName) => {
-  // Thay thế bằng placeholder nếu logo không load được
-  event.target.src = `https://via.placeholder.com/150x50?text=${encodeURIComponent(brandName)}`
-  event.target.onerror = null // Tránh loop
+  // Tạo SVG placeholder inline thay vì gọi API bên ngoài
+  const svgPlaceholder = `data:image/svg+xml;base64,${btoa(`
+    <svg width="150" height="50" xmlns="http://www.w3.org/2000/svg">
+      <rect width="150" height="50" fill="#f3f4f6"/>
+      <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="12" fill="#6b7280" text-anchor="middle" dominant-baseline="middle">${brandName}</text>
+    </svg>
+  `)}`
+  event.target.src = svgPlaceholder
+  event.target.onerror = null // Tránh loop vô hạn
 }
 
 const checkScrollButtons = () => {

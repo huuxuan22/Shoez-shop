@@ -133,6 +133,432 @@ export default {
     NewsSection: {
       title: "SHOEZ.VN NEWS",
       hashtag: "#BLOG",
+      brandName: "Myshoes.vn",
+      articles: {
+        "1": {
+          title: 'WHICH RUNNING SHOES ARE THE "CROWN" OF RUNNERS IN 2025?',
+          excerpt: 'Introduction: The Pinnacle of Running Shoe Technology 2025…',
+        },
+        "2": {
+          title: 'Don\'t Ask Why I Only Wear Authentic Shoes – The Answer Lies in the Feeling When Putting Them On',
+          excerpt: 'I used to be a "sale hunter" for fake shoes…',
+        },
+        "3": {
+          title: '5 Comfortable and Convenient Sneaker Recommendations for Late 2025',
+          excerpt: 'End of year is always the ideal time to shop…',
+        },
+        "4": {
+          title: 'Cold Wind is Coming, Do You Have Warm Shoes Yet?',
+          excerpt: 'Introduction When the first cold winds of the season begin to creep in…',
+        },
+        "5": {
+          title: 'Top Sneaker Models Worth Buying for Fall 2025',
+          excerpt: 'Latest collection with many colors and comfortable technology…',
+        },
+        "6": {
+          title: 'How to Choose Shoe Size Online: Tips from Experts',
+          excerpt: 'Guide to accurate measurement, avoid troublesome returns.',
+        },
+      },
+    },
+    NewsDetail: {
+      back: "Go Back",
+      tableOfContents: "Table of Contents",
+      relatedImages: "Related Images",
+      image: "Image",
+      imageIndex: "Image {index}",
+      imageForSection: "Image for {section}",
+      share: "Share:",
+      comments: "Comments",
+      enterComment: "Enter your comment...",
+      submitComment: "Submit Comment",
+      guest: "Guest",
+      noComments: "No comments yet.",
+      relatedArticles: "Related Articles",
+      articleNotFound: "Article does not exist.",
+      linkCopied: "Article link copied!",
+      author: "Author: Myshoes Team",
+      views: "views",
+      articleContent: {
+        "1": `I. Introduction: The Pinnacle of Running Shoe Technology 2025
+
+2025 marks a major turning point in the running shoe industry. Not just small improvements, we are witnessing a true revolution in technology and materials. Major brands have invested millions of dollars in research and development, bringing products that not only improve performance but also protect runners' health.
+
+The 2025 running shoe market sees fierce competition among giants like {{BRAND_NIKE}}, {{BRAND_ADIDAS}}, {{BRAND_NEW_BALANCE}}, and {{BRAND_ASICS}}. Each brand brings exclusive technologies, from ultra-light cushioning systems to integrated smart sensors. Consumers now seek not just comfortable shoes, but a "powerful assistant" that can accompany them on every journey.
+
+II. Breakthrough New Technologies
+
+{{TECH_CARBON_FIBER_PLATE}} - Carbon plates are no longer exclusive to {{TECH_RACING_SHOES}}: 2025 sees the popularity of carbon plates in {{TECH_TRAINING_SHOES}} as well. This technology increases forward propulsion efficiency by up to 4%, while minimizing muscle injuries.
+
+Foam Revolution - The revolution in cushioning materials: Brands have developed new foam types with superior elasticity. {{BRAND_NIKE}} with {{TECH_ZOOM_X}}, {{BRAND_ADIDAS}} with {{TECH_LIGHTSTRIKE_PRO}}, and {{BRAND_NEW_BALANCE}} with {{TECH_FUELCELL}} all show significant improvements in durability and responsiveness.
+
+Sustainable Materials - Sustainable materials: The greening trend in the sports shoe industry continues to be promoted. Over 50% of running shoes in 2025 use recycled materials, from {{TECH_UPPER}} mesh made from recycled plastic bottles to {{TECH_MIDSOLE}} made from corn and bio-based raw materials.
+
+Smart Integration - Smart sensors: Many premium shoe models now integrate sensors that monitor foot strike, ground contact force, and running form. Data is synchronized with mobile applications, helping runners analyze and improve their technique.
+
+III. Top 5 Most Notable Shoe Models 2025
+
+1. {{BRAND_NIKE}} {{PRODUCT_ALPHAFLY_3}} - "Speed Masterpiece"
+   • Improved {{TECH_ZOOM_X}} cushioning with optimal thickness
+   • Exclusive wing-shaped carbon plate
+   • Weight only 180g for US size 9
+   • Suitable for: {{TECH_MARATHON}}, speed training
+
+2. {{BRAND_ADIDAS}} {{PRODUCT_ADIZERO_PRIME_X_2}}
+   • Dual {{TECH_LIGHTSTRIKE_PRO}} technology
+   • {{TECH_MIDSOLE}} thickness 50mm - technical limit
+   • Flexible {{TECH_ENERGY_RODS}} design
+   • Suitable for: Experienced runners seeking new sensations
+
+3. {{BRAND_NEW_BALANCE}} {{PRODUCT_FUELCELL_SUPERCOMP_ELITE_V4}}
+   • {{TECH_FUELCELL}} foam with new formula
+   • Dual energy carbon plate system
+   • Ultra-light {{TECH_UPPER}} {{TECH_ENGINEERED_MESH}}
+   • Suitable for: Balance between speed and stability
+
+4. {{BRAND_ASICS}} {{PRODUCT_METASPEED_SKY}}
+   • Premium {{TECH_FLYTEFOAM_BLAST_TURBO}}
+   • {{TECH_GUIDESOLE}} technology reduces energy consumption
+   • Design specifically for high-cadence runners
+   • Suitable for: Professional racing runners
+
+5. {{BRAND_SAUCONY}} {{PRODUCT_ENDORPHIN_PRO_4}}
+   • Ultra-light {{TECH_PWRRUN_HG}} foam cushioning
+   • {{TECH_SPEEDROLL}} technology creates propulsion
+   • Perfect Formfit {{TECH_UPPER}} fit
+   • Suitable for: Diverse from beginner to pro
+
+IV. Shoe Selection Criteria
+
+To choose the "crown" shoe for yourself, runners need to consider factors:
+
+• Running type: {{TECH_ROAD_RUNNING}}, {{TECH_TRAIL_RUNNING}}, or {{TECH_TRACK}}?
+• Distance: 5K, 10K, half marathon, or full marathon?
+• Running gait: {{TECH_NEUTRAL}}, {{TECH_OVERPRONATION}}, or {{TECH_UNDERPRONATION}}?
+• Body weight: Affects cushioning durability
+• Budget: From 2-6 million VND depending on segment
+• Terrain: Concrete, dirt roads, or complex terrain?
+
+V. Conclusion: Break Through All Limits
+
+2025 is truly a golden time for the Vietnamese running community. With diverse technologies and models, every runner can find the perfect "crown" for their feet. Most importantly, listen to your body and choose shoes not just based on technology, but also on comfort when wearing them.
+
+Remember: The best shoes are not the most expensive, but the most suitable for you. Come to Myshoes.vn, we commit to bringing the best shopping experiences and most professional advice to help you find the perfect companion on every road.`,
+        "2": `I. Journey From "Sale Hunter" To Smart Consumer
+
+5 years ago, I was a dedicated "sale hunter". My goal was always to find the cheapest shoes, whether they were authentic or replicas. I was proud of my ability to find shoes that were "99% identical" at just 1/3 or 1/4 of the real price. But then an event completely changed my perspective.
+
+It was on a rainy day, when I was wearing a fake shoe I bought for 400k, the sole suddenly came off causing me to slip and injure my ankle. 2 weeks of immobility and medical costs 10 times the amount I "saved" taught me an expensive lesson.
+
+II. Unmistakable Differences
+
+1. Materials: From the Smallest Details
+   • {{TECH_UPPER}}: Authentic shoes use premium {{TECH_ENGINEERED_MESH}}, with carefully calculated stretch and breathability. Fakes usually use regular fabric, prone to tearing and causing heat.
+   • Cushioning: Exclusive foam technologies like {{TECH_BOOST}}, {{TECH_ZOOM_X}}, {{TECH_REACT}} are only found in authentic products. Fakes use cheap foam that quickly deflates and lacks elasticity.
+   • Adhesive: Authentic shoes use specialized industrial adhesive that withstands high temperature and pull force. Fakes use regular glue that easily peels.
+
+2. Manufacturing Technology
+   • Strict {{TECH_QC}} ({{TECH_QUALITY_CONTROL}}) process
+   • High-tech machinery from Germany, Japan
+   • Experienced engineering team
+   • Inspection at every production stage
+
+3. Usage Experience
+   • Perfect foot fit
+   • Even force distribution
+   • Superior durability (average 800-1000km)
+   • Authentic 2-year warranty
+
+III. Consequences of Using Fake Shoes
+
+1. Health Risks
+   • Knee and ankle injuries
+   • Back pain, spinal pain
+   • Plantar fasciitis
+   • Gait deformity
+
+2. Economic Loss
+   • Low lifespan, frequent replacement needed
+   • Medical costs when injuries occur
+   • No resale value
+
+3. Environmental Issues
+   • Use of toxic chemicals
+   • Uncontrolled production process
+   • Quickly becomes waste
+
+IV. How to Distinguish Authentic from Fake?
+
+1. Check Packaging
+   • Sturdy box, sharp printing
+   • QR code, serial number
+   • Anti-counterfeit labels
+
+2. Observe Details
+   • Meticulous, even stitching
+   • Clear, non-blurry logo printing
+   • Consistent colors, no defects
+
+3. Feel When Using
+   • Light and comfortable from first wear
+   • No chemical smell
+   • Good elasticity
+
+V. Sincere Advice
+
+After 3 years of using only authentic shoes, I realized: "Expensive once but quality forever". Every morning when I put on authentic shoes, I feel trust and peace of mind. No more worries about soles coming off while running, no more fear of unexpected injuries.
+
+Especially with Myshoes.vn's warranty policy, I'm completely confident about quality. The professional consulting team helps me choose the most suitable shoes for my needs and budget.
+
+Invest in your feet - the foundation that supports your entire body. Don't let short-term savings cost you dearly later.`,
+        "3": `I. End-of-Year 2025 Sneaker Trends: Convenient & Versatile
+
+Year-end is always a busy time with many events: parties, travel, shopping, and gatherings. A comfortable, flexible sneaker becomes essential for every fashion enthusiast. 2025 sees the rise of "all-in-one" sneakers - can be styled from casual to semi-formal, from office to year-end parties.
+
+According to the latest survey from Myshoes.vn, 85% of customers seeking year-end sneakers prioritize 3 factors: maximum comfort, easy styling, and reasonable prices. Below are the 5 most prominent names that fully meet these criteria.
+
+II. Top 5 Worth-Every-Penny Sneakers
+
+1. {{BRAND_NIKE}} {{PRODUCT_AIR_FORCE_1}} '07 Premium
+   • Advantages: Classic design never goes out of style
+   • Technology: {{TECH_AIR_SOLE}} unit throughout sole
+   • Material: Premium leather, easy to clean
+   • Styling: Jeans, joggers, or even suits
+   • Price: 2,500,000 VND
+   • Rating: 9.5/10 - "Basic but never boring"
+
+2. {{BRAND_ADIDAS}} {{PRODUCT_ULTRABOOST_LIGHT}}
+   • Advantages: Most comfortable in segment
+   • Technology: New {{TECH_BOOST}} foam 30% lighter
+   • Material: {{TECH_PRIMAKNIT}}+ 4-way stretch
+   • Styling: Sporty chic, streetwear
+   • Price: 4,200,000 VND
+   • Rating: 9.8/10 - "Like walking on clouds all day"
+
+3. {{BRAND_NEW_BALANCE}} {{PRODUCT_NB_990V6}}
+   • Advantages: Excellent support for feet
+   • Technology: {{TECH_FUELCELL}} {{TECH_MIDSOLE}} combined with {{TECH_ENCAP}}
+   • Material: Pigskin suede and premium mesh
+   • Styling: Smart casual, business casual
+   • Price: 5,500,000 VND
+   • Rating: 9.2/10 - "Classy and comfortable"
+
+4. {{BRAND_VEJA}} {{PRODUCT_CAMPO_LEATHER}}
+   • Advantages: Eco-friendly, minimalist design
+   • Technology: {{TECH_L_FOAM}} cushioning from recycled corn
+   • Material: Chrome-free leather
+   • Styling: Minimalist, sustainable fashion
+   • Price: 2,800,000 VND
+   • Rating: 8.8/10 - "Responsible style"
+
+5. {{BRAND_CONVERSE}} {{PRODUCT_CHUCK_70}} Vintage Canvas
+   • Advantages: Affordable price, diverse colors
+   • Technology: Classic rubber sole, durable
+   • Material: Premium 12oz canvas
+   • Styling: Streetwear, retro style
+   • Price: 1,500,000 VND
+   • Rating: 9.0/10 - "Ageless icon"
+
+III. Tips for Choosing Sneakers by Need
+
+1. Office Workers
+   • Priority: Neutral colors (white, black, beige)
+   • Style: Neat, not too sporty
+   • Comfort: Top priority
+
+2. Active Youth
+   • Priority: Youthful colors, innovative design
+   • Features: Light, flexible
+   • Budget: Flexible 1-3 million
+
+3. Middle-Aged
+   • Priority: Comfortable, good support
+   • Design: Simple, easy to style
+   • Brand: Reputable, durable
+
+IV. Smart Styling with Sneakers
+
+1. End-of-Year Smart Casual
+   • White sneakers + Chinos + Shirt
+   • Add blazer for important events
+   • Accessories: Low-cut socks, leather watch
+
+2. Energetic Streetwear
+   • Colored sneakers + Joggers + Hoodie
+   • Layer with denim or bomber jacket
+   • Accessories: Bucket hat, backpack
+
+3. Festive Parties
+   • Luxurious sneakers + Dress pants + Polo
+   • Colors: Red, deep blue, bronze
+   • Accessories: Leather strap, clutch
+
+V. Expert Advice
+
+"Don't chase quantity, invest in quality" - that's the sharing from fashion expert Nguyen Minh Anh. According to him, everyone should own 3-4 quality sneakers instead of 10-15 cheap pairs.
+
+End of 2025, Myshoes.vn brings the special "Year-End Comfort" promotion with up to 30% discount on premium sneaker lines. Specifically, we commit:
+• Authentic 24-month warranty
+• Size exchange within 30 days
+• Free style consultation
+
+Come to Myshoes.vn to find your perfect companion in these busy year-end days!`,
+        "4": `I. Winter 2025: Harsh Weather and Warm Shoe Needs
+
+According to forecasts from the Central Meteorological Center, winter 2025 is predicted to be colder and longer than previous years. Temperatures in the North can drop below 10°C, while the Central region is also affected by Northeast monsoon waves. This is the time to prepare warm shoes to protect your feet - the most sensitive part to low temperatures.
+
+II. Modern Heat Retention Technology in Winter Shoes
+
+1. Heat Retention Technology
+   • Silver Ion thermal fiber: Antibacterial and heat retention
+   • {{TECH_THINSULATE}}™ lining: 1.5x warmer than regular cotton
+   • {{TECH_GORE_TEX}} waterproof membrane: Blocks water, releases moisture
+
+2. Insulating Materials
+   • Wool Felt: Natural pressed wool heat retention
+   • Shearling Lining: Soft sheepskin lining
+   • Memory Foam Insole: Molding thermal cushion
+
+3. Cold-Resistant Design
+   • High ankle collar
+   • Anti-slip {{PRODUCT_WINTER_GRIP}} sole
+   • Watertight seams
+
+III. Top 5 Best Winter Boots 2025
+
+1. {{BRAND_TIMBERLAND}} {{PRODUCT_SIX_INCH_PREMIUM_BOOT}}
+   • Temperature tolerance: -20°C
+   • Technology: Waterproof leather, {{TECH_PRIMALOFT}} insulation
+   • Price: 4,500,000 VND
+   • Suitable for: City, light outdoor
+
+2. {{BRAND_DR_MARTENS}} {{PRODUCT_WINTER_GRIP}}
+   • Temperature tolerance: -15°C
+   • Technology: Thermal sole, fur lining
+   • Price: 3,800,000 VND
+   • Suitable for: Street style, work
+
+3. {{BRAND_UGG}} {{PRODUCT_CLASSIC_ULTRA_MINI}}
+   • Temperature tolerance: -10°C
+   • Technology: Twinface sheepskin, {{TECH_TREADLITE}} sole
+   • Price: 3,200,000 VND
+   • Suitable for: Casual, going out
+
+4. {{BRAND_SOREL}} {{PRODUCT_CARIBOU_BOOT}}
+   • Temperature tolerance: -40°C
+   • Technology: Waterproof nubuck, felt liner
+   • Price: 5,500,000 VND
+   • Suitable for: Snow, harsh weather
+
+5. {{BRAND_ECCO}} {{PRODUCT_SOFT_7_WINTER}}
+   • Temperature tolerance: -25°C
+   • Technology: Yak leather, thermal insole
+   • Price: 3,600,000 VND
+   • Suitable for: Office, smart casual
+
+IV. Tips for Choosing Warm Shoes by Region
+
+1. North (Hanoi & neighboring provinces)
+   • Temperature: 8-15°C, high humidity
+   • Priority: Waterproof, good heat retention
+   • Style: Mid to high-top boots
+
+2. Central (Da Nang, Hue)
+   • Temperature: 15-20°C, lots of rain
+   • Priority: Breathable, waterproof
+   • Style: Warm sneakers, low-top boots
+
+3. South (Ho Chi Minh City & provinces)
+   • Temperature: 20-25°C, chilly at night
+   • Priority: Airy, light
+   • Style: Thin sneakers, sports shoes
+
+V. Care and Maintenance of Winter Shoes
+
+1. Daily Cleaning
+   • Use soft brush to clean mud
+   • Air dry naturally, avoid high heat
+   • Use waterproof spray periodically
+
+2. Storage When Not in Use
+   • Stuff newspaper to maintain shoe shape
+   • Store in dry, airy place
+   • Avoid direct sunlight
+
+3. "Emergency" for Wet Shoes
+   • Remove insoles immediately
+   • Stuff with dry newspaper to absorb moisture
+   • Dry in shade for 2-3 days
+
+VI. Special "Winter Ready" Promotion
+
+On the occasion of monsoon season, Myshoes.vn launches special promotion:
+• 25% off all winter boots
+• Free shoe care kit worth 500k
+• Free nationwide shipping
+• Authentic 2-year warranty
+
+Don't let the cold affect your health and life. Prepare warm shoes starting today! Visit Myshoes.vn or come directly to stores for free consultation and choose your perfect companion this winter.`,
+        "5": `I. Latest Collection with Many Colors and Comfortable Technology…
+
+Fall 2025 brings fresh air to the sneaker world with perfect combination of modern technology and fashionable design. Major brands have launched special collections, focusing on waterproof features and smart design suitable for the characteristic cool weather of fall.
+
+II. Fall Sneaker Selection Criteria
+
+When choosing sneakers for fall, consider factors:
+
+• Materials: Choose materials with light water resistance like leather, waterproof-treated suede
+• Colors: Warm muted tones like brown, beige, moss green, burgundy
+• Warmth: Thin lining that keeps warm but still breathable
+• Sole: Good slip resistance for rainy humid days
+
+III. Top Picks Fall Sneakers 2025
+
+1. {{BRAND_NIKE}} {{PRODUCT_AIR_FORCE_1}} "Autumn Pack"
+   • Design: Camel brown with gum sole
+   • Technology: Visible {{TECH_AIR_MAX}} unit, leather {{TECH_UPPER}}
+   • Price: 3,200,000 VND
+   • Features: Light waterproof, easy styling
+
+2. {{BRAND_ADIDAS}} {{PRODUCT_STAN_SMITH}} "Wool Edition"
+   • Design: {{TECH_UPPER}} made from warm wool blend
+   • Technology: {{TECH_CLOUDFOAM}} comfort insole
+   • Price: 2,800,000 VND
+   • Features: Light, warm, suitable for cool weather
+
+3. {{BRAND_NEW_BALANCE}} {{PRODUCT_NB_574}} "Weatherproof"
+   • Design: Waterproof-treated suede and mesh
+   • Technology: {{TECH_ENCAP}} {{TECH_MIDSOLE}}, anti-slip sole
+   • Price: 2,500,000 VND
+   • Features: Durable, suitable for daily work
+
+4. {{BRAND_CONVERSE}} {{PRODUCT_CHUCK_70}} "Shield Canvas"
+   • Design: Waterproof canvas, olive color
+   • Technology: Thick rubber sole, comfortable insole
+   • Price: 1,800,000 VND
+   • Features: Affordable, unisex
+
+5. {{BRAND_PUMA}} {{PRODUCT_RS_X_ECHO}}
+   • Design: Gray combined with burnt orange
+   • Technology: RS cushioning system
+   • Price: 2,900,000 VND
+   • Features: Comfortable, futuristic design
+
+IV. Styling with Fall Sneakers
+
+• Casual Style: Sneakers + Jeans + Hoodie + Denim jacket
+• Smart Casual: Sneakers + Chinos + Shirt + Blazer
+• Street Style: Sneakers + Joggers + Graphic tee + Bomber jacket
+
+V. Fall Sneaker Maintenance
+
+• Use waterproof spray before use
+• Clean with damp cloth after outdoor use
+• Avoid direct sun exposure
+• Use shoe tree to maintain shape
+
+Myshoes.vn currently has special promotion for fall sneakers with up to 30% discount. Come to the nearest store or order online to own the most beautiful sneakers this season!`,
+      },
     },
     Testimonials: {
       title: "Testimonials",
@@ -1361,8 +1787,62 @@ export default {
     title: "CONTACT",
     subtitle: "We are always ready to listen and support you. Please contact us for consultation and answers to all your questions.",
     contactInfo: "CONTACT INFORMATION",
+    address: "ADDRESS",
+    addressLine1: "Floor 6, 266 Doi Can, Hanoi",
+    addressLine2: "P. Uoi Can, Phan Ke Binh",
+    phone: "PHONE",
+    email: "EMAIL",
+    emailLabel: "Email",
+    emailPlaceholder: "Enter Email *",
+    followUs: "FOLLOW US",
+    sendMessage: "SEND US A MESSAGE",
+    fullName: "Full Name",
+    fullNamePlaceholder: "Enter full name *",
+    content: "Content",
+    messagePlaceholder: "Your message",
+    sendButton: "SEND MESSAGE",
+    otherBranches: "OTHER BRANCHES",
+    location1Name: "Cung the Hao Quan Ngua",
+    location1Address: "Group 6B, Luc qua",
+    location1City: "Hanoi",
+    location2Name: "HO DAM TRON",
+    location2Address: "Group 1B",
+    location2City: "Hanoi",
+    location3Name: "Bao lang Chien thang B-52",
+    location3Address: "P. Doi Can",
+    location3City: "Hanoi",
     needSupportNow: "NEED SUPPORT NOW?",
     supportTeam: "Our customer service team is always ready to support you 24/7",
+    callNow: "CALL NOW",
+    sendEmail: "SEND EMAIL",
     thankYouContact: "Thank you for contacting us! We will respond as soon as possible.",
+  },
+  AboutTemplate: {
+    title: "ABOUT DELVOR",
+    subtitle: "Premium fashion footwear brand, bringing wonderful shopping experiences and quality products to Vietnamese users",
+    mission: "Our Mission",
+    missionText: "We are committed to bringing the highest quality shoes, combining trendy design and maximum comfort. Each product is a crystallization of passion and creativity.",
+    missionQuote: "Bringing the best shoe shopping experience to Vietnamese people",
+    coreValues: "Core Values",
+    coreValuesSubtitle: "The golden principles that make Delvor different",
+    quality: "Quality",
+    qualityText: "Each pair of shoes is manufactured with strict quality control processes, ensuring durability and maximum comfort.",
+    design: "Design",
+    designText: "The creative design team continuously brings unique, fashionable shoe models that align with global trends.",
+    community: "Community",
+    communityText: "Building a shoe-loving community, sharing knowledge and spreading passion to all customers.",
+    journey: "Development Journey",
+    timeline1Title: "Beginning",
+    timeline1Text: "Delvor was founded with the mission to bring the first quality shoes to the Vietnamese market.",
+    timeline2Title: "Expansion",
+    timeline2Text: "Launching online store, bringing products to customers nationwide.",
+    timeline3Title: "Breakthrough",
+    timeline3Text: "Introducing premium product lines, collaborating with international designers.",
+    timeline4Title: "Present",
+    timeline4Text: "Becoming one of the most beloved shoe brands with over 50,000 trusted customers.",
+    ctaTitle: "Ready to Explore?",
+    ctaSubtitle: "Discover our latest shoe collection and find your perfect pair",
+    shopNow: "SHOP NOW",
+    contact: "CONTACT",
   },
 };

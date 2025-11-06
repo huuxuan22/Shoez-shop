@@ -11,10 +11,9 @@
           >
           <div class="container mx-auto px-4 relative z-10">
             <div class="max-w-4xl mx-auto text-center">
-              <h1 class="text-6xl font-bold mb-6 font-['Playfair_Display']">VỀ DELVOR</h1>
+              <h1 class="text-6xl font-bold mb-6 font-['Playfair_Display']">{{ $t('AboutTemplate.title') }}</h1>
               <p class="text-xl text-gray-200 leading-relaxed">
-                Thương hiệu giày thời trang cao cấp, mang đến những trải nghiệm mua sắm tuyệt vời 
-                và sản phẩm chất lượng cho người dùng Việt Nam
+                {{ $t('AboutTemplate.subtitle') }}
               </p>
             </div>
           </div>
@@ -36,15 +35,13 @@
   
               <!-- Nội dung -->
               <div class="order-1 lg:order-2">
-                <h2 class="text-4xl font-bold text-gray-900 mb-8 font-['Playfair_Display']">Sứ Mệnh Của Chúng Tôi</h2>
+                <h2 class="text-4xl font-bold text-gray-900 mb-8 font-['Playfair_Display']">{{ $t('AboutTemplate.mission') }}</h2>
                 <p class="text-gray-600 leading-relaxed text-lg mb-6">
-                  Chúng tôi cam kết mang đến những đôi giày chất lượng nhất, kết hợp giữa thiết kế 
-                  thời thượng và sự thoải mái tối đa. Mỗi sản phẩm là sự kết tinh của đam mê và 
-                  sáng tạo.
+                  {{ $t('AboutTemplate.missionText') }}
                 </p>
                 <div class="bg-gray-50 p-6 rounded-xl border-l-4 border-gray-900">
                   <p class="text-gray-700 italic">
-                    "Mang đến trải nghiệm mua sắm giày dép tuyệt vời nhất cho người Việt"
+                    "{{ $t('AboutTemplate.missionQuote') }}"
                   </p>
                 </div>
               </div>
@@ -56,9 +53,9 @@
         <section class="py-20 bg-gray-50">
           <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-              <h2 class="text-4xl font-bold text-gray-900 mb-4 font-['Playfair_Display']">Giá Trị Cốt Lõi</h2>
+              <h2 class="text-4xl font-bold text-gray-900 mb-4 font-['Playfair_Display']">{{ $t('AboutTemplate.coreValues') }}</h2>
               <p class="text-gray-600 text-lg max-w-2xl mx-auto">
-                Những nguyên tắc vàng tạo nên sự khác biệt của Delvor
+                {{ $t('AboutTemplate.coreValuesSubtitle') }}
               </p>
             </div>
   
@@ -70,10 +67,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                   </svg>
                 </div>
-                <h3 class="text-2xl font-semibold text-gray-900 mb-4 font-['Playfair_Display']">Chất Lượng</h3>
+                <h3 class="text-2xl font-semibold text-gray-900 mb-4 font-['Playfair_Display']">{{ $t('AboutTemplate.quality') }}</h3>
                 <p class="text-gray-600 leading-relaxed">
-                  Mỗi đôi giày được sản xuất với quy trình kiểm soát chất lượng nghiêm ngặt, 
-                  đảm bảo độ bền và sự thoải mái tối đa.
+                  {{ $t('AboutTemplate.qualityText') }}
                 </p>
               </div>
   
@@ -84,10 +80,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
                   </svg>
                 </div>
-                <h3 class="text-2xl font-semibold text-gray-900 mb-4 font-['Playfair_Display']">Thiết Kế</h3>
+                <h3 class="text-2xl font-semibold text-gray-900 mb-4 font-['Playfair_Display']">{{ $t('AboutTemplate.design') }}</h3>
                 <p class="text-gray-600 leading-relaxed">
-                  Đội ngũ thiết kế sáng tạo không ngừng, mang đến những mẫu giày độc đáo, 
-                  hợp thời trang và phù hợp với xu hướng toàn cầu.
+                  {{ $t('AboutTemplate.designText') }}
                 </p>
               </div>
   
@@ -98,10 +93,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                   </svg>
                 </div>
-                <h3 class="text-2xl font-semibold text-gray-900 mb-4 font-['Playfair_Display']">Cộng Đồng</h3>
+                <h3 class="text-2xl font-semibold text-gray-900 mb-4 font-['Playfair_Display']">{{ $t('AboutTemplate.community') }}</h3>
                 <p class="text-gray-600 leading-relaxed">
-                  Xây dựng cộng đồng yêu giày, chia sẻ kiến thức và lan tỏa đam mê đến 
-                  mọi khách hàng.
+                  {{ $t('AboutTemplate.communityText') }}
                 </p>
               </div>
             </div>
@@ -116,7 +110,7 @@
                 
                 <!-- Timeline -->
                 <div>
-                  <h2 class="text-4xl font-bold text-gray-900 mb-12 font-['Playfair_Display']">Hành Trình Phát Triển</h2>
+                  <h2 class="text-4xl font-bold text-gray-900 mb-12 font-['Playfair_Display']">{{ $t('AboutTemplate.journey') }}</h2>
                   
                   <div class="space-y-8 relative">
                     <!-- Timeline line -->
@@ -128,10 +122,9 @@
                         <span class="text-white font-bold text-sm">2015</span>
                       </div>
                       <div class="pb-8">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Khởi Đầu</h3>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ $t('AboutTemplate.timeline1Title') }}</h3>
                         <p class="text-gray-600">
-                          Delvor được thành lập với sứ mệnh mang đến những đôi giày chất lượng 
-                          đầu tiên cho thị trường Việt Nam.
+                          {{ $t('AboutTemplate.timeline1Text') }}
                         </p>
                       </div>
                     </div>
@@ -142,10 +135,9 @@
                         <span class="text-white font-bold text-sm">2018</span>
                       </div>
                       <div class="pb-8">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Mở Rộng</h3>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ $t('AboutTemplate.timeline2Title') }}</h3>
                         <p class="text-gray-600">
-                          Ra mắt cửa hàng trực tuyến, mang sản phẩm đến với khách hàng trên 
-                          toàn quốc.
+                          {{ $t('AboutTemplate.timeline2Text') }}
                         </p>
                       </div>
                     </div>
@@ -156,10 +148,9 @@
                         <span class="text-white font-bold text-sm">2020</span>
                       </div>
                       <div class="pb-8">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Đột Phá</h3>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ $t('AboutTemplate.timeline3Title') }}</h3>
                         <p class="text-gray-600">
-                          Giới thiệu dòng sản phẩm cao cấp, hợp tác với các nhà thiết kế 
-                          quốc tế.
+                          {{ $t('AboutTemplate.timeline3Text') }}
                         </p>
                       </div>
                     </div>
@@ -170,10 +161,9 @@
                         <span class="text-white font-bold text-sm">2024</span>
                       </div>
                       <div>
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Hiện Tại</h3>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ $t('AboutTemplate.timeline4Title') }}</h3>
                         <p class="text-gray-600">
-                          Trở thành một trong những thương hiệu giày được yêu thích nhất 
-                          với hơn 50,000 khách hàng tin dùng.
+                          {{ $t('AboutTemplate.timeline4Text') }}
                         </p>
                       </div>
                     </div>
@@ -211,22 +201,22 @@
         <!-- CTA Section -->
         <section class="py-20 bg-gradient-to-r from-gray-900 to-black text-white">
           <div class="container mx-auto px-4 text-center">
-            <h2 class="text-4xl font-bold mb-6 font-['Playfair_Display']">Sẵn Sàng Khám Phá?</h2>
+            <h2 class="text-4xl font-bold mb-6 font-['Playfair_Display']">{{ $t('AboutTemplate.ctaTitle') }}</h2>
             <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Khám phá bộ sưu tập giày mới nhất của chúng tôi và tìm cho mình đôi giày hoàn hảo
+              {{ $t('AboutTemplate.ctaSubtitle') }}
             </p>
             <div class="space-x-4">
               <router-link 
                 to="/products" 
                 class="bg-white text-gray-900 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 hover:scale-105 inline-block text-lg"
               >
-                MUA SẮM NGAY
+                {{ $t('AboutTemplate.shopNow') }}
               </router-link>
               <router-link 
                 to="/contact" 
                 class="border border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-gray-900 transition-all duration-300 hover:scale-105 inline-block text-lg"
               >
-                LIÊN HỆ
+                {{ $t('AboutTemplate.contact') }}
               </router-link>
             </div>
           </div>
@@ -236,4 +226,6 @@
   </template>
   
   <script setup>
+  // Vue i18n is available globally via $t() in template
+  // No need to import useI18n for template-only usage
   </script>
