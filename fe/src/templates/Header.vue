@@ -1,6 +1,6 @@
 <template>
   <header class="bg-white shadow-md sticky top-0 z-50">
-    <ConfirmModal :show="showConfirm" message="Bạn có chắc chắn muốn đăng xuất?" @confirm="handleLogout"
+    <ConfirmModal :show="showConfirm" :message="$t('confirmLogout')" @confirm="handleLogout"
       @cancel="showConfirm = false" />
     <nav class="container mx-auto px-4 py-4">
       <div class="flex items-center justify-between flex-wrap">
@@ -23,7 +23,7 @@
             <router-link to="/products"
               class="flex items-center space-x-1 text-gray-800 hover:text-black transition-colors font-medium"
               :class="{ 'text-black font-bold': $route.name === 'Products' }">
-              <img src="@/assets/icons/product.png" alt="Sản phẩm" class="w-5 h-5">
+              <img src="@/assets/icons/product.png" :alt="$t('Header.products')" class="w-5 h-5">
               <span>{{ $t('Header.products') }}</span>
             </router-link>
             <router-link to="/about"

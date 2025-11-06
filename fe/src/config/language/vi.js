@@ -133,6 +133,432 @@ export default {
     NewsSection: {
       title: "TIN TỨC SHOEZ.VN",
       hashtag: "#BLOG",
+      brandName: "Myshoes.vn",
+      articles: {
+        "1": {
+          title: 'GIÀY CHẠY BỘ NÀO ĐANG LÀ "CHIẾC VƯƠNG MIỆN" CỦA DÂN RUNNER 2025?',
+          excerpt: 'Lời Mở Đầu: Đỉnh Cao Của Công Nghệ Giày Chạy 2025…',
+        },
+        "2": {
+          title: 'Đừng Hỏi Vì Sao Tôi Chỉ Mang Giày Chính Hãng – Câu Trả Lời Nằm Ở Cảm Giác Khi Xỏ Chân Vào',
+          excerpt: 'Tôi đã từng là một "thợ săn sale" giày fake…',
+        },
+        "3": {
+          title: 'Gợi ý 5 đôi sneaker tiện lợi và êm chân phù hợp cuối năm 2025',
+          excerpt: 'Cuối năm luôn là thời điểm lý tưởng để sắm sửa…',
+        },
+        "4": {
+          title: 'Gió Lạnh Về Rồi, Bạn Đã Có Giày Ấm Chưa?',
+          excerpt: 'Mở đầu Khi những cơn gió lạnh đầu mùa bắt đầu len lỏi…',
+        },
+        "5": {
+          title: 'Top mẫu sneaker đáng sắm mùa thu 2025',
+          excerpt: 'BST mới nhất với nhiều màu sắc và công nghệ êm ái…',
+        },
+        "6": {
+          title: 'Cách chọn size giày online: mẹo từ chuyên gia',
+          excerpt: 'Hướng dẫn đo chuẩn, tránh đổi trả phiền phức.',
+        },
+      },
+    },
+    NewsDetail: {
+      back: "Quay lại",
+      tableOfContents: "Mục lục",
+      relatedImages: "Hình ảnh liên quan",
+      image: "Hình ảnh",
+      imageIndex: "Hình ảnh {index}",
+      imageForSection: "Hình ảnh cho {section}",
+      share: "Chia sẻ:",
+      comments: "Bình luận",
+      enterComment: "Nhập bình luận của bạn...",
+      submitComment: "Gửi bình luận",
+      guest: "Khách",
+      noComments: "Chưa có bình luận nào.",
+      relatedArticles: "Bài viết liên quan",
+      articleNotFound: "Bài báo không tồn tại.",
+      linkCopied: "Đã copy liên kết bài viết!",
+      author: "Tác giả: Myshoes Team",
+      views: "lượt xem",
+      articleContent: {
+        "1": `I. Lời Mở Đầu: Đỉnh Cao Của Công Nghệ Giày Chạy 2025
+
+Năm 2025 đánh dấu một bước ngoặt lớn trong ngành công nghiệp giày chạy bộ. Không chỉ là những cải tiến nhỏ lẻ, chúng ta đang chứng kiến một cuộc cách mạng thực sự về công nghệ và vật liệu. Các thương hiệu lớn đã đầu tư hàng triệu đô la vào nghiên cứu và phát triển, mang đến những sản phẩm không chỉ giúp cải thiện thành tích mà còn bảo vệ sức khỏe của runner.
+
+Thị trường giày chạy bộ năm 2025 chứng kiến sự cạnh tranh khốc liệt giữa các ông lớn như {{BRAND_NIKE}}, {{BRAND_ADIDAS}}, {{BRAND_NEW_BALANCE}} và {{BRAND_ASICS}}. Mỗi hãng đều mang đến những công nghệ độc quyền, từ hệ thống đệm siêu nhẹ cho đến cảm biến thông minh tích hợp. Người tiêu dùng giờ đây không chỉ tìm kiếm một đôi giày êm ái, mà còn cần một "trợ thủ đắc lực" có thể đồng hành trong mọi hành trình chinh phục.
+
+II. Công Nghệ Mới Đột Phá
+
+{{TECH_CARBON_FIBER_PLATE}} - Tấm carbon không còn là độc quyền của giày {{TECH_RACING_SHOES}}: Năm 2025 chứng kiến sự phổ biến của tấm carbon trong cả giày {{TECH_TRAINING_SHOES}}. Công nghệ này giúp tăng hiệu suất đẩy về phía trước lên đến 4%, đồng thời giảm thiểu chấn thương cho cơ bắp.
+
+Foam Revolution - Cuộc cách mạng về chất liệu đệm: Các hãng đã phát triển những loại foam mới với độ đàn hồi vượt trội. {{BRAND_NIKE}} với {{TECH_ZOOM_X}}, {{BRAND_ADIDAS}} với {{TECH_LIGHTSTRIKE_PRO}}, và {{BRAND_NEW_BALANCE}} với {{TECH_FUELCELL}} đều cho thấy sự cải tiến đáng kể về độ bền và khả năng phục hồi.
+
+Sustainable Materials - Vật liệu bền vững: Xu hướng xanh hóa ngành giày thể thao tiếp tục được đẩy mạnh. Hơn 50% giày chạy bộ năm 2025 sử dụng vật liệu tái chế, từ lưới {{TECH_UPPER}} làm từ chai nhựa tái chế đến {{TECH_MIDSOLE}} làm từ ngô và các nguyên liệu sinh học.
+
+Smart Integration - Cảm biến thông minh: Nhiều mẫu giày cao cấp nay được tích hợp cảm biến theo dõi nhịp chân, lực tiếp đất và form chạy. Dữ liệu được đồng bộ hóa với ứng dụng di động, giúp runner phân tích và cải thiện kỹ thuật.
+
+III. Top 5 Mẫu Giày Đáng Chú Ý Nhất 2025
+
+1. {{BRAND_NIKE}} {{PRODUCT_ALPHAFLY_3}} - "Siêu Phẩm Tốc Độ"
+   • Đệm {{TECH_ZOOM_X}} cải tiến với độ dày tối ưu
+   • Tấm carbon hình cánh cung độc quyền
+   • Trọng lượng chỉ 180g cho size US 9
+   • Phù hợp: {{TECH_MARATHON}}, tập luyện tốc độ
+
+2. {{BRAND_ADIDAS}} {{PRODUCT_ADIZERO_PRIME_X_2}}
+   • Công nghệ {{TECH_LIGHTSTRIKE_PRO}} kép
+   • Độ dày {{TECH_MIDSOLE}} 50mm - giới hạn kỹ thuật
+   • Thiết kế {{TECH_ENERGY_RODS}} linh hoạt
+   • Phù hợp: Runner kinh nghiệm tìm kiếm cảm giác mới lạ
+
+3. {{BRAND_NEW_BALANCE}} {{PRODUCT_FUELCELL_SUPERCOMP_ELITE_V4}}
+   • {{TECH_FUELCELL}} foam với công thức mới
+   • Hệ thống tấm carbon năng lượng kép
+   • {{TECH_UPPER}} {{TECH_ENGINEERED_MESH}} siêu nhẹ
+   • Phù hợp: Cân bằng giữa tốc độ và sự ổn định
+
+4. {{BRAND_ASICS}} {{PRODUCT_METASPEED_SKY}}
+   • {{TECH_FLYTEFOAM_BLAST_TURBO}} cao cấp
+   • Công nghệ {{TECH_GUIDESOLE}} giảm tiêu hao năng lượng
+   • Thiết kế riêng cho runner có nhịp bước cao
+   • Phù hợp: Runner chuyên nghiệp thi đấu
+
+5. {{BRAND_SAUCONY}} {{PRODUCT_ENDORPHIN_PRO_4}}
+   • {{TECH_PWRRUN_HG}} foam đệm siêu nhẹ
+   • {{TECH_SPEEDROLL}} technology tạo lực đẩy
+   • Formfit {{TECH_UPPER}} ôm chân hoàn hảo
+   • Phù hợp: Đa dạng từ beginner đến pro
+
+IV. Tiêu Chí Lựa Chọn Giày Phù Hợp
+
+Để chọn được đôi giày "vương miện" cho riêng mình, runner cần xem xét các yếu tố:
+
+• Loại hình chạy: {{TECH_ROAD_RUNNING}}, {{TECH_TRAIL_RUNNING}} hay {{TECH_TRACK}}?
+• Khoảng cách: 5K, 10K, bán marathon hay full marathon?
+• Dáng chạy: {{TECH_NEUTRAL}}, {{TECH_OVERPRONATION}} hay {{TECH_UNDERPRONATION}}?
+• Trọng lượng cơ thể: Ảnh hưởng đến độ bền của đệm
+• Ngân sách: Từ 2-6 triệu đồng tùy phân khúc
+• Địa hình: Bê tông, đường đất hay địa hình phức tạp?
+
+V. Kết Luận: Bứt Phá Mọi Giới Hạn
+
+Năm 2025 thực sự là thời điểm vàng cho cộng đồng runner Việt Nam. Với sự đa dạng về công nghệ và mẫu mã, mỗi người chạy đều có thể tìm thấy "chiếc vương miện" phù hợp cho đôi chân của mình. Quan trọng nhất, hãy lắng nghe cơ thể và chọn giày không chỉ dựa trên công nghệ, mà còn dựa trên cảm giác thoải mái khi xỏ vào.
+
+Hãy nhớ: Đôi giày tốt nhất không phải là đôi đắt nhất, mà là đôi phù hợp nhất với bạn. Đến với Myshoes.vn, chúng tôi cam kết mang đến những trải nghiệm mua sắm tốt nhất và tư vấn chuyên nghiệp nhất để bạn tìm được người bạn đồng hành hoàn hảo trên mọi cung đường.`,
+        "2": `I. Hành Trình Từ "Thợ Săn Sale" Đến Người Tiêu Dùng Thông Thái
+
+Cách đây 5 năm, tôi từng là một "thợ săn sale" chính hiệu. Mục tiêu của tôi luôn là tìm kiếm những đôi giày có giá rẻ nhất, bất kể đó là hàng chính hãng hay replica. Tôi tự hào về khả năng tìm được những đôi giày "giống 99%" với giá chỉ bằng 1/3, 1/4 so với hàng thật. Nhưng rồi một sự kiện đã thay đổi hoàn toàn quan điểm của tôi.
+
+Đó là vào một ngày mưa, khi tôi đang đi chiếc giày fake mua được với giá 400k, đế giày bất ngờ bong ra khiến tôi trượt ngã và chấn thương mắt cá chân. 2 tuần nằm bất động và chi phí y tế gấp 10 lần số tiền tôi "tiết kiệm" được đã dạy cho tôi một bài học đắt giá.
+
+II. Sự Khác Biệt Không Thể Phủ Nhận
+
+1. Chất Liệu: Từ Những Điều Nhỏ Nhất
+   • {{TECH_UPPER}}: Hàng chính hãng sử dụng {{TECH_ENGINEERED_MESH}} cao cấp, có độ co giãn và thông thoáng được tính toán kỹ lưỡng. Hàng fake thường dùng vải thường, dễ rách và gây hầm nóng.
+   • Đệm: Công nghệ foam độc quyền như {{TECH_BOOST}}, {{TECH_ZOOM_X}}, {{TECH_REACT}} chỉ có ở hàng thật. Hàng fake sử dụng foam rẻ tiền, nhanh xẹp và không có độ đàn hồi.
+   • Keo dán: Hàng thật sử dụng keo công nghiệp chuyên dụng, chịu được nhiệt độ và lực kéo cao. Hàng fake dùng keo thường, dễ bong tróc.
+
+2. Công Nghệ Sản Xuất
+   • Quy trình {{TECH_QC}} ({{TECH_QUALITY_CONTROL}}) nghiêm ngặt
+   • Máy móc công nghệ cao từ Đức, Nhật
+   • Đội ngũ kỹ sư giàu kinh nghiệm
+   • Kiểm tra từng công đoạn sản xuất
+
+3. Trải Nghiệm Sử Dụng
+   • Độ ôm chân hoàn hảo
+   • Phân phối lực đồng đều
+   • Độ bền vượt trội (trung bình 800-1000km)
+   • Bảo hành chính hãng 2 năm
+
+III. Những Hệ Lụy Khi Sử Dụng Giày Fake
+
+1. Nguy Cơ Sức Khỏe
+   • Chấn thương khớp gối, mắt cá chân
+   • Đau lưng, đau cột sống
+   • Viêm cân gan chân
+   • Biến dạng dáng đi
+
+2. Thiệt Hại Kinh Tế
+   • Tuổi thọ thấp, phải thay thường xuyên
+   • Chi phí y tế khi xảy ra chấn thương
+   • Không có giá trị bán lại
+
+3. Vấn Đề Môi Trường
+   • Sử dụng hóa chất độc hại
+   • Quy trình sản xuất không kiểm soát
+   • Nhanh chóng trở thành rác thải
+
+IV. Làm Sao Phân Biệt Hàng Thật - Hàng Fake?
+
+1. Kiểm Tra Bao Bì
+   • Hộp cứng cáp, in ấn sắc nét
+   • Mã QR, serial number
+   • Tem chống hàng giả
+
+2. Quan Sát Chi Tiết
+   • Đường may tỉ mỉ, đều đặn
+   • Logo in rõ ràng, không nhòe
+   • Màu sắc đồng nhất, không lỗi
+
+3. Cảm Nhận Khi Sử Dụng
+   • Nhẹ và êm ngay lần đầu đi
+   • Không có mùi hóa chất
+   • Độ đàn hồi tốt
+
+V. Lời Khuyên Chân Thành
+
+Sau 3 năm chỉ sử dụng giày chính hãng, tôi nhận ra rằng: "Đắt một lần nhưng chất lượng mãi mãi". Mỗi buổi sáng xỏ đôi giày chính hãng vào, tôi cảm nhận được sự tin tưởng và an tâm. Không còn lo lắng về việc đế bong khi đang chạy, không còn sợ chấn thương bất ngờ.
+
+Đặc biệt, với chính sách bảo hành của Myshoes.vn, tôi hoàn toàn yên tâm về chất lượng. Đội ngũ tư vấn chuyên nghiệp giúp tôi chọn được đôi giày phù hợp nhất với nhu cầu và túi tiền.
+
+Hãy đầu tư cho đôi chân của bạn - nơi nâng đỡ toàn bộ cơ thể. Đừng để những khoản tiết kiệm trước mắt khiến bạn phải trả giá đắt về sau.`,
+        "3": `I. Xu Hướng Sneaker Cuối Năm 2025: Tiện Lợi & Đa Năng
+
+Cuối năm luôn là thời điểm bận rộn với hàng loạt sự kiện: tiệc tùng, du lịch, mua sắm và các buổi họp mặt. Một đôi sneaker êm ái, linh hoạt trở thành vật bất ly thân của mọi tín đồ thời trang. Năm 2025 chứng kiến sự lên ngôi của những mẫu sneaker "all-in-one" - có thể phối đồ từ casual đến semi-formal, từ văn phòng đến các buổi tiệc cuối năm.
+
+Theo khảo sát mới nhất từ Myshoes.vn, 85% khách hàng tìm kiếm sneaker cuối năm ưu tiên 3 yếu tố: comfort tối đa, dễ phối đồ và giá cả hợp lý. Dưới đây là 5 cái tên nổi bật nhất đáp ứng đầy đủ các tiêu chí này.
+
+II. Top 5 Sneaker Đáng Đồng Tiền Bát Gạo
+
+1. {{BRAND_NIKE}} {{PRODUCT_AIR_FORCE_1}} '07 Premium
+   • Ưu điểm: Thiết kế classic không bao giờ lỗi thời
+   • Công nghệ: {{TECH_AIR_SOLE}} unit toàn bộ đế
+   • Chất liệu: Leather cao cấp, dễ vệ sinh
+   • Phối đồ: Quần jeans, jogger, hay cả suit
+   • Giá: 2,500,000 VND
+   • Đánh giá: 9.5/10 - "Basic nhưng không bao giờ nhàm chán"
+
+2. {{BRAND_ADIDAS}} {{PRODUCT_ULTRABOOST_LIGHT}}
+   • Ưu điểm: Êm ái nhất trong phân khúc
+   • Công nghệ: {{TECH_BOOST}} foam mới nhẹ hơn 30%
+   • Chất liệu: {{TECH_PRIMAKNIT}}+ co giãn 4 chiều
+   • Phối đồ: Sporty chic, streetwear
+   • Giá: 4,200,000 VND
+   • Đánh giá: 9.8/10 - "Như đi trên mây cả ngày"
+
+3. {{BRAND_NEW_BALANCE}} {{PRODUCT_NB_990V6}}
+   • Ưu điểm: Support tuyệt vời cho bàn chân
+   • Công nghệ: {{TECH_FUELCELL}} {{TECH_MIDSOLE}} kết hợp {{TECH_ENCAP}}
+   • Chất liệu: Pigskin suede và mesh cao cấp
+   • Phối đồ: Smart casual, business casual
+   • Giá: 5,500,000 VND
+   • Đánh giá: 9.2/10 - "Đẳng cấp và thoải mái"
+
+4. {{BRAND_VEJA}} {{PRODUCT_CAMPO_LEATHER}}
+   • Ưu điểm: Thân thiện môi trường, thiết kế tối giản
+   • Công nghệ: Đệm {{TECH_L_FOAM}} từ ngô tái chế
+   • Chất liệu: Leather chrome-free
+   • Phối đồ: Minimalist, sustainable fashion
+   • Giá: 2,800,000 VND
+   • Đánh giá: 8.8/10 - "Style có trách nhiệm"
+
+5. {{BRAND_CONVERSE}} {{PRODUCT_CHUCK_70}} Vintage Canvas
+   • Ưu điểm: Giá cả phải chăng, đa dạng màu sắc
+   • Công nghệ: Đế cao su cổ điển, bền bỉ
+   • Chất liệu: Canvas 12oz cao cấp
+   • Phối đồ: Streetwear, retro style
+   • Giá: 1,500,000 VND
+   • Đánh giá: 9.0/10 - "Icon không tuổi"
+
+III. Bí Quyết Chọn Sneaker Theo Nhu Cầu
+
+1. Dân Văn Phòng
+   • Ưu tiên: Màu trung tính (trắng, đen, be)
+   • Kiểu dáng: Gọn gàng, không quá thể thao
+   • Comfort: Quan trọng hàng đầu
+
+2. Giới Trẻ Năng Động
+   • Ưu tiên: Màu sắc trẻ trung, thiết kế mới lạ
+   • Tính năng: Nhẹ, linh hoạt
+   • Ngân sách: Linh hoạt 1-3 triệu
+
+3. Người Trung Niên
+   • Ưu tiên: Êm ái, support tốt
+   • Thiết kế: Đơn giản, dễ phối đồ
+   • Thương hiệu: Uy tín, bền bỉ
+
+IV. Cách Phối Đồ Thông Minh Với Sneaker
+
+1. Smart Casual Cuối Năm
+   • Sneaker trắng + Quần chinos + Áo sơ mi
+   • Thêm blazer cho các sự kiện quan trọng
+   • Phụ kiện: Tất cổ thấp, đồng hồ leather
+
+2. Streetwear Năng Động
+   • Sneaker màu + Quần jogger + Hoodie
+   • Layer với áo khoác denim hoặc bomber
+   • Phụ kiện: Mũ bucket, backpack
+
+3. Tiệc Tùng Festive
+   • Sneaker sang trọng + Quần âu + Áo polo
+   • Màu sắc: Đỏ, xanh đậm, vàng đồng
+   • Phụ kiện: Dây da, ví cầm tay
+
+V. Lời Khuyên Từ Chuyên Gia
+
+"Đừng chạy theo số lượng, hãy đầu tư vào chất lượng" - đó là chia sẻ từ chuyên gia thời trang Nguyễn Minh Anh. Theo anh, mỗi người nên sở hữu 3-4 đôi sneaker chất lượng thay vì 10-15 đôi giá rẻ.
+
+Cuối năm 2025, Myshoes.vn mang đến chương trình khuyến mãi đặc biệt "Year-End Comfort" với ưu đãi lên đến 30% cho các dòng sneaker cao cấp. Đặc biệt, chúng tôi cam kết:
+• Bảo hành chính hãng 24 tháng
+• Đổi size trong 30 ngày
+• Tư vấn style miễn phí
+
+Hãy đến với Myshoes.vn để tìm cho mình người bạn đồng hành hoàn hảo trong những ngày cuối năm bận rộn!`,
+        "4": `I. Mùa Đông 2025: Thời Tiết Khắc Nghiệt Và Nhu Cầu Giày Ấm
+
+Theo dự báo từ Trung tâm Khí tượng Thủy văn Trung ương, mùa đông năm 2025 được dự báo sẽ lạnh hơn và kéo dài hơn so với các năm trước. Nhiệt độ tại miền Bắc có thể xuống dưới 10 độ C, trong khi miền Trung cũng chịu ảnh hưởng của các đợt gió mùa Đông Bắc. Đây chính là thời điểm cần chuẩn bị những đôi giày ấm áp để bảo vệ đôi chân - bộ phận nhạy cảm nhất với nhiệt độ thấp.
+
+II. Công Nghệ Giữ Nhiệt Hiện Đại Trong Giày Mùa Đông
+
+1. Công Nghệ Heat Retention
+   • Sợi nhiệt Silver Ion: Kháng khuẩn và giữ nhiệt
+   • Lớp lót {{TECH_THINSULATE}}™: Giữ ấm gấp 1.5 lần bông thường
+   • Màng chống thấm {{TECH_GORE_TEX}}: Ngăn nước, thoát hơi ẩm
+
+2. Vật Liệu Cách Nhiệt
+   • Wool Felt: Len ép giữ nhiệt tự nhiên
+   • Shearling Lining: Lớp lót lông cừu mềm mại
+   • Memory Foam Insole: Đệm nhiệt định hình
+
+3. Thiết Kế Chống Lạnh
+   • Cổ giày cao ôm mắt cá
+   • Đế chống trượt {{PRODUCT_WINTER_GRIP}}
+   • Đường may kín nước
+
+III. Top 5 Giày Ấm Đáng Mua Nhất Mùa Đông 2025
+
+1. {{BRAND_TIMBERLAND}} {{PRODUCT_SIX_INCH_PREMIUM_BOOT}}
+   • Nhiệt độ chịu được: -20°C
+   • Công nghệ: Waterproof leather, {{TECH_PRIMALOFT}} insulation
+   • Giá: 4,500,000 VND
+   • Phù hợp: Thành phố, dã ngoại nhẹ
+
+2. {{BRAND_DR_MARTENS}} {{PRODUCT_WINTER_GRIP}}
+   • Nhiệt độ chịu được: -15°C
+   • Công nghệ: Thermal sole, fur lining
+   • Giá: 3,800,000 VND
+   • Phù hợp: Street style, đi làm
+
+3. {{BRAND_UGG}} {{PRODUCT_CLASSIC_ULTRA_MINI}}
+   • Nhiệt độ chịu được: -10°C
+   • Công nghệ: Twinface sheepskin, {{TECH_TREADLITE}} sole
+   • Giá: 3,200,000 VND
+   • Phù hợp: Casual, đi chơi
+
+4. {{BRAND_SOREL}} {{PRODUCT_CARIBOU_BOOT}}
+   • Nhiệt độ chịu được: -40°C
+   • Công nghệ: Waterproof nubuck, felt liner
+   • Giá: 5,500,000 VND
+   • Phù hợp: Tuyết, thời tiết khắc nghiệt
+
+5. {{BRAND_ECCO}} {{PRODUCT_SOFT_7_WINTER}}
+   • Nhiệt độ chịu được: -25°C
+   • Công nghệ: Yak leather, thermal insole
+   • Giá: 3,600,000 VND
+   • Phù hợp: Văn phòng, smart casual
+
+IV. Bí Quyết Chọn Giày Ấm Theo Vùng Miền
+
+1. Miền Bắc (Hà Nội & các tỉnh lân cận)
+   • Nhiệt độ: 8-15°C, độ ẩm cao
+   • Ưu tiên: Chống thấm, giữ nhiệt tốt
+   • Kiểu dáng: Boot cổ trung đến cao
+
+2. Miền Trung (Đà Nẵng, Huế)
+   • Nhiệt độ: 15-20°C, mưa nhiều
+   • Ưu tiên: Thoáng khí, chống thấm
+   • Kiểu dáng: Sneaker ấm, boot cổ thấp
+
+3. Miền Nam (TP.HCM & các tỉnh)
+   • Nhiệt độ: 20-25°C, se lạnh về đêm
+   • Ưu tiên: Thoáng mát, nhẹ nhàng
+   • Kiểu dáng: Sneaker mỏng, giày thể thao
+
+V. Chăm Sóc Và Bảo Quản Giày Mùa Đông
+
+1. Vệ Sinh Hàng Ngày
+   • Dùng bàn chải mềm làm sạch bùn đất
+   • Lau khô tự nhiên, tránh nhiệt cao
+   • Sử dụng waterproof spray định kỳ
+
+2. Bảo Quản Khi Không Sử Dụng
+   • Nhét giấy báo giữ form giày
+   • Để nơi khô ráo, thoáng mát
+   • Tránh ánh nắng trực tiếp
+
+3. "Cấp Cứu" Giày Bị Ướt
+   • Tháo ngay lót giày ra ngoài
+   • Nhét báo khô để hút ẩm
+   • Phơi trong bóng râm 2-3 ngày
+
+VI. Chương Trình Khuyến Mãi Đặc Biệt "Winter Ready"
+
+Nhân dịp gió mùa về, Myshoes.vn triển khai chương trình ưu đãi đặc biệt:
+• Giảm 25% toàn bộ giày boot mùa đông
+• Tặng bộ chăm sóc giày trị giá 500k
+• Miễn phí giao hàng toàn quốc
+• Bảo hành 2 năm chính hãng
+
+Đừng để cái lạnh làm ảnh hưởng đến sức khỏe và cuộc sống của bạn. Hãy chuẩn bị ngay những đôi giày ấm áp từ hôm nay! Ghé thăm Myshoes.vn hoặc đến trực tiếp các cửa hàng để được tư vấn miễn phí và chọn cho mình người bạn đồng hành hoàn hảo trong mùa đông này.`,
+        "5": `I. BST Mới Nhất Với Nhiều Màu Sắc Và Công Nghệ Êm Ái…
+
+Mùa thu 2025 mang đến làn gió mới cho thế giới sneaker với sự kết hợp hoàn hảo giữa công nghệ hiện đại và thiết kế thời trang. Các thương hiệu lớn đã cho ra mắt những bộ sưu tập đặc biệt, tập trung vào tính năng chống thấm nước và thiết kế thông minh phù hợp với thời tiết se lạnh đặc trưng của mùa thu.
+
+II. Tiêu Chí Lựa Chọn Sneaker Mùa Thu
+
+Khi lựa chọn sneaker cho mùa thu, cần cân nhắc các yếu tố:
+
+• Chất liệu: Nên chọn những chất liệu có khả năng chống nước nhẹ như leather, suede được xử lý waterproof
+• Màu sắc: Tông màu trầm ấm như nâu, be, xanh rêu, burgundy
+• Độ ấm: Có lớp lót mỏng giữ ấm nhưng vẫn thoáng khí
+• Đế: Chống trượt tốt cho những ngày mưa ẩm
+
+III. Top Picks Sneaker Mùa Thu 2025
+
+1. {{BRAND_NIKE}} {{PRODUCT_AIR_FORCE_1}} "Autumn Pack"
+   • Thiết kế: Màu nâu camel kết hợp gum sole
+   • Công nghệ: {{TECH_AIR_MAX}} unit visible, leather {{TECH_UPPER}}
+   • Giá: 3,200,000 VND
+   • Đặc điểm: Chống nước nhẹ, phối đồ dễ dàng
+
+2. {{BRAND_ADIDAS}} {{PRODUCT_STAN_SMITH}} "Wool Edition"
+   • Thiết kế: {{TECH_UPPER}} làm từ wool blend ấm áp
+   • Công nghệ: {{TECH_CLOUDFOAM}} comfort insole
+   • Giá: 2,800,000 VND
+   • Đặc điểm: Nhẹ, ấm, phù hợp tiết trời se lạnh
+
+3. {{BRAND_NEW_BALANCE}} {{PRODUCT_NB_574}} "Weatherproof"
+   • Thiết kế: Suede và mesh có xử lý chống nước
+   • Công nghệ: {{TECH_ENCAP}} {{TECH_MIDSOLE}}, đế chống trượt
+   • Giá: 2,500,000 VND
+   • Đặc điểm: Bền bỉ, phù hợp đi làm hàng ngày
+
+4. {{BRAND_CONVERSE}} {{PRODUCT_CHUCK_70}} "Shield Canvas"
+   • Thiết kế: Canvas chống nước, màu olive
+   • Công nghệ: Đế cao su dày, lót êm
+   • Giá: 1,800,000 VND
+   • Đặc điểm: Giá cả phải chăng, unisex
+
+5. {{BRAND_PUMA}} {{PRODUCT_RS_X_ECHO}}
+   • Thiết kế: Màu xám kết hợp cam burnt
+   • Công nghệ: RS cushioning system
+   • Giá: 2,900,000 VND
+   • Đặc điểm: Êm ái, thiết kế futuristict
+
+IV. Cách Phối Đồ Với Sneaker Mùa Thu
+
+• Casual Style: Sneaker + Quần jeans + Áo hoodie + Áo khoác denim
+• Smart Casual: Sneaker + Quần chinos + Áo sơ mi + Blazer
+• Street Style: Sneaker + Quần jogger + Áo graphic tee + Bomber jacket
+
+V. Bảo Quản Sneaker Mùa Thu
+
+• Sử dụng waterproof spray trước khi dùng
+• Vệ sinh bằng khăn ẩm sau khi đi ngoài trời
+• Tránh phơi trực tiếp dưới nắng gắt
+• Sử dụng shoe tree để giữ form
+
+Myshoes.vn hiện đang có chương trình ưu đãi đặc biệt cho các mẫu sneaker mùa thu với mức giảm lên đến 30%. Đến ngay cửa hàng gần nhất hoặc đặt hàng online để sở hữu những đôi sneaker đẹp nhất mùa này!`,
+      },
     },
     Testimonials: {
       title: "Đánh giá",
@@ -1294,8 +1720,62 @@ export default {
     title: "LIÊN HỆ",
     subtitle: "Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn. Hãy liên hệ với chúng tôi để được tư vấn và giải đáp mọi thắc mắc.",
     contactInfo: "THÔNG TIN LIÊN HỆ",
+    address: "ĐỊA CHỈ",
+    addressLine1: "Tầng 6, 266 Đội Cần, Hà Nội",
+    addressLine2: "P. Uối Cần, Phân Kế Bình",
+    phone: "ĐIỆN THOẠI",
+    email: "EMAIL",
+    emailLabel: "Email",
+    emailPlaceholder: "Nhập Email *",
+    followUs: "THEO DÕI CHÚNG TÔI",
+    sendMessage: "GỬI TIN NHẮN CHO CHÚNG TÔI",
+    fullName: "Họ tên",
+    fullNamePlaceholder: "Nhập họ tên *",
+    content: "Nội dung",
+    messagePlaceholder: "Lời nhắn",
+    sendButton: "GỬI TIN NHẮN",
+    otherBranches: "CÁC CHI NHÁNH KHÁC",
+    location1Name: "Cung thể Hạo Quận Ngựa",
+    location1Address: "Tổ 6B, Lúc quá",
+    location1City: "Hà Nội",
+    location2Name: "HỒ DÂM TRÒN",
+    location2Address: "Tổ 1B",
+    location2City: "Hà Nội",
+    location3Name: "Bảo lạng Chiến thăng B-52",
+    location3Address: "P. Đội Cần",
+    location3City: "Hà Nội",
     needSupportNow: "CẦN HỖ TRỢ NGAY?",
     supportTeam: "Đội ngũ chăm sóc khách hàng của chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7",
+    callNow: "GỌI NGAY",
+    sendEmail: "GỬI EMAIL",
     thankYouContact: "Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất có thể.",
+  },
+  AboutTemplate: {
+    title: "VỀ DELVOR",
+    subtitle: "Thương hiệu giày thời trang cao cấp, mang đến những trải nghiệm mua sắm tuyệt vời và sản phẩm chất lượng cho người dùng Việt Nam",
+    mission: "Sứ Mệnh Của Chúng Tôi",
+    missionText: "Chúng tôi cam kết mang đến những đôi giày chất lượng nhất, kết hợp giữa thiết kế thời thượng và sự thoải mái tối đa. Mỗi sản phẩm là sự kết tinh của đam mê và sáng tạo.",
+    missionQuote: "Mang đến trải nghiệm mua sắm giày dép tuyệt vời nhất cho người Việt",
+    coreValues: "Giá Trị Cốt Lõi",
+    coreValuesSubtitle: "Những nguyên tắc vàng tạo nên sự khác biệt của Delvor",
+    quality: "Chất Lượng",
+    qualityText: "Mỗi đôi giày được sản xuất với quy trình kiểm soát chất lượng nghiêm ngặt, đảm bảo độ bền và sự thoải mái tối đa.",
+    design: "Thiết Kế",
+    designText: "Đội ngũ thiết kế sáng tạo không ngừng, mang đến những mẫu giày độc đáo, hợp thời trang và phù hợp với xu hướng toàn cầu.",
+    community: "Cộng Đồng",
+    communityText: "Xây dựng cộng đồng yêu giày, chia sẻ kiến thức và lan tỏa đam mê đến mọi khách hàng.",
+    journey: "Hành Trình Phát Triển",
+    timeline1Title: "Khởi Đầu",
+    timeline1Text: "Delvor được thành lập với sứ mệnh mang đến những đôi giày chất lượng đầu tiên cho thị trường Việt Nam.",
+    timeline2Title: "Mở Rộng",
+    timeline2Text: "Ra mắt cửa hàng trực tuyến, mang sản phẩm đến với khách hàng trên toàn quốc.",
+    timeline3Title: "Đột Phá",
+    timeline3Text: "Giới thiệu dòng sản phẩm cao cấp, hợp tác với các nhà thiết kế quốc tế.",
+    timeline4Title: "Hiện Tại",
+    timeline4Text: "Trở thành một trong những thương hiệu giày được yêu thích nhất với hơn 50,000 khách hàng tin dùng.",
+    ctaTitle: "Sẵn Sàng Khám Phá?",
+    ctaSubtitle: "Khám phá bộ sưu tập giày mới nhất của chúng tôi và tìm cho mình đôi giày hoàn hảo",
+    shopNow: "MUA SẮM NGAY",
+    contact: "LIÊN HỆ",
   },
 };

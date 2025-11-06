@@ -21,6 +21,9 @@ BaseAxios.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // Add Accept-Language header for all requests
+    const language = localStorage.getItem("language") || "vi";
+    config.headers["Accept-Language"] = language;
     config.metadata = { startTime: new Date() };
     return config;
   },
