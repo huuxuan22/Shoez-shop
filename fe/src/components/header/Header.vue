@@ -4,26 +4,26 @@
       <div class="flex items-center justify-between">
         <!-- Logo -->
         <router-link to="/" class="text-2xl font-bold text-blue-600 hover:text-blue-700">
-          Shoez Shop
+          {{ shopTitle }}
         </router-link>
 
         <!-- Navigation Menu -->
         <div class="hidden md:flex items-center space-x-6">
           <router-link to="/" class="text-gray-700 hover:text-blue-600 transition-colors"
             :class="{ 'text-blue-600 font-semibold': $route.name === 'Home' }">
-            Trang chủ
+            {{ $t('Header.navigation.home') }}
           </router-link>
           <router-link to="/products" class="text-gray-700 hover:text-blue-600 transition-colors"
             :class="{ 'text-blue-600 font-semibold': $route.name === 'Products' }">
-            Sản phẩm
+            {{ $t('Header.navigation.products') }}
           </router-link>
           <router-link to="/about" class="text-gray-700 hover:text-blue-600 transition-colors"
             :class="{ 'text-blue-600 font-semibold': $route.name === 'About' }">
-            Về chúng tôi
+            {{ $t('Header.navigation.about') }}
           </router-link>
           <router-link to="/contact" class="text-gray-700 hover:text-blue-600 transition-colors"
             :class="{ 'text-blue-600 font-semibold': $route.name === 'Contact' }">
-            Liên hệ
+            {{ $t('Header.navigation.contact') }}
           </router-link>
         </div>
 
@@ -58,12 +58,12 @@
           <!-- Auth Links -->
           <div v-if="!isAuthenticated" class="flex items-center space-x-2">
             <router-link to="/login" class="text-gray-700 hover:text-blue-600 transition-colors">
-              Đăng nhập
+              {{ $t('Header.navigation.login') }}
             </router-link>
             <span class="text-gray-400">|</span>
             <router-link to="/register"
               class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-              Đăng ký
+              {{ $t('Header.navigation.register') }}
             </router-link>
           </div>
 
@@ -71,7 +71,7 @@
           <div v-else class="relative">
             <button @click="toggleUserMenu"
               class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors">
-              <span>Xin chào, {{ userName }}</span>
+              <span>{{ $t('Header.navigation.greeting', { name: userName }) }}</span>
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
@@ -81,10 +81,10 @@
             <div v-if="showUserMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border">
               <router-link to="/profile" class="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                 @click="closeMenus">
-                Hồ sơ
+                {{ $t('Header.navigation.profile') }}
               </router-link>
               <button @click="handleLogout" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
-                Đăng xuất
+                {{ $t('Header.navigation.logout') }}
               </button>
             </div>
           </div>
@@ -104,36 +104,36 @@
           <router-link to="/" class="text-gray-700 hover:text-blue-600 transition-colors"
             @click="closeMenus"
             :class="{ 'text-blue-600 font-semibold': $route.name === 'Home' }">
-            Trang chủ
+            {{ $t('Header.navigation.home') }}
           </router-link>
           <router-link to="/products" class="text-gray-700 hover:text-blue-600 transition-colors"
             @click="closeMenus"
             :class="{ 'text-blue-600 font-semibold': $route.name === 'Products' }">
-            Sản phẩm
+            {{ $t('Header.navigation.products') }}
           </router-link>
           <router-link to="/about" class="text-gray-700 hover:text-blue-600 transition-colors"
             @click="closeMenus"
             :class="{ 'text-blue-600 font-semibold': $route.name === 'About' }">
-            Về chúng tôi
+            {{ $t('Header.navigation.about') }}
           </router-link>
           <router-link to="/contact" class="text-gray-700 hover:text-blue-600 transition-colors"
             @click="closeMenus"
             :class="{ 'text-blue-600 font-semibold': $route.name === 'Contact' }">
-            Liên hệ
+            {{ $t('Header.navigation.contact') }}
           </router-link>
           <router-link v-if="isAuthenticated" to="/favourite" class="text-gray-700 hover:text-red-500 transition-colors"
             @click="closeMenus"
             :class="{ 'text-red-500 font-semibold': $route.name === 'Favourite' }">
-            Yêu thích
+            {{ $t('Header.navigation.favourite') }}
           </router-link>
           
           <!-- Mobile Auth Links -->
           <div v-if="!isAuthenticated" class="flex flex-col space-y-2 pt-4 border-t border-gray-200">
             <router-link to="/login" class="text-gray-700 hover:text-blue-600 transition-colors" @click="closeMenus">
-              Đăng nhập
+              {{ $t('Header.navigation.login') }}
             </router-link>
             <router-link to="/register" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-center" @click="closeMenus">
-              Đăng ký
+              {{ $t('Header.navigation.register') }}
             </router-link>
           </div>
         </div>
@@ -146,6 +146,11 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useFavouriteStore } from '@/stores/favourite';
+import { useI18n } from 'vue-i18n';
+import { BrandConstants } from '@/common/enum';
+
+const { t } = useI18n();
+const shopTitle = BrandConstants.TITLE_SHOP;
 
 const router = useRouter();
 const favouriteStore = useFavouriteStore();

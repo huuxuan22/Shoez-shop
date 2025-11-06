@@ -6,6 +6,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
     status: {
@@ -15,14 +18,7 @@ const props = defineProps({
 })
 
 const statusText = computed(() => {
-    const statusMap = {
-        pending: 'chờ xác nhận',
-        confirmed: 'đã xác nhận',
-        shipping: 'đang giao hàng',
-        complete: 'hoàn thành',
-        cancelled: 'đã hủy'
-    }
-    return statusMap[props.status] || props.status
+    return t(`Orders.StatusBadge.${props.status}`) || props.status
 })
 
 const statusClasses = computed(() => {

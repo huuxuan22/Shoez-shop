@@ -13,10 +13,16 @@
 <script setup>
 import { computed } from 'vue'
 
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 const props = defineProps({
     url: { type: String, default: 'https://zalo.me' },
-    title: { type: String, default: 'Liên hệ qua Zalo' }
+    title: { type: String, default: null }
 })
+
+const title = computed(() => props.title || t('Contact.zalo'))
 
 const targetUrl = computed(() => props.url || 'https://zalo.me')
 

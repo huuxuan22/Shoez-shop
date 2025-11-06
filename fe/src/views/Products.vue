@@ -3,8 +3,8 @@
     <div class="container mx-auto px-4 py-8">
       <!-- Page Header -->
       <div class="mb-8">
-        <h1 class="text-5xl font-script font-bold text-gray-800 mb-2 tracking-wide">Tất cả sản phẩm</h1>
-        <p class="text-gray-600 font-elegant text-lg">Tìm thấy {{ pagination.total || 0 }} sản phẩm</p>
+        <h1 class="text-5xl font-script font-bold text-gray-800 mb-2 tracking-wide">{{ $t('Views.Products.title') }}</h1>
+        <p class="text-gray-600 font-elegant text-lg">{{ $t('Views.Products.found', { count: pagination.total || 0 }) }}</p>
       </div>
 
       <div class="flex flex-col lg:flex-row gap-8">
@@ -39,11 +39,11 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <h3 class="text-xl font-semibold text-gray-700 mb-2">Không tìm thấy sản phẩm</h3>
-            <p class="text-gray-500 mb-4">Thử điều chỉnh bộ lọc để xem thêm sản phẩm</p>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">{{ $t('Views.Products.noResults') }}</h3>
+            <p class="text-gray-500 mb-4">{{ $t('Views.Products.adjustFilters') }}</p>
             <button @click="clearFilters"
               class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors">
-              Xóa bộ lọc
+              {{ $t('Views.Products.clearFilters') }}
             </button>
           </div>
 
@@ -52,14 +52,14 @@
             <nav class="flex space-x-2">
               <button @click="changePage(pagination.page - 1)" :disabled="pagination.page === 1"
                 class="px-4 py-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100">
-                Trước
+                {{ $t('Views.Products.previous') }}
               </button>
               <span class="px-4 py-2">
-                Trang {{ pagination.page }} / {{ pagination.total_pages }}
+                {{ $t('Views.Products.page', { current: pagination.page, total: pagination.total_pages }) }}
               </span>
               <button @click="changePage(pagination.page + 1)" :disabled="pagination.page === pagination.total_pages"
                 class="px-4 py-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100">
-                Sau
+                {{ $t('Views.Products.next') }}
               </button>
             </nav>
           </div>
@@ -72,11 +72,14 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import ProductService from '@/api-services/ProductService';
 import BrandService from '@/api-services/BrandService';
 import ProductFilters from '@/components/products/ProductFilters.vue';
 import ProductCard from '@/components/products/ProductCard.vue';
 import ProductSort from '@/components/products/ProductSort.vue';
+
+const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();

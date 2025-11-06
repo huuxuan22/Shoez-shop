@@ -46,31 +46,31 @@
     <div class="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12">
       <div class="w-full max-w-md space-y-6">
         <div class="text-center">
-          <h1 class="text-3xl font-bold text-gray-900">Chào mừng</h1>
-          <p class="mt-2 text-gray-600">Đăng nhập để trải nghiệm dịch vụ</p>
+          <h1 class="text-3xl font-bold text-gray-900">{{ $t('Login.welcome') }}</h1>
+          <p class="mt-2 text-gray-600">{{ $t('Login.subtitle') }}</p>
         </div>
 
         <form class="mt-6 space-y-4" @submit.prevent="onSubmit">
           <div>
-            <FormInput v-model="email" label="Email" id="email" type="email" placeholder="Nhập email"
+            <FormInput v-model="email" :label="$t('Login.emailLabel')" id="email" type="email" :placeholder="$t('Login.emailPlaceholder')"
               :class="{ 'border-red-500': emailError }" />
             <span v-if="emailError" class="text-red-500 text-sm mt-1 block">{{ emailError }}</span>
           </div>
 
           <div>
-            <FormInput v-model="password" label="Mật khẩu" id="password" type="password" placeholder="Nhập mật khẩu"
+            <FormInput v-model="password" :label="$t('Login.passwordLabel')" id="password" type="password" :placeholder="$t('Login.passwordPlaceholder')"
               :class="{ 'border-red-500': passwordError }" />
             <span v-if="passwordError" class="text-red-500 text-sm mt-1 block">{{ passwordError }}</span>
           </div>
 
           <div class="flex items-center justify-between">
             <a href="#" class="text-sm font-medium text-gray-600 hover:text-black-500">
-              Quên mật khẩu?
+              {{ $t('Login.forgotPassword') }}
             </a>
           </div>
 
           <div>
-            <FormButton label="Đăng nhập" :loading="isLoading" :disabled="isLoading" type="submit" variant="black"
+            <FormButton :label="$t('Login.loginButton')" :loading="isLoading" :disabled="isLoading" type="submit" variant="black"
               @click="onSubmit" class="w-full" />
           </div>
         </form>
@@ -80,7 +80,7 @@
             <div class="w-full border-t border-gray-200"></div>
           </div>
           <div class="relative flex justify-center text-sm">
-            <span class="px-2 bg-white text-gray-500">Hoặc tiếp tục với</span>
+            <span class="px-2 bg-white text-gray-500">{{ $t('Login.orContinueWith') }}</span>
           </div>
         </div>
 
@@ -99,7 +99,7 @@
               <path fill="#1976D2"
                 d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
             </svg>
-            Google
+            {{ $t('Views.Login.google') }}
           </button>
 
           <!-- Nút đăng nhập bằng Facebook -->
@@ -110,13 +110,13 @@
               <path fill="currentColor"
                 d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z" />
             </svg>
-            Facebook
+            {{ $t('Views.Login.facebook') }}
           </button>
         </div>
 
         <p class="text-center text-sm text-gray-500">
-          Chưa có tài khoản?
-          <a href="/register" class="font-medium text-black-600 hover:text-gray-500">Đăng ký ngay</a>
+          {{ $t('Login.noAccount') }}
+          <a href="/register" class="font-medium text-black-600 hover:text-gray-500">{{ $t('Login.registerLink') }}</a>
         </p>
 
         <!-- Admin Login Link -->
@@ -127,7 +127,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
-            Đăng nhập với tài khoản quản trị
+            {{ $t('Login.adminLoginLink') }}
           </router-link>
         </div>
       </div>
@@ -137,6 +137,7 @@
 
 <script setup>
 import { reactive, ref, onMounted, onBeforeUnmount, watch } from "vue";
+import { useI18n } from 'vue-i18n';
 import FormInput from "../components/FormInput.vue";
 import FormButton from "../components/FormButton.vue";
 import { useRoute, useRouter } from "vue-router";
@@ -145,6 +146,8 @@ import { useForm } from "vee-validate";
 import { useAuthStore } from "@/stores/auth";
 import ToastNotification from '@/components/ToastNotification.vue';
 import AuthService from '@/api-services/AuthService';
+
+const { t } = useI18n();
 
 let timer = null;
 const route = useRoute();
@@ -195,21 +198,21 @@ function showToast(message, type = 'info') {
 
 const validateEmail = (email) => {
   if (!email) {
-    return 'Vui lòng nhập email';
+    return t('Login.validation.emailRequired');
   }
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
-    return 'Email không hợp lệ';
+    return t('Login.validation.emailInvalid');
   }
   return '';
 };
 
 const validatePassword = (password) => {
   if (!password) {
-    return 'Vui lòng nhập mật khẩu';
+    return t('Login.validation.passwordRequired');
   }
   if (password.length < 6) {
-    return 'Mật khẩu tối thiểu 6 ký tự';
+    return t('Login.validation.passwordMinLength');
   }
   return '';
 };
@@ -274,14 +277,21 @@ watch(
       handledOAuth.value = true;
       // Gọi hydrate để lấy user và token từ session
       AuthService.hydrateFromOAuthRedirect(authStore).then(async () => {
-        const providerName = oauth === 'google' ? 'Google' : (oauth === 'facebook' ? 'Facebook' : 'OAuth');
-        showToast(`Đăng nhập ${providerName} thành công!`, 'success');
+        let message;
+        if (oauth === 'google') {
+          message = t('Login.messages.googleSuccess');
+        } else if (oauth === 'facebook') {
+          message = t('Login.messages.facebookSuccess');
+        } else {
+          message = t('Login.messages.oauthSuccess', { provider: oauth });
+        }
+        showToast(message, 'success');
         // Chuyển trang sau khi hiển thị toast
         setTimeout(() => {
           router.push('/');
         }, 1200);
       }).catch((error) => {
-        showToast('Có lỗi xảy ra khi đăng nhập', 'error');
+        showToast(t('Login.messages.error'), 'error');
       });
     }
   },
@@ -320,14 +330,14 @@ const onSubmit = async () => {
     });
 
     // Hiển thị toast thành công
-    showToast('Đăng nhập thành công!', 'success');
+    showToast(t('Login.messages.success'), 'success');
 
     // Delay chuyển trang 1.5 giây để user thấy toast
     setTimeout(() => {
       router.push('/');
     }, 1500);
   } catch (error) {
-    const errorMessage = error.data?.detail || error.message || 'Sai email hoặc mật khẩu!';
+    const errorMessage = error.data?.detail || error.message || t('Login.messages.invalidCredentials');
     showToast(errorMessage, 'error');
   } finally {
     isLoading.value = false;

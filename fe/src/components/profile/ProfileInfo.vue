@@ -1,47 +1,47 @@
 <template>
     <div class="p-6">
         <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold text-black">Thông tin cá nhân</h2>
+            <h2 class="text-xl font-bold text-black">{{ $t('Profile.Info.title') }}</h2>
         </div>
 
         <form @submit.prevent="handleSubmit" class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Full Name -->
-                <InputField label="Họ và tên" name="fullName" v-model="formData.fullName" placeholder="Nhập họ và tên"
+                <InputField :label="$t('Profile.Info.fullName')" name="fullName" v-model="formData.fullName" :placeholder="$t('Profile.Info.fullNamePlaceholder')"
                     :required="true" />
 
                 <!-- Email -->
-                <InputField label="Email" name="email" type="email" v-model="formData.email" placeholder="Nhập email"
+                <InputField :label="$t('Profile.Info.email')" name="email" type="email" v-model="formData.email" :placeholder="$t('Profile.Info.emailPlaceholder')"
                     :required="true" :disabled="true" />
 
                 <!-- Phone -->
-                <InputField label="Số điện thoại" name="phone" type="tel" v-model="formData.phone"
-                    placeholder="Nhập số điện thoại" :required="true" />
+                <InputField :label="$t('Profile.Info.phone')" name="phone" type="tel" v-model="formData.phone"
+                    :placeholder="$t('Profile.Info.phonePlaceholder')" :required="true" />
 
                 <!-- Birthday -->
-                <InputField label="Ngày sinh" name="birthday" type="date" v-model="formData.birthday"
+                <InputField :label="$t('Profile.Info.birthday')" name="birthday" type="date" v-model="formData.birthday"
                     :required="true" />
 
                 <!-- Gender -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Giới tính
+                        {{ $t('Profile.Info.gender') }}
                     </label>
                     <div class="flex gap-4">
                         <label class="flex items-center">
                             <input type="radio" value="male" v-model="formData.gender"
                                 class="text-black focus:ring-black" />
-                            <span class="ml-2 text-gray-700">Nam</span>
+                            <span class="ml-2 text-gray-700">{{ $t('Profile.Info.genderMale') }}</span>
                         </label>
                         <label class="flex items-center">
                             <input type="radio" value="female" v-model="formData.gender"
                                 class="text-black focus:ring-black" />
-                            <span class="ml-2 text-gray-700">Nữ</span>
+                            <span class="ml-2 text-gray-700">{{ $t('Profile.Info.genderFemale') }}</span>
                         </label>
                         <label class="flex items-center">
                             <input type="radio" value="other" v-model="formData.gender"
                                 class="text-black focus:ring-black" />
-                            <span class="ml-2 text-gray-700">Khác</span>
+                            <span class="ml-2 text-gray-700">{{ $t('Profile.Info.genderOther') }}</span>
                         </label>
                     </div>
                 </div>
@@ -49,14 +49,14 @@
 
             <!-- Address -->
             <div>
-                <InputField label="Địa chỉ" name="address" v-model="formData.address" placeholder="Nhập địa chỉ"
+                <InputField :label="$t('Profile.Info.address')" name="address" v-model="formData.address" :placeholder="$t('Profile.Info.addressPlaceholder')"
                     :required="true" />
             </div>
 
             <!-- Action Buttons -->
             <div class="flex justify-end gap-3 pt-6 border-t border-gray-200">
                 <Button type="button" variant="outline" @click="resetForm" :disabled="isLoading">
-                    Hủy
+                    {{ $t('Profile.Info.cancel') }}
                 </Button>
                 <Button type="submit" variant="primary" :disabled="isLoading || !hasChanges">
                     <span v-if="isLoading" class="flex items-center gap-2">
@@ -64,10 +64,10 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
-                        Đang lưu...
+                        {{ $t('Profile.Info.saving') }}
                     </span>
                     <span v-else>
-                        Lưu thay đổi
+                        {{ $t('Profile.Info.saveChanges') }}
                     </span>
                 </Button>
             </div>

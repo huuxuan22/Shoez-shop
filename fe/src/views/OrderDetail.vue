@@ -14,8 +14,8 @@
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-6">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h1 class="text-3xl font-bold text-gray-900 font-script mb-2">Đơn hàng của bạn</h1>
-                            <p class="text-gray-600">Cảm ơn bạn đã mua hàng tại Shoez</p>
+                            <h1 class="text-3xl font-bold text-gray-900 font-script mb-2">{{ $t('Views.OrderDetail.title') }}</h1>
+                            <p class="text-gray-600">{{ $t('Views.OrderDetail.thankYou') }}</p>
                         </div>
                         <div class="text-right">
                             <div class="inline-block px-4 py-2 rounded-full font-semibold"

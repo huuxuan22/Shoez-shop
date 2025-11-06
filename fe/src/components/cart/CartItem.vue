@@ -23,8 +23,8 @@
                 </div>
 
                 <div class="mt-3 flex items-center gap-6 text-sm">
-                    <span class="text-gray-600">Size: <strong class="text-black">{{ item.size }}</strong></span>
-                    <span class="text-gray-600">Màu: <strong class="text-black">{{ item.color }}</strong></span>
+                    <span class="text-gray-600">{{ $t('Cart.Item.size') }} <strong class="text-black">{{ item.size }}</strong></span>
+                    <span class="text-gray-600">{{ $t('Cart.Item.color') }} <strong class="text-black">{{ item.color }}</strong></span>
                 </div>
 
                 <div class="mt-5 flex items-center justify-between">
@@ -46,8 +46,10 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import QuantitySelector from '../QuantitySelector.vue';
 
+const { t } = useI18n()
 
 const props = defineProps({
     item: Object

@@ -29,8 +29,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <h2 class="text-2xl font-bold text-gray-700 mb-2">Không tìm thấy sản phẩm</h2>
-            <router-link to="/products" class="text-black hover:underline">Quay lại trang sản phẩm</router-link>
+            <h2 class="text-2xl font-bold text-gray-700 mb-2">{{ $t('Product.Detail.notFound') }}</h2>
+            <router-link to="/products" class="text-black hover:underline">{{ $t('Product.Detail.backToProducts') }}</router-link>
         </div>
     </div>
 </template>

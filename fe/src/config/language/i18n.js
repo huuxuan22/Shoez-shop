@@ -2,14 +2,13 @@ import { createI18n } from "vue-i18n";
 import vi from "@/config/language/vi";
 import en from "@/config/language/en";
 import ja from "@/config/language/ja";
-import { MultiLanguage } from "@/common/enum";
 
-const lang = localStorage.getItem("language") || MultiLanguage.VI;
+const lang = localStorage.getItem("language") || "vi";
 
 const i18n = createI18n({
-  legacy: false, // Tắt legacy mode warning
+  legacy: false,
   locale: lang,
-  fallbackLocale: MultiLanguage.VI,
+  fallbackLocale: "vi",
   messages: {
     vi,
     en,

@@ -1,13 +1,15 @@
 <template>
     <section class="hero-section">
         <div class="hero-background">
-            <img src="/images/brands/nike.jpg" alt="Nike" class="hero-image" />
+            <img src="/images/brands/nike.jpg" :alt="$t('HEROSECTION.bgAlt')" class="hero-image" />
         </div>
     </section>
 </template>
 
 <script setup>
-// Component chỉ hiển thị hình ảnh
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 </script>
 
 <style scoped>

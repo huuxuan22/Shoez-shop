@@ -1,23 +1,23 @@
 <template>
   <aside class="lg:w-1/4">
     <div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
-      <h2 class="text-xl font-bold mb-6 text-gray-800">Bộ lọc</h2>
+      <h2 class="text-xl font-bold mb-6 text-gray-800">{{ $t('Products.Filters.title') }}</h2>
 
       <!-- Search -->
       <div class="mb-6">
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Tìm kiếm</label>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ $t('Products.Filters.search') }}</label>
         <input 
           :value="filters.search"
           @input="$emit('update:filters', { ...filters, search: $event.target.value })"
           type="text" 
-          placeholder="Tên sản phẩm..."
+          :placeholder="$t('Products.Filters.searchPlaceholder')"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
 
       <!-- Brand Filter -->
       <div class="mb-6">
-        <label class="block text-sm font-semibold text-gray-700 mb-3">Thương hiệu</label>
+        <label class="block text-sm font-semibold text-gray-700 mb-3">{{ $t('Products.Filters.brand') }}</label>
         <div class="space-y-2">
           <label v-for="brand in availableBrands" :key="brand" class="flex items-center cursor-pointer">
             <input 
@@ -34,7 +34,7 @@
 
       <!-- Category Filter -->
       <div class="mb-6">
-        <label class="block text-sm font-semibold text-gray-700 mb-3">Loại giày</label>
+        <label class="block text-sm font-semibold text-gray-700 mb-3">{{ $t('Products.Filters.category') }}</label>
         <div class="space-y-2">
           <label v-for="category in availableCategories" :key="category" class="flex items-center cursor-pointer">
             <input 
@@ -51,7 +51,7 @@
 
       <!-- Color Filter -->
       <div class="mb-6">
-        <label class="block text-sm font-semibold text-gray-700 mb-3">Màu sắc</label>
+        <label class="block text-sm font-semibold text-gray-700 mb-3">{{ $t('Products.Filters.color') }}</label>
         <div class="flex flex-wrap gap-2">
           <button
             v-for="color in availableColors"
@@ -74,7 +74,7 @@
 
       <!-- Size Filter -->
       <div class="mb-6">
-        <label class="block text-sm font-semibold text-gray-700 mb-3">Size</label>
+        <label class="block text-sm font-semibold text-gray-700 mb-3">{{ $t('Products.Filters.size') }}</label>
         <div class="grid grid-cols-4 gap-2">
           <button
             v-for="size in availableSizes"
@@ -94,7 +94,7 @@
 
       <!-- Price Range -->
       <div class="mb-6">
-        <label class="block text-sm font-semibold text-gray-700 mb-3">Giá</label>
+        <label class="block text-sm font-semibold text-gray-700 mb-3">{{ $t('Products.Filters.price') }}</label>
         <div class="space-y-3">
           <div>
             <input 
@@ -128,7 +128,7 @@
         @click="$emit('clear-filters')"
         class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
       >
-        Xóa bộ lọc
+        {{ $t('Products.Filters.reset') }}
       </button>
     </div>
   </aside>

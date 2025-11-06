@@ -17,18 +17,18 @@
                 <!-- Badge -->
                 <div
                     class="inline-block bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full mb-8 font-medium border border-white/30 text-lg">
-                    Bộ sưu tập mới
+                    {{ $t('Home.VideoHero.badge') }}
                 </div>
 
                 <!-- Title -->
                 <h1 class="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-tight tracking-tight">
-                    {{ title }}
+                    {{ title || $t('Home.VideoHero.defaultTitle') }}
                 </h1>
 
                 <!-- Description -->
                 <p
                     class="text-xl md:text-2xl lg:text-3xl mb-10 opacity-95 font-light max-w-2xl mx-auto leading-relaxed">
-                    {{ description }}
+                    {{ description || $t('Home.VideoHero.defaultDescription') }}
                 </p>
 
                 <!-- CTA Button -->
@@ -38,7 +38,7 @@
                     <div
                         class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000">
                     </div>
-                    <span class="relative">{{ ctaText }}</span>
+                    <span class="relative">{{ ctaText || $t('Home.VideoHero.defaultCta') }}</span>
                 </button>
 
                 <!-- Scroll indicator -->
@@ -69,18 +69,22 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps({
     title: {
         type: String,
-        default: 'GIÀY THỂ THAO'
+        default: ''
     },
     description: {
         type: String,
-        default: 'Chọn giày phù hợp với phong cách của bạn'
+        default: ''
     },
     ctaText: {
         type: String,
-        default: 'Khám phá ngay'
+        default: ''
     },
     fallbackImage: {
         type: String,

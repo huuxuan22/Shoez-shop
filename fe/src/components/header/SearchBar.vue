@@ -2,7 +2,7 @@
     <div class="relative">
       <input
         type="text"
-        placeholder="Tìm kiếm..."
+        :placeholder="$t('Header.search.placeholder')"
         v-model="searchQuery"
         @input="handleSearch"
         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white text-gray-900"
@@ -17,7 +17,9 @@
   
   <script setup>
   import { ref } from 'vue'
+  import { useI18n } from 'vue-i18n'
   
+  const { t } = useI18n()
   const searchQuery = ref('')
   
   const handleSearch = () => {

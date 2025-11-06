@@ -235,7 +235,7 @@ import NotificationBell from '@/components/notifications/NotificationBell.vue';
 import ToastNotification from '@/components/notifications/ToastNotification.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
-import { MultiLanguage } from '@/common/enum';
+import { BrandConstants } from '@/common/enum';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -243,7 +243,7 @@ const cartStore = useCartStore();
 const orderStore = useOrderStore();
 const favouriteStore = useFavouriteStore();
 const notificationStore = useNotificationStore();
-const shopTitle = MultiLanguage.TITLE_SHOP;
+const shopTitle = BrandConstants.TITLE_SHOP;
 
 // Reactive data
 const showUserMenu = ref(false);

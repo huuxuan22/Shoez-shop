@@ -30,8 +30,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useOrderStore } from '@/stores/order'
 import { useToast } from '@/composables/useToast'
+
+const { t } = useI18n()
 import OrdersHeader from '@/components/orders/OrdersHeader.vue'
 import OrdersLoading from '@/components/orders/OrdersLoading.vue'
 import OrdersEmpty from '@/components/orders/OrdersEmpty.vue'
@@ -105,20 +108,20 @@ const cancelOrder = async (orderId) => {
 
     // CHỈ cho phép hủy khi order đang "pending" (chưa admin xác nhận)
     if (order && order.status !== 'pending') {
-        toast.warning('Không thể hủy đơn hàng này. Đơn hàng đã được xác nhận bởi admin. Vui lòng liên hệ admin để hủy.')
+        toast.warning(t('Orders.Layout.cancelOrderWarning'))
         return
     }
 
-    if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
+    if (confirm(t('Orders.Layout.cancelOrderConfirm'))) {
         try {
             // Update order status
             await orderStore.updateOrderStatus(orderId, 'cancelled')
             // Reload orders
             await fetchOrders()
-            toast.success('Đơn hàng đã được hủy thành công!')
+            toast.success(t('Orders.Layout.cancelSuccess'))
         } catch (error) {
             console.error('Error cancelling order:', error)
-            toast.error('Không thể hủy đơn hàng')
+            toast.error(t('Orders.Layout.cancelError'))
         }
     }
 }
@@ -126,7 +129,7 @@ const cancelOrder = async (orderId) => {
 const handleReorder = (orderId) => {
     const order = orders.value.find(order => order.id === orderId || order._id === orderId)
     if (order && order.items) {
-        toast.success('Sản phẩm đã được thêm vào giỏ hàng!')
+        toast.success(t('Orders.Layout.reorderSuccess'))
     }
 }
 

@@ -21,7 +21,7 @@
                             <span class="text-sm text-gray-500">{{ formatDate(review.createdAt) }}</span>
                             <span v-if="review.verified"
                                 class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
-                                ✅ Đã mua hàng
+                                {{ $t('Product.ReviewCard.verified') }}
                             </span>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                         </svg>
-                        <span>Hữu ích ({{ review.helpfulCount || 0 }})</span>
+                        <span>{{ $t('Product.ReviewCard.helpful') }} ({{ review.helpfulCount || 0 }})</span>
                     </button>
 
                     <button class="flex items-center space-x-1 hover:text-gray-700 transition-colors">
@@ -54,7 +54,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
-                        <span>Phản hồi</span>
+                        <span>{{ $t('Product.ReviewCard.reply') }}</span>
                     </button>
                 </div>
             </div>
@@ -63,7 +63,10 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import StarRating from '../shared/StarRating.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
     review: {

@@ -29,7 +29,7 @@
                     <h3 class="font-semibold text-gray-900 text-sm">{{ toast.title }}</h3>
                     <p class="text-sm text-gray-600 mt-1">{{ toast.message }}</p>
                     <p v-if="toast.order_id" class="text-xs text-gray-500 mt-2">
-                        Mã đơn: #{{ toast.order_id }}
+                        {{ $t('Notifications.Toast.orderCode') }}#{{ toast.order_id }}
                     </p>
                 </div>
 
@@ -58,7 +58,10 @@
  * - Click để close
  */
 import { ref, onMounted, onUnmounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useNotificationStore } from '@/stores/notification';
+
+const { t } = useI18n();
 
 const notificationStore = useNotificationStore();
 const toasts = ref([]);
@@ -93,7 +96,7 @@ const showToast = (notification) => {
     const toast = {
         id: Date.now(),
         type: getToastType(notification.type),
-        title: notification.title || 'Thông báo',
+        title: notification.title || t('Notifications.Toast.defaultTitle'),
         message: notification.message,
         order_id: notification.order_id,
         duration: 5000 // 5 giây

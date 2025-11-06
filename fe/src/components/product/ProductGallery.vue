@@ -28,7 +28,7 @@
                 'relative pt-[100%] bg-white rounded-lg overflow-hidden cursor-pointer border-2 transition-all',
                 selectedImage === img ? 'border-black shadow-lg' : 'border-gray-200 hover:border-gray-400'
             ]">
-                <img :src="img" :alt="`${product.name} ${index + 1}`"
+                <img :src="img" :alt="`${product.name} - ${$t('Product.Gallery.thumbnail')} ${index + 1}`"
                     class="absolute inset-0 w-full h-full object-cover" @error="handleImageError" />
             </div>
         </div>

@@ -2,7 +2,7 @@
   <section class="py-12 border-t border-gray-200 bg-gray-50">
     <div class="container mx-auto px-4">
       <div class="text-center mb-8">
-        <h2 class="text-2xl md:text-3xl font-bold text-black">Thương hiệu</h2>
+        <h2 class="text-2xl md:text-3xl font-bold text-black">{{ $t('Home.BrandSection.title') }}</h2>
       </div>
 
       <!-- Loading state với scroll ngang -->
@@ -54,7 +54,7 @@
 
       <!-- Empty state -->
       <div v-else class="text-center py-8 text-gray-500">
-        <p>Chưa có thương hiệu nào</p>
+        <p>{{ $t('Home.BrandSection.empty') }}</p>
       </div>
 
       <!-- Brand trust badges -->
@@ -65,7 +65,7 @@
               d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
               clip-rule="evenodd" />
           </svg>
-          <span>Đối tác chính thức</span>
+          <span>{{ $t('Home.BrandSection.officialPartner') }}</span>
         </div>
         <div class="flex items-center gap-2">
           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -73,7 +73,7 @@
               d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
               clip-rule="evenodd" />
           </svg>
-          <span>Hàng chính hãng 100%</span>
+          <span>{{ $t('Home.BrandSection.authentic') }}</span>
         </div>
         <div class="flex items-center gap-2">
           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -81,7 +81,7 @@
               d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
               clip-rule="evenodd" />
           </svg>
-          <span>Bảo hành toàn cầu</span>
+          <span>{{ $t('Home.BrandSection.globalWarranty') }}</span>
         </div>
       </div>
     </div>

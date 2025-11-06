@@ -4,34 +4,34 @@
             <!-- Section header -->
             <div class="text-center mb-12">
                 <h2 class="text-3xl md:text-4xl font-bold text-black mb-2">
-                    Sản phẩm nổi bật
+                    {{ $t('Home.FeaturedProducts.title') }}
                 </h2>
                 <p class="text-gray-600">
-                    Những đôi giày được yêu thích nhất
+                    {{ $t('Home.FeaturedProducts.subtitle') }}
                 </p>
             </div>
 
             <!-- Loading state -->
             <div v-if="loading" class="text-center py-12">
                 <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
-                <p class="mt-4 text-gray-600">Đang tải sản phẩm...</p>
+                <p class="mt-4 text-gray-600">{{ $t('Home.FeaturedProducts.loading') }}</p>
             </div>
 
             <!-- Error state -->
             <div v-if="error" class="text-center py-12">
-                <p class="text-red-500">Có lỗi xảy ra khi tải sản phẩm: {{ error }}</p>
+                <p class="text-red-500">{{ $t('Home.FeaturedProducts.error') }} {{ error }}</p>
                 <button @click="fetchProducts" class="mt-4 px-6 py-2 bg-black text-white rounded hover:bg-gray-800">
-                    Thử lại
+                    {{ $t('Home.FeaturedProducts.retry') }}
                 </button>
             </div>
 
             <!-- Men's Shoes - Nike -->
             <div v-if="!loading && !error && nikeProducts.length" class="mb-16">
                 <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-semibold text-black">Giày nam</h3>
+                    <h3 class="text-xl font-semibold text-black">{{ $t('Home.FeaturedProducts.menShoes') }}</h3>
                     <router-link to="/products?category=men"
                         class="text-sm text-gray-600 hover:text-black flex items-center gap-1 group">
-                        Xem tất cả
+                        {{ $t('Home.FeaturedProducts.viewAll') }}
                         <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -44,10 +44,10 @@
             <!-- Women's Shoes - Puma -->
             <div v-if="!loading && !error && pumaProducts.length" class="mb-16">
                 <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-semibold text-black">Giày nữ</h3>
+                    <h3 class="text-xl font-semibold text-black">{{ $t('Home.FeaturedProducts.womenShoes') }}</h3>
                     <router-link to="/products?category=women"
                         class="text-sm text-gray-600 hover:text-black flex items-center gap-1 group">
-                        Xem tất cả
+                        {{ $t('Home.FeaturedProducts.viewAll') }}
                         <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -60,10 +60,10 @@
             <!-- Sale Products - Adidas -->
             <div v-if="!loading && !error && adidasProducts.length" class="border-t border-gray-200 pt-16">
                 <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-semibold text-black">🔥 Sale</h3>
+                    <h3 class="text-xl font-semibold text-black">{{ $t('Home.FeaturedProducts.sale') }}</h3>
                     <router-link to="/products?sale=true"
                         class="text-sm text-gray-600 hover:text-black flex items-center gap-1 group">
-                        Xem tất cả
+                        {{ $t('Home.FeaturedProducts.viewAll') }}
                         <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -76,10 +76,10 @@
             <!-- Top Rated Products -->
             <div v-if="!loading && !error && topRatedProducts.length" class="border-t border-gray-200 pt-16">
                 <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-semibold text-black">⭐ Đánh giá cao</h3>
+                    <h3 class="text-xl font-semibold text-black">{{ $t('Home.FeaturedProducts.topRated') }}</h3>
                     <router-link to="/products?top-rated=true"
                         class="text-sm text-gray-600 hover:text-black flex items-center gap-1 group">
-                        Xem tất cả
+                        {{ $t('Home.FeaturedProducts.viewAll') }}
                         <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -92,7 +92,7 @@
             <!-- Empty state -->
             <div v-if="!loading && !error && !nikeProducts.length && !pumaProducts.length && !adidasProducts.length && !topRatedProducts.length"
                 class="text-center py-12">
-                <p class="text-gray-500">Không có sản phẩm nào để hiển thị.</p>
+                <p class="text-gray-500">{{ $t('Home.FeaturedProducts.empty') }}</p>
             </div>
         </div>
     </section>
@@ -100,8 +100,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import ProductCategory from '@/components/shared/ProductCategory.vue'
 import ProductService from '@/api-services/ProductService'
+
+const { t } = useI18n()
 
 const loading = ref(false)
 const error = ref(null)
@@ -131,7 +134,7 @@ const fetchProducts = async () => {
         topRatedProducts.value = transformProductData(topRatedResponse)
 
     } catch (err) {
-        error.value = 'Có lỗi xảy ra khi tải dữ liệu sản phẩm'
+        error.value = t('Home.FeaturedProducts.errorLoad')
     } finally {
         loading.value = false
     }

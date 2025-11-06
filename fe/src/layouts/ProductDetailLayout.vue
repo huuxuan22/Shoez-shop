@@ -71,7 +71,7 @@
         <Footer />
 
         <!-- Login Required Modal -->
-        <ConfirmModal :show="showLoginModal" :message="loginModalMessage" confirm-text="Đăng nhập" cancel-text="Đóng"
+        <ConfirmModal :show="showLoginModal" :message="loginModalMessage" :confirm-text="$t('ProductDetailLayout.login')" :cancel-text="$t('ProductDetailLayout.close')"
             @confirm="handleLoginModalConfirm" @cancel="handleLoginModalCancel" />
     </div>
 </template>

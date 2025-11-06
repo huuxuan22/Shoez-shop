@@ -1,8 +1,8 @@
 <template>
   <section class="mt-12 relative">
     <div class="text-center mb-6 max-w-6xl mx-auto">
-      <h2 class="text-2xl font-bold">TIN TỨC SHOEZ.VN</h2>
-      <p class="text-sm text-gray-500">#BLOG</p>
+      <h2 class="text-2xl font-bold">{{ $t('Home.NewsSection.title') }}</h2>
+      <p class="text-sm text-gray-500">{{ $t('Home.NewsSection.hashtag') }}</p>
       <div class="w-16 h-1 bg-red-500 mx-auto mt-2 rounded"></div>
     </div>
 

@@ -18,9 +18,9 @@
         <div v-if="showNotifications"
             class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-96 overflow-y-auto">
             <div class="p-4 border-b border-gray-200">
-                <h3 class="font-semibold text-lg">Thông báo</h3>
+                <h3 class="font-semibold text-lg">{{ $t('Shared.NotificationBell.title') }}</h3>
                 <button @click="markAllAsRead" class="text-sm text-blue-600 hover:text-blue-800">
-                    Đánh dấu đã đọc tất cả
+                    {{ $t('Shared.NotificationBell.markAllRead') }}
                 </button>
             </div>
 
@@ -54,13 +54,13 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M15 17h5l-5 5v-5zM10.24 8.56a5.97 5.97 0 01-4.66-7.5 1 1 0 00-1.14-1.14 7.97 7.97 0 00-5.34 11.3 1 1 0 001.14 1.14 5.97 5.97 0 014.66 7.5 1 1 0 001.14 1.14 7.97 7.97 0 005.34-11.3 1 1 0 00-1.14-1.14z" />
                 </svg>
-                <p class="text-gray-500 mt-2">Không có thông báo</p>
+                <p class="text-gray-500 mt-2">{{ $t('Shared.NotificationBell.noNotifications') }}</p>
             </div>
 
             <div class="p-4 border-t border-gray-200">
                 <router-link to="/notifications" class="block text-center text-blue-600 hover:text-blue-800 font-medium"
                     @click="showNotifications = false">
-                    Xem tất cả thông báo
+                    {{ $t('Shared.NotificationBell.viewAll') }}
                 </router-link>
             </div>
         </div>
@@ -69,19 +69,22 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+
+const { t } = useI18n()
 
 const router = useRouter()
 const showNotifications = ref(false)
 const notifications = ref([])
 
 // Mock data - trong thực tế sẽ lấy từ API
-const mockNotifications = [
+const mockNotifications = computed(() => [
     {
         id: 1,
         type: 'order',
-        title: 'Đơn hàng đã được xác nhận',
-        message: 'Đơn hàng #12345 của bạn đã được xác nhận và đang được chuẩn bị.',
+        title: t('Shared.NotificationBell.mockOrderTitle'),
+        message: t('Shared.NotificationBell.mockOrderMessage'),
         read: false,
         createdAt: new Date(Date.now() - 1000 * 60 * 5), // 5 phút trước
         link: '/orders/12345'
@@ -89,8 +92,8 @@ const mockNotifications = [
     {
         id: 2,
         type: 'promotion',
-        title: 'Khuyến mãi đặc biệt',
-        message: 'Giảm 20% cho tất cả giày Nike. Áp dụng đến hết ngày 31/12.',
+        title: t('Shared.NotificationBell.mockPromotionTitle'),
+        message: t('Shared.NotificationBell.mockPromotionMessage'),
         read: false,
         createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30 phút trước
         link: '/products?brand=Nike'
@@ -98,13 +101,13 @@ const mockNotifications = [
     {
         id: 3,
         type: 'system',
-        title: 'Cập nhật hệ thống',
-        message: 'Hệ thống sẽ bảo trì từ 2:00 đến 4:00 ngày mai.',
+        title: t('Shared.NotificationBell.mockSystemTitle'),
+        message: t('Shared.NotificationBell.mockSystemMessage'),
         read: true,
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 giờ trước
         link: null
     }
-]
+])
 
 const unreadCount = computed(() => {
     return notifications.value.filter(n => !n.read).length
@@ -188,10 +191,10 @@ const formatTime = (date) => {
     const hours = Math.floor(diff / 3600000)
     const days = Math.floor(diff / 86400000)
 
-    if (minutes < 1) return 'Vừa xong'
-    if (minutes < 60) return `${minutes} phút trước`
-    if (hours < 24) return `${hours} giờ trước`
-    return `${days} ngày trước`
+    if (minutes < 1) return t('Shared.NotificationBell.justNow')
+    if (minutes < 60) return t('Shared.NotificationBell.minutesAgo', { count: minutes })
+    if (hours < 24) return t('Shared.NotificationBell.hoursAgo', { count: hours })
+    return t('Shared.NotificationBell.daysAgo', { count: days })
 }
 
 const handleClickOutside = (event) => {
@@ -202,7 +205,7 @@ const handleClickOutside = (event) => {
 
 onMounted(() => {
     // Load notifications from API
-    notifications.value = mockNotifications
+    notifications.value = mockNotifications.value
     document.addEventListener('click', handleClickOutside)
 })
 

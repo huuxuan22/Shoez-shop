@@ -1,11 +1,6 @@
-export const MultiLanguage = {
-    VI: "vi",
-    EN: "en",
-    JA: "ja",
-    EN_US: "en-US",
-    EN_GB: "en-GB",
-    EN_CA: "en-CA",
+export const BrandConstants = {
     TITLE_SHOP: "EZSHOPPING",
+    COMPANY_NAME: "Shoez Shop",
     TITLE_PRODUCTS: "Products",
     TITLE_ABOUT: "About",
     TITLE_NEWS: "News",

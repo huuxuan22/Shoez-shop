@@ -4,7 +4,7 @@
             <!-- Header -->
             <div class="border-b border-gray-200 p-6">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-2xl font-bold text-gray-900 font-serif">Đánh giá sản phẩm</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 font-serif">{{ $t('Product.ReviewModal.title') }}</h3>
                     <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -27,7 +27,7 @@
             <form @submit.prevent="submitReview" class="p-6 space-y-6">
                 <!-- Rating -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-3">Đánh giá của bạn *</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">{{ $t('Product.ReviewModal.yourRating') }}</label>
                     <div class="flex items-center space-x-2">
                         <button v-for="star in 5" :key="star" type="button" @click="form.rating = star"
                             class="text-3xl transition-transform hover:scale-110"
@@ -39,15 +39,15 @@
 
                 <!-- Comment -->
                 <div>
-                    <label for="comment" class="block text-sm font-medium text-gray-700 mb-3">Nhận xét *</label>
+                    <label for="comment" class="block text-sm font-medium text-gray-700 mb-3">{{ $t('Product.ReviewModal.comment') }}</label>
                     <textarea id="comment" v-model="form.comment" rows="5" required
                         class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all duration-300 resize-none"
-                        placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."></textarea>
+                        :placeholder="$t('Product.ReviewModal.commentPlaceholder')"></textarea>
                 </div>
 
                 <!-- Image Upload -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-3">Hình ảnh (tối đa 3 ảnh)</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">{{ $t('Product.ReviewModal.images') }}</label>
                     <div class="flex space-x-4">
                         <!-- Image Preview -->
                         <div v-for="(image, index) in form.images" :key="index" class="relative w-20 h-20">
@@ -74,11 +74,11 @@
                 <div class="flex space-x-4 pt-4">
                     <button type="button" @click="$emit('close')"
                         class="flex-1 border-2 border-gray-300 text-gray-700 py-3 rounded-2xl font-semibold hover:border-gray-900 hover:text-gray-900 transition-all duration-300">
-                        Hủy
+                        {{ $t('Product.ReviewModal.cancel') }}
                     </button>
                     <button type="submit" :disabled="!form.rating || !form.comment"
                         class="flex-1 bg-gradient-to-r from-gray-900 to-black text-white py-3 rounded-2xl font-semibold hover:from-gray-800 hover:to-gray-900 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Gửi đánh giá
+                        {{ $t('Product.ReviewModal.submit') }}
                     </button>
                 </div>
             </form>
@@ -88,6 +88,9 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
     product: {

@@ -302,7 +302,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                                             </svg>
-                                            <span>Cần hỗ trợ? Liên hệ hotline MoMo: 1800.1207</span>
+                                            <span>{{ $t('CheckoutLayout.supportMoMo') }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -482,9 +482,9 @@
                                 </svg>
                             </div>
 
-                            <h2 class="text-2xl font-bold text-black mb-4">Đặt hàng thành công!</h2>
-                            <p class="text-gray-600 mb-2">Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đã được xác nhận.</p>
-                            <p class="text-gray-600 mb-6">Mã đơn hàng: <strong class="text-black">{{ orderResult?.id
+                            <h2 class="text-2xl font-bold text-black mb-4">{{ $t('CheckoutLayout.orderSuccess') }}</h2>
+                            <p class="text-gray-600 mb-2">{{ $t('CheckoutLayout.thankYou') }}</p>
+                            <p class="text-gray-600 mb-6">{{ $t('CheckoutLayout.orderId') }} <strong class="text-black">{{ orderResult?.id
                                     }}</strong></p>
 
                             <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left">

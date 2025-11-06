@@ -17,7 +17,7 @@
                         d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
             </div>
-            <span class="text-gray-600">(128 đánh giá)</span>
+            <span class="text-gray-600">(128 {{ $t('Product.Info.reviews') }})</span>
         </div>
 
         <!-- Price -->
@@ -29,14 +29,14 @@
                 </p>
             </div>
             <p v-if="product.discount" class="text-gray-600 font-semibold mt-2">
-                Tiết kiệm {{ formatPrice(product.originalPrice - product.price) }}
+                {{ $t('Product.Info.save') }} {{ formatPrice(product.originalPrice - product.price) }}
             </p>
         </div>
 
         <!-- Color Selection -->
         <div class="mb-8">
             <label class="block text-gray-700 font-semibold mb-3">
-                Màu sắc: <span class="text-black">{{ selectedColor }}</span>
+                {{ $t('Product.Info.color') }} <span class="text-black">{{ selectedColor }}</span>
             </label>
             <div class="flex flex-wrap gap-3">
                 <button v-for="color in product.colors" :key="color" @click="$emit('update:selectedColor', color)"
@@ -56,7 +56,7 @@
         <div class="mb-8">
             <div class="flex justify-between items-center mb-3">
                 <label class="block text-gray-700 font-semibold">
-                    Size: <span class="text-black">{{ selectedSize || 'Chọn size' }}</span>
+                    {{ $t('Product.Info.size') }} <span class="text-black">{{ selectedSize || $t('Product.Info.selectSize') }}</span>
                 </label>
                 <!-- <button class="text-black text-sm hover:underline">Hướng dẫn chọn size</button> -->
             </div>
@@ -75,7 +75,7 @@
 
         <!-- Quantity -->
         <div class="mb-8">
-            <label class="block text-gray-700 font-semibold mb-3">Số lượng</label>
+            <label class="block text-gray-700 font-semibold mb-3">{{ $t('Product.Info.quantity') }}</label>
             <div class="flex items-center gap-4">
                 <div class="flex items-center border-2 border-gray-300 rounded-lg">
                     <button @click="$emit('update:quantity', Math.max(1, quantity - 1))"
@@ -94,7 +94,7 @@
                         </svg>
                     </button>
                 </div>
-                <p class="text-gray-600">{{ product.stock || 50 }} sản phẩm có sẵn</p>
+                <p class="text-gray-600">{{ product.stock || 50 }} {{ $t('Product.Info.available') }}</p>
             </div>
         </div>
 
@@ -106,7 +106,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-                Thêm vào giỏ
+                {{ $t('Product.Info.addToCart') }}
             </button>
             <button @click="toggleFavourite"
                 :class="[
@@ -117,7 +117,7 @@
                     <path
                         d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                 </svg>
-                {{ isFavourited ? 'Đã thích' : 'Yêu thích' }}
+                {{ isFavourited ? $t('Product.Info.liked') : $t('Product.Info.favourite') }}
             </button>
             <button @click="$emit('buy-now')"
                 class="flex-1 bg-black text-white px-8 py-4 rounded-lg font-semibold hover:bg-gray-800 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
@@ -125,13 +125,13 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                Mua ngay
+                {{ $t('Product.Info.buyNow') }}
             </button>
         </div>
 
         <!-- Product Features -->
         <div class="border-t border-gray-200 pt-6">
-            <h3 class="font-semibold text-gray-800 mb-4">Đặc điểm nổi bật</h3>
+            <h3 class="font-semibold text-gray-800 mb-4">{{ $t('Product.Info.features') }}</h3>
             <ul class="space-y-2 text-gray-600">
                 <li class="flex items-start">
                     <svg class="w-5 h-5 text-gray-800 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -139,7 +139,7 @@
                             d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                             clip-rule="evenodd" />
                     </svg>
-                    Chính hãng 100%, tem check chống hàng giả
+                    {{ $t('Product.Info.authentic') }}
                 </li>
                 <li class="flex items-start">
                     <svg class="w-5 h-5 text-gray-800 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -147,7 +147,7 @@
                             d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                             clip-rule="evenodd" />
                     </svg>
-                    Miễn phí vận chuyển toàn quốc cho đơn hàng từ 500k
+                    {{ $t('Product.Info.freeShipping') }}
                 </li>
                 <li class="flex items-start">
                     <svg class="w-5 h-5 text-gray-800 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -155,7 +155,7 @@
                             d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                             clip-rule="evenodd" />
                     </svg>
-                    Đổi trả trong vòng 7 ngày nếu có lỗi từ nhà sản xuất
+                    {{ $t('Product.Info.returnPolicy') }}
                 </li>
                 <li class="flex items-start">
                     <svg class="w-5 h-5 text-gray-800 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -163,7 +163,7 @@
                             d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                             clip-rule="evenodd" />
                     </svg>
-                    Bảo hành 6 tháng chính hãng
+                    {{ $t('Product.Info.warranty') }}
                 </li>
             </ul>
         </div>
