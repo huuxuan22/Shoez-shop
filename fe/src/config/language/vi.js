@@ -802,6 +802,10 @@ Myshoes.vn hiện đang có chương trình ưu đãi đặc biệt cho các m�
         ratingTo: "Đến:",
         clearRating: "Xóa filter đánh giá",
         quick: "Nhanh:",
+        starUnit: "sao",
+        quickPresets: {
+          range: "{stars} ({min}-{max} {unit})",
+        },
       },
       table: {
         product: "Sản phẩm",
@@ -837,6 +841,11 @@ Myshoes.vn hiện đang có chương trình ưu đãi đặc biệt cho các m�
       },
       rating: {
         notRated: "Chưa đánh giá",
+      },
+      statusLabels: {
+        inStock: "Đang bán",
+        lowStock: "Sắp hết",
+        outOfStock: "Hết hàng",
       }
     },
     AddProduct: {
@@ -991,6 +1000,8 @@ Myshoes.vn hiện đang có chương trình ưu đãi đặc biệt cho các m�
       title: "Thống kê & Phân tích",
       subtitle: "Tổng quan về hệ thống và hiệu suất kinh doanh",
       retry: "Thử lại",
+      topCategoriesTitle: "Danh mục hàng đầu",
+      topBrandsTitle: "Thương hiệu hàng đầu",
       cards: {
         totalRevenue: "Tổng doanh thu",
         revenueChangeSuffix: "% so với tháng trước",
@@ -1318,6 +1329,10 @@ Myshoes.vn hiện đang có chương trình ưu đãi đặc biệt cho các m�
       cancel: "Hủy",
       saving: "Đang lưu...",
       saveChanges: "Lưu thay đổi",
+      messages: {
+        updateSuccess: "Cập nhật thành công!",
+        updateError: "Cập nhật không thành công!",
+      },
     },
     Avatar: {
       changePhoto: "Đổi ảnh",
@@ -1325,6 +1340,9 @@ Myshoes.vn hiện đang có chương trình ưu đãi đặc biệt cho các m�
       noteText: "Ảnh đại diện nên có định dạng JPG, PNG hoặc GIF. Kích thước tối đa 5MB.",
       invalidFormat: "Chỉ chấp nhận file ảnh (JPG, PNG, GIF)",
       fileSizeExceeded: "Kích thước file không được vượt quá 5MB",
+      messages: {
+        uploadError: "Lỗi khi cập nhật ảnh",
+      },
     },
     Password: {
       title: "Đổi mật khẩu",
@@ -1355,6 +1373,10 @@ Myshoes.vn hiện đang có chương trình ưu đãi đặc biệt cho các m�
         newPasswordSameAsCurrent: "Mật khẩu mới không được trùng với mật khẩu hiện tại",
         confirmPasswordRequired: "Vui lòng xác nhận mật khẩu mới",
         confirmPasswordMismatch: "Mật khẩu xác nhận không khớp",
+      },
+      messages: {
+        changeSuccess: "Thay đổi mật khẩu thành công!",
+        genericError: "Cập nhật người dùng không thành công",
       },
     },
   },

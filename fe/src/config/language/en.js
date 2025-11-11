@@ -802,6 +802,10 @@ Myshoes.vn currently has special promotion for fall sneakers with up to 30% disc
         ratingTo: "To:",
         clearRating: "Clear rating filter",
         quick: "Quick:",
+        starUnit: "stars",
+        quickPresets: {
+          range: "{stars} ({min}-{max} {unit})",
+        },
       },
       table: {
         product: "Product",
@@ -837,6 +841,11 @@ Myshoes.vn currently has special promotion for fall sneakers with up to 30% disc
       },
       rating: {
         notRated: "Not rated",
+      },
+      statusLabels: {
+        inStock: "Active",
+        lowStock: "Low stock",
+        outOfStock: "Out of stock",
       }
     },
     AddProduct: {
@@ -991,6 +1000,8 @@ Myshoes.vn currently has special promotion for fall sneakers with up to 30% disc
       title: "Analytics",
       subtitle: "System overview and business performance",
       retry: "Retry",
+      topCategoriesTitle: "Top categories",
+      topBrandsTitle: "Top brands",
       cards: {
         totalRevenue: "Total revenue",
         revenueChangeSuffix: "% vs. last month",
@@ -1385,6 +1396,10 @@ Myshoes.vn currently has special promotion for fall sneakers with up to 30% disc
       cancel: "Cancel",
       saving: "Saving...",
       saveChanges: "Save Changes",
+      messages: {
+        updateSuccess: "Profile updated successfully!",
+        updateError: "Failed to update profile.",
+      },
     },
     Avatar: {
       changePhoto: "Change Photo",
@@ -1392,6 +1407,9 @@ Myshoes.vn currently has special promotion for fall sneakers with up to 30% disc
       noteText: "Profile photo should be in JPG, PNG or GIF format. Maximum size 5MB.",
       invalidFormat: "Only image files (JPG, PNG, GIF) are accepted",
       fileSizeExceeded: "File size must not exceed 5MB",
+      messages: {
+        uploadError: "Failed to update avatar.",
+      },
     },
     Password: {
       title: "Change Password",
@@ -1422,6 +1440,10 @@ Myshoes.vn currently has special promotion for fall sneakers with up to 30% disc
         newPasswordSameAsCurrent: "New password cannot be the same as current password",
         confirmPasswordRequired: "Please confirm new password",
         confirmPasswordMismatch: "Password confirmation does not match",
+      },
+      messages: {
+        changeSuccess: "Password updated successfully!",
+        genericError: "Failed to update user information.",
       },
     },
   },

@@ -100,21 +100,13 @@
       <!-- Rating Presets -->
       <div class="mt-2 flex items-center space-x-2">
         <span class="text-sm text-gray-500">{{$t('Admin.Products.filters.quick')}}</span>
-        <button @click="setRatingFilter(4, 5)"
-          class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200 cursor-pointer">
-          ⭐⭐⭐⭐+ (4-5 sao)
-        </button>
-        <button @click="setRatingFilter(3, 4)"
-          class="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded hover:bg-orange-200 cursor-pointer">
-          ⭐⭐⭐+ (3-4 sao)
-        </button>
-        <button @click="setRatingFilter(2, 3)"
-          class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded hover:bg-red-200 cursor-pointer">
-          ⭐⭐+ (2-3 sao)
-        </button>
-        <button @click="setRatingFilter(0, 2)"
-          class="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded hover:bg-gray-200 cursor-pointer">
-          ⭐+ (0-2 sao)
+        <button
+          v-for="preset in ratingQuickFilters"
+          :key="`${preset.min}-${preset.max}`"
+          @click="setRatingFilter(preset.min, preset.max)"
+          :class="['px-2 py-1 text-xs rounded cursor-pointer transition-colors', preset.classes]"
+        >
+          {{ preset.label }}
         </button>
       </div>
     </div>
@@ -464,11 +456,61 @@ const formatDate = (dateString) => {
 
 // Format rating stars
 const formatRating = (rating) => {
-  if (!rating) return 'Chưa đánh giá';
-  const stars = '⭐'.repeat(Math.floor(rating));
-  const halfStar = rating % 1 >= 0.5 ? '⭐' : '';
-  return `${stars}${halfStar} ${rating.toFixed(1)}`;
+  if (!rating) return $t('Admin.Products.rating.notRated');
+  const ratingValue = Number(rating);
+  if (Number.isNaN(ratingValue)) return $t('Admin.Products.rating.notRated');
+
+  const fullStars = '⭐'.repeat(Math.floor(ratingValue));
+  const hasHalfStar = ratingValue % 1 >= 0.5 ? '⭐' : '';
+  return `${fullStars}${hasHalfStar} ${ratingValue.toFixed(1)}`;
 };
+
+const ratingQuickFilters = computed(() => [
+  {
+    min: 4,
+    max: 5,
+    label: $t('Admin.Products.filters.quickPresets.range', {
+      stars: '⭐⭐⭐⭐+',
+      min: 4,
+      max: 5,
+      unit: $t('Admin.Products.filters.starUnit')
+    }),
+    classes: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+  },
+  {
+    min: 3,
+    max: 4,
+    label: $t('Admin.Products.filters.quickPresets.range', {
+      stars: '⭐⭐⭐+',
+      min: 3,
+      max: 4,
+      unit: $t('Admin.Products.filters.starUnit')
+    }),
+    classes: 'bg-orange-100 text-orange-800 hover:bg-orange-200'
+  },
+  {
+    min: 2,
+    max: 3,
+    label: $t('Admin.Products.filters.quickPresets.range', {
+      stars: '⭐⭐+',
+      min: 2,
+      max: 3,
+      unit: $t('Admin.Products.filters.starUnit')
+    }),
+    classes: 'bg-red-100 text-red-800 hover:bg-red-200'
+  },
+  {
+    min: 0,
+    max: 2,
+    label: $t('Admin.Products.filters.quickPresets.range', {
+      stars: '⭐+',
+      min: 0,
+      max: 2,
+      unit: $t('Admin.Products.filters.starUnit')
+    }),
+    classes: 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+  }
+]);
 
 // Calculate discounted price
 const calculateDiscountedPrice = (price, discount) => {
@@ -483,9 +525,9 @@ const getAvailableSizes = (sizes) => {
 
 // Get status text based on product data
 const getStatusText = (product) => {
-  if (product.stock === 0) return 'Hết hàng';
-  if (product.stock < 10) return 'Sắp hết';
-  return 'Đang bán';
+  if (product.stock === 0) return $t('Admin.Products.statusLabels.outOfStock');
+  if (product.stock < 10) return $t('Admin.Products.statusLabels.lowStock');
+  return $t('Admin.Products.statusLabels.inStock');
 };
 
 // Get status class based on product data
@@ -657,12 +699,12 @@ const confirmDeleteProduct = async () => {
     productToDelete.value = null;
 
     // Show success message
-    successMessage.value = 'Xóa sản phẩm thành công!';
+    successMessage.value = $t('Admin.Products.confirm.success');
     setTimeout(() => {
       successMessage.value = '';
     }, 3000);
   } catch (error) {
-    errorMessage.value = error.response?.data?.detail || 'Có lỗi xảy ra khi xóa sản phẩm';
+    errorMessage.value = error.response?.data?.detail || $t('Admin.Products.confirm.error');
     setTimeout(() => {
       errorMessage.value = '';
     }, 3000);
@@ -678,12 +720,12 @@ const deleteProductFromDetail = async (product) => {
 
     closeProductDetailModal();
     // Show success message
-    successMessage.value = 'Xóa sản phẩm thành công!';
+    successMessage.value = $t('Admin.Products.confirm.success');
     setTimeout(() => {
       successMessage.value = '';
     }, 3000);
   } catch (error) {
-    errorMessage.value = error.response?.data?.detail || 'Có lỗi xảy ra khi xóa sản phẩm';
+    errorMessage.value = error.response?.data?.detail || $t('Admin.Products.confirm.error');
     setTimeout(() => {
       errorMessage.value = '';
     }, 3000);

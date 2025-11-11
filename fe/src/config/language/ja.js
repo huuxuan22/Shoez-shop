@@ -802,6 +802,10 @@ Myshoes.vnは現在、秋のスニーカーに最大30%割引の特別プロモ�
         ratingTo: "(上限):",
         clearRating: "評価フィルターを解除",
         quick: "クイック:",
+        starUnit: "スター",
+        quickPresets: {
+          range: "{stars} ({min}-{max}{unit})",
+        },
       },
       table: {
         product: "商品",
@@ -837,6 +841,11 @@ Myshoes.vnは現在、秋のスニーカーに最大30%割引の特別プロモ�
       },
       rating: {
         notRated: "未評価",
+      },
+      statusLabels: {
+        inStock: "販売中",
+        lowStock: "在庫わずか",
+        outOfStock: "在庫切れ",
       }
     },
     AddProduct: {
@@ -991,6 +1000,8 @@ Myshoes.vnは現在、秋のスニーカーに最大30%割引の特別プロモ�
       title: "分析",
       subtitle: "システム概要とビジネスのパフォーマンス",
       retry: "再試行",
+      topCategoriesTitle: "人気カテゴリ",
+      topBrandsTitle: "人気ブランド",
       cards: {
         totalRevenue: "総売上",
         revenueChangeSuffix: "%（前月比）",
@@ -1385,6 +1396,10 @@ Myshoes.vnは現在、秋のスニーカーに最大30%割引の特別プロモ�
       cancel: "キャンセル",
       saving: "保存中...",
       saveChanges: "変更を保存",
+      messages: {
+        updateSuccess: "プロフィールを更新しました！",
+        updateError: "プロフィールの更新に失敗しました。",
+      },
     },
     Avatar: {
       changePhoto: "写真を変更",
@@ -1392,6 +1407,9 @@ Myshoes.vnは現在、秋のスニーカーに最大30%割引の特別プロモ�
       noteText: "プロフィール写真はJPG、PNG、GIF形式である必要があります。最大サイズ5MB。",
       invalidFormat: "画像ファイル（JPG、PNG、GIF）のみ受け付けます",
       fileSizeExceeded: "ファイルサイズは5MBを超えてはいけません",
+      messages: {
+        uploadError: "アバターの更新中にエラーが発生しました。",
+      },
     },
     Password: {
       title: "パスワードを変更",
@@ -1422,6 +1440,10 @@ Myshoes.vnは現在、秋のスニーカーに最大30%割引の特別プロモ�
         newPasswordSameAsCurrent: "新しいパスワードは現在のパスワードと同じにすることはできません",
         confirmPasswordRequired: "新しいパスワードを確認してください",
         confirmPasswordMismatch: "パスワードの確認が一致しません",
+      },
+      messages: {
+        changeSuccess: "パスワードを変更しました！",
+        genericError: "ユーザー情報の更新に失敗しました。",
       },
     },
   },
