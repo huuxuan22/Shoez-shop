@@ -60,6 +60,7 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '@/stores/auth';
 import UserService from '@/api-services/UserService';
@@ -77,6 +78,8 @@ const { user: authUser } = storeToRefs(authStore);
 let timer = null;
 
 // State
+const { t: $t } = useI18n();
+
 const activeTab = ref('info');
 const isLoading = ref(false);
 const isUploading = ref(false);
@@ -130,19 +133,19 @@ const user = computed(() => {
     };
 });
 
-// Tabs configuration với đường dẫn trực tiếp
-const tabs = [
+// Tabs configuration với i18n
+const tabs = computed(() => [
     {
         id: 'info',
-        label: 'Thông tin cá nhân',
+        label: $t('Profile.Info.title'),
         icon: '/src/assets/icons/user_icon.png'
     },
     {
         id: 'password',
-        label: 'Đổi mật khẩu',
+        label: $t('Profile.Password.title'),
         icon: '/src/assets/icons/lock.png'
     }
-];
+]);
 
 const handleUpdateProfile = async (profileData) => {
     isLoading.value = true;
@@ -159,9 +162,9 @@ const handleUpdateProfile = async (profileData) => {
         if (response.user_update) {
             await authStore.updateUser(response.user_update);
         }
-        showToast('Cập nhật thành công!', 'success');
+        showToast($t('Profile.Info.messages.updateSuccess'), 'success');
     } catch (error) {
-        showToast('Cập nhật không thành công!', 'error');
+        showToast(error?.data?.detail || $t('Profile.Info.messages.updateError'), 'error');
         throw error;
     } finally {
         isLoading.value = false;
@@ -180,16 +183,11 @@ const handleChangePassword = async (passwordData) => {
         const response = await UserService.changePassword(payload)
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        showToast('Thay đổi mật khẩu thành công!', 'success');
+        showToast($t('Profile.Password.messages.changeSuccess'), 'success');
         return true;
     } catch (error) {
-        if (error?.status === 400) {
-            showToast(error?.data?.detail, 'error');
-        } else if (error?.status === 404) {
-            showToast(error?.data?.detail, 'error');
-        } else {
-            showToast('Cập nhật người dùng không thành công', 'error');
-        }
+        const errorMessage = error?.data?.detail || $t('Profile.Password.messages.genericError');
+        showToast(errorMessage, 'error');
         return false;
     } finally {
         isLoading.value = false;
@@ -197,7 +195,6 @@ const handleChangePassword = async (passwordData) => {
 };
 
 const handleAvatarChange = async (file) => {
-    debugger;
     isUploading.value = true;
     try {
         const response = await UserService.uploadAvatar(file, authUser.value.id);
@@ -207,13 +204,8 @@ const handleAvatarChange = async (file) => {
         }
 
     } catch (error) {
-        if (error?.status === 400) {
-            showToast(error?.data?.detail, 'error');
-        } else if (error?.status === 404) {
-            showToast(error?.data?.detail, 'error');
-        } else {
-            showToast('Lỗi khi cập nhật ảnh', 'error');
-        }
+        const errorMessage = error?.data?.detail || $t('Profile.Avatar.messages.uploadError');
+        showToast(errorMessage, 'error');
         throw error;
     } finally {
         isUploading.value = false;
