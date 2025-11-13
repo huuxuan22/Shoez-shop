@@ -100,5 +100,12 @@ class UserRepository(BaseRepository[User]):
         except PyMongoError as e:
             raise Exception(f"Failed to update user by ID: {str(e)}")
 
+    async def count_by_role(self, role: str) -> int:
+        """
+        Đếm số lượng người dùng theo role, mặc định bỏ qua những user đã bị soft delete.
+        """
+        query = {"role": role, "is_deleted": {"$ne": True}}
+        return await self.collection.count_documents(query)
+
 
 

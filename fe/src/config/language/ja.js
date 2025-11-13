@@ -1640,6 +1640,66 @@ Myshoes.vnは現在、秋のスニーカーに最大30%割引の特別プロモ�
       resendError: "再送信に失敗しました！",
       pleaseRegister: "確認コードを受け取るには登録してください",
     },
+    PaymentDemo: {
+      badge: "🧪 デモモード - テスト決済",
+      title: "MoMo決済",
+      subtitle: "デモ決済ページです。実際の請求は行われません",
+      orderIdLabel: "注文番号:",
+      amountLabel: "金額:",
+      transactionIdLabel: "トランザクションID:",
+      phoneLabel: "MoMo電話番号",
+      phonePlaceholder: "0123456789",
+      passwordLabel: "パスワード（デモ）",
+      passwordPlaceholder: "任意の値を入力（デモ）",
+      otpTitle: "OTP認証",
+      otpInstruction: "デモ用OTPをMoMo電話番号に送信しました。取引を完了するために6桁のコードを入力してください。",
+      otpInputLabel: "OTPを入力",
+      otpPlaceholder: "••••••",
+      otpDemoCodeMessage: "デモ用デフォルトOTP: {code}",
+      infoNoteLabel: "注意:",
+      infoNoteText: "これはデモモードです。実際の取引は行われません。成功・失敗の両方のシナリオをテストできます。",
+      buttons: {
+        continue: "✅ 続けてOTPを入力（デモ）",
+        processing: "処理中...",
+        confirm: "🔐 OTPを確認",
+        back: "戻る",
+        cancel: "キャンセル",
+      },
+      otpErrors: {
+        incomplete: "6桁のOTPをすべて入力してください",
+        incorrect: "OTPが正しくありません。もう一度お試しください。",
+      },
+      toasts: {
+        noOrder: "注文情報が見つかりません",
+        invalidPhone: "有効なMoMo電話番号を入力してください",
+        missingPassword: "デモ用パスワードを入力してください",
+        otpSent: "デモ用OTPをSMSで送信しました。コードを入力して続行してください。",
+        otpInvalid: "OTPが無効です（デモ）",
+        success: "決済に成功しました！（デモ）",
+        failure: "決済に失敗しました！（デモ）",
+        genericError: "エラーが発生しました",
+        processError: "デモ決済の処理中にエラーが発生しました",
+      },
+      PaymentSuccess: {
+        title: "決済が完了しました！",
+        description: "ご注文の決済が正常に完了しました。",
+        orderIdLabel: "注文ID",
+        actions: {
+          viewOrder: "注文を確認",
+          goHome: "ホームに戻る",
+        },
+      },
+      PaymentCancel: {
+        title: "決済がキャンセルされました",
+        description: "決済をキャンセルしました。ご注文は保存されており、後で再度お支払いいただけます。",
+        orderIdLabel: "注文ID",
+        actions: {
+          retry: "再度支払う",
+          viewOrder: "注文を確認",
+          goHome: "ホームに戻る",
+        },
+      },
+    },
     OrderDetail: {
       title: "ご注文",
       thankYou: "Shoezでのご購入ありがとうございます",
@@ -1681,11 +1741,16 @@ Myshoes.vnは現在、秋のスニーカーに最大30%割引の特別プロモ�
       statusCancelled: "キャンセル済み",
       paymentCOD: "代金引換",
       paymentCreditCard: "クレジットカード",
+      paymentTransfer: "銀行振込",
       paymentMomo: "MoMo",
+      paymentShopeePay: "ShopeePay",
+      paymentZalopay: "ZaloPay",
       paymentCODDesc: "商品受け取り時に支払います",
       paymentCardDesc: "カードで支払済み",
       paymentTransferDesc: "銀行振込",
       paymentMomoDesc: "MoMoで支払済み",
+      paymentShopeePayDesc: "ShopeePayで支払済み",
+      paymentZalopayDesc: "ZaloPayで支払済み",
       shippingStandard: "標準配送",
       shippingExpress: "速達配送",
       shippingPickup: "店舗受取",
@@ -1784,6 +1849,194 @@ Myshoes.vnは現在、秋のスニーカーに最大30%割引の特別プロモ�
       tip1: "購入前にサイズと商品説明をよく確認してください。",
       tip2: "すばやく検索できるように注文番号を保存してください。",
       contactSupport: "サポートに連絡",
+    },
+    Checkout: {
+      header: {
+        title: "チェックアウト",
+        subtitle: "ご注文を完了してください"
+      },
+      steps: {
+        shipping: "配送情報",
+        payment: "お支払い",
+        review: "確認"
+      },
+      shipping: {
+        title: "配送先情報",
+        fields: {
+          fullName: {
+            label: "氏名 *",
+            placeholder: "氏名を入力"
+          },
+          phone: {
+            label: "電話番号 *",
+            placeholder: "電話番号を入力"
+          },
+          email: {
+            label: "メールアドレス *",
+            placeholder: "メールアドレスを入力"
+          },
+          address: {
+            label: "住所 *",
+            placeholder: "詳細な住所を入力"
+          },
+          city: {
+            label: "都道府県 *",
+            placeholder: "都道府県を入力"
+          },
+          district: {
+            label: "市区郡 *",
+            placeholder: "市区郡を入力"
+          },
+          ward: {
+            label: "町村 *",
+            placeholder: "町村を入力"
+          }
+        },
+        methodTitle: "配送方法",
+        methods: {
+          standard: {
+            label: "通常配送",
+            description: "3〜5営業日でお届け",
+            price: "30.000đ"
+          },
+          express: {
+            label: "お急ぎ便",
+            description: "1〜2営業日でお届け",
+            price: "50.000đ"
+          },
+          pickup: {
+            label: "店舗受取",
+            description: "店頭で直接受け取る",
+            price: "無料"
+          }
+        },
+        noteLabel: "備考（任意）",
+        notePlaceholder: "ご要望があればご記入ください..."
+      },
+      payment: {
+        title: "お支払い方法",
+        options: {
+          cod: {
+            label: "代金引換 (COD)",
+            description: "商品受け取り時に現金でお支払い"
+          },
+          creditCard: {
+            label: "クレジット/デビットカード",
+            description: "Visa、MasterCardで安全に決済"
+          },
+          bankTransfer: {
+            label: "銀行振込",
+            description: "指定口座へ直接お振込み"
+          },
+          momo: {
+            label: "MoMoウォレット",
+            description: "MoMo電子マネーでスピード決済"
+          },
+          shopeePay: {
+            label: "ShopeePay",
+            description: "ShopeePayウォレットでスピード決済"
+          },
+          zaloPay: {
+            label: "ZaloPay",
+            description: "ZaloPayウォレットでスピード決済"
+          }
+        },
+        creditCardForm: {
+          numberLabel: "カード番号",
+          numberPlaceholder: "1234 5678 9012 3456",
+          nameLabel: "カード名義",
+          namePlaceholder: "NGUYEN VAN A",
+          expiryLabel: "有効期限",
+          expiryPlaceholder: "MM/YY",
+          cvvLabel: "CVV",
+          cvvPlaceholder: "123"
+        },
+        momo: {
+          headerTitle: "MoMo電子ウォレット",
+          headerDescription: "高速かつ安全な決済",
+          phoneLabel: "MoMo電話番号 *",
+          phonePlaceholder: "MoMoに登録した電話番号を入力",
+          phoneHint: "MoMoに登録された10桁の電話番号が必要です",
+          qrPending: "QRコードはまもなく生成されます",
+          qrInstructionPending: "電話番号入力後にQRコードが表示されます",
+          qrTitle: "またはQRコードをスキャンして支払う",
+          qrDescription: "MoMoアプリを開き、上記のQRコードをスキャンしてください",
+          phoneVerified: "✓ 電話番号が確認されました",
+          instructionsTitle: "決済手順",
+          instructions: {
+            step1: "登録済みのMoMo電話番号を入力",
+            step2: "MoMoアプリでQRコードをスキャンするか、端末で承認する",
+            step3: "MoMoアプリで決済を確定",
+            step4: "決済完了を待ちます"
+          },
+          securityTitle: "MoMoで安全に決済",
+          securityDescription: "お支払い情報は暗号化されます。電話番号やウォレット情報を保存することはありません。"
+        },
+        shopeePay: {
+          headerTitle: "ShopeePayウォレット",
+          headerDescription: "高速かつ安全な決済",
+          phoneLabel: "ShopeePay電話番号 *",
+          phonePlaceholder: "ShopeePayに登録した電話番号を入力",
+          phoneHint: "ShopeePayに登録された10桁の電話番号が必要です",
+          instructionsTitle: "決済手順",
+          instructions: {
+            step1: "登録済みのShopeePay電話番号を入力",
+            step2: "ShopeePayアプリで決済を承認",
+            step3: "決済完了を待ちます"
+          },
+          securityTitle: "ShopeePayで安全に決済",
+          securityDescription: "お支払い情報は暗号化されます。電話番号やウォレット情報を保存することはありません。"
+        },
+        zaloPay: {
+          headerTitle: "ZaloPayウォレット",
+          headerDescription: "高速かつ安全な決済",
+          phoneLabel: "ZaloPay電話番号 *",
+          phonePlaceholder: "ZaloPayに登録した電話番号を入力",
+          phoneHint: "ZaloPayに登録された10桁の電話番号が必要です",
+          instructionsTitle: "決済手順",
+          instructions: {
+            step1: "登録済みのZaloPay電話番号を入力",
+            step2: "ZaloPayアプリで決済を承認",
+            step3: "決済完了を待ちます"
+          },
+          securityTitle: "ZaloPayで安全に決済",
+          securityDescription: "お支払い情報は暗号化されます。電話番号やウォレット情報を保存することはありません。"
+        },
+        securityNotice: "カード情報は暗号化され安全に保護されています。カード情報を保存することはありません。",
+        securityBadge: "安全で暗号化された決済"
+      },
+      summary: {
+        title: "注文概要",
+        sizePrefix: "サイズ",
+        quantityPrefix: "数量:",
+        subtotal: "小計",
+        shippingFee: "配送料",
+        freeShipping: "無料",
+        total: "合計",
+        previousStep: "前のステップに戻る"
+      },
+      actions: {
+        nextToPayment: "お支払いへ進む",
+        nextToReview: "確認へ進む",
+        placeOrder: "注文を確定する",
+        continue: "続行"
+      },
+      toasts: {
+        fillShipping: "配送情報を入力してください",
+        invalidMomoPhone: "有効なMoMo電話番号（10桁）を入力してください",
+        invalidShopeePayPhone: "有効なShopeePay電話番号（10桁）を入力してください",
+        invalidZaloPayPhone: "有効なZaloPay電話番号（10桁）を入力してください",
+        loginRequired: "注文するにはログインしてください",
+        creatingMomoPayment: "MoMo決済を作成中...",
+        createPaymentError: "決済リクエストの作成中にエラーが発生しました。注文は作成済みです。",
+        placeOrderError: "注文処理中にエラーが発生しました。もう一度お試しください。"
+      },
+      successModal: {
+        totalLabel: "合計金額",
+        deliveryEstimateLabel: "お届け予定日",
+        continueShopping: "買い物を続ける",
+        viewOrder: "注文を確認"
+      }
     },
   },
   OAuthCallback: {

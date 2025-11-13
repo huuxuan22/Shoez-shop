@@ -14,7 +14,8 @@
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-6">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h1 class="text-3xl font-bold text-gray-900 font-script mb-2">{{ $t('Views.OrderDetail.title') }}</h1>
+                            <h1 class="text-3xl font-bold text-gray-900 font-script mb-2">{{
+                                $t('Views.OrderDetail.title') }}</h1>
                             <p class="text-gray-600">{{ $t('Views.OrderDetail.thankYou') }}</p>
                         </div>
                         <div class="text-right">
@@ -116,7 +117,12 @@
                                     </svg>
                                 </div>
                                 <div v-else class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                                    <template v-if="getPaymentIcon(order.paymentMethod)">
+                                        <img :src="getPaymentIcon(order.paymentMethod)"
+                                            :alt="getPaymentMethodText(order.paymentMethod)"
+                                            class="w-10 h-10 object-contain" />
+                                    </template>
+                                    <svg v-else class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
                                         <path
                                             d="M12.5 2C6.512 2 1.5 7.012 1.5 13s5.012 11 11 11 11-5.012 11-11S18.488 2 12.5 2zm0 19c-4.408 0-8-3.592-8-8s3.592-8 8-8 8 3.592 8 8-3.592 8-8 8z" />
                                         <circle cx="8.5" cy="8.5" r="1.5" />
@@ -253,13 +259,18 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useOrderStore } from '@/stores/order'
 import Header from '@/templates/Header.vue'
 import Footer from '@/templates/Footer.vue'
 import ReviewModal from '@/components/reviews/ReviewModal.vue'
+import momoIcon from '@/assets/icons/momo.jpg'
+import zalopayIcon from '@/assets/icons/zalopay.png'
+import shopeePayIcon from '@/assets/icons/ShopeePay-B.jpg'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 const orderStore = useOrderStore()
 
 const loading = ref(true)
@@ -375,23 +386,40 @@ const getStatusClass = (status) => {
     return classMap[status] || 'bg-gray-100 text-gray-800'
 }
 
+const paymentMethodIcons = {
+    momo: momoIcon,
+    zalopay: zalopayIcon,
+    shopee_pay: shopeePayIcon
+}
+
 const getPaymentMethodText = (method) => {
-    const methodMap = {
-        'cod': 'Thanh toán khi nhận hàng',
-        'credit_card': 'Thẻ tín dụng',
-        'momo': 'MoMo'
+    const keyMap = {
+        cod: 'paymentCOD',
+        credit_card: 'paymentCreditCard',
+        bank_transfer: 'paymentTransfer',
+        momo: 'paymentMomo',
+        zalopay: 'paymentZalopay',
+        shopee_pay: 'paymentShopeePay'
     }
-    return methodMap[method] || method
+    const key = keyMap[method]
+    return key ? t(`Views.OrderDetail.${key}`) : method
 }
 
 const getPaymentDescription = (method) => {
-    const descMap = {
-        'cod': 'Bạn sẽ thanh toán khi nhận hàng',
-        'credit_card': 'Đã thanh toán bằng thẻ',
-        'bank_transfer': 'Đã chuyển khoản ngân hàng',
-        'momo': 'Đã thanh toán qua MoMo'
+    const keyMap = {
+        cod: 'paymentCODDesc',
+        credit_card: 'paymentCardDesc',
+        bank_transfer: 'paymentTransferDesc',
+        momo: 'paymentMomoDesc',
+        zalopay: 'paymentZalopayDesc',
+        shopee_pay: 'paymentShopeePayDesc'
     }
-    return descMap[method] || ''
+    const key = keyMap[method]
+    return key ? t(`Views.OrderDetail.${key}`) : ''
+}
+
+const getPaymentIcon = (method) => {
+    return paymentMethodIcons[method] || null
 }
 
 const getShippingMethodText = (method) => {

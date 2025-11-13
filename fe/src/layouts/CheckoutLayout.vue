@@ -3,8 +3,8 @@
         <div class="container mx-auto px-4 py-8">
             <!-- Header -->
             <div class="text-center mb-8">
-                <h1 class="text-4xl font-bold text-black mb-4">Thanh toán</h1>
-                <p class="text-gray-600 text-lg">Hoàn tất đơn hàng của bạn</p>
+                <h1 class="text-4xl font-bold text-black mb-4">{{ t('Views.Checkout.header.title') }}</h1>
+                <p class="text-gray-600 text-lg">{{ t('Views.Checkout.header.subtitle') }}</p>
             </div>
 
             <!-- Checkout Steps -->
@@ -43,36 +43,51 @@
                     <!-- Shipping Information -->
                     <div v-if="currentStep === 1" class="space-y-6">
                         <div class="bg-white border border-gray-200 rounded-lg p-6">
-                            <h2 class="text-xl font-bold text-black mb-6">Thông tin giao hàng</h2>
+                            <h2 class="text-xl font-bold text-black mb-6">{{ t('Views.Checkout.shipping.title') }}</h2>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <InputField label="Họ và tên *" name="fullName" v-model="shippingForm.fullName"
-                                    placeholder="Nhập họ và tên" :required="true" />
+                                <InputField :label="t('Views.Checkout.shipping.fields.fullName.label')" name="fullName"
+                                    v-model="shippingForm.fullName"
+                                    :placeholder="t('Views.Checkout.shipping.fields.fullName.placeholder')"
+                                    :required="true" />
 
-                                <InputField label="Số điện thoại *" name="phone" type="tel" v-model="shippingForm.phone"
-                                    placeholder="Nhập số điện thoại" :required="true" />
+                                <InputField :label="t('Views.Checkout.shipping.fields.phone.label')" name="phone"
+                                    type="tel" v-model="shippingForm.phone"
+                                    :placeholder="t('Views.Checkout.shipping.fields.phone.placeholder')"
+                                    :required="true" />
 
-                                <InputField label="Email *" name="email" type="email" v-model="shippingForm.email"
-                                    placeholder="Nhập email" :required="true" />
+                                <InputField :label="t('Views.Checkout.shipping.fields.email.label')" name="email"
+                                    type="email" v-model="shippingForm.email"
+                                    :placeholder="t('Views.Checkout.shipping.fields.email.placeholder')"
+                                    :required="true" />
 
                                 <div class="md:col-span-2">
-                                    <InputField label="Địa chỉ *" name="address" v-model="shippingForm.address"
-                                        placeholder="Nhập địa chỉ chi tiết" :required="true" />
+                                    <InputField :label="t('Views.Checkout.shipping.fields.address.label')"
+                                        name="address" v-model="shippingForm.address"
+                                        :placeholder="t('Views.Checkout.shipping.fields.address.placeholder')"
+                                        :required="true" />
                                 </div>
 
-                                <InputField label="Tỉnh/Thành phố *" name="city" v-model="shippingForm.city"
-                                    placeholder="Nhập tỉnh/thành phố" :required="true" />
+                                <InputField :label="t('Views.Checkout.shipping.fields.city.label')" name="city"
+                                    v-model="shippingForm.city"
+                                    :placeholder="t('Views.Checkout.shipping.fields.city.placeholder')"
+                                    :required="true" />
 
-                                <InputField label="Quận/Huyện *" name="district" v-model="shippingForm.district"
-                                    placeholder="Nhập quận/huyện" :required="true" />
+                                <InputField :label="t('Views.Checkout.shipping.fields.district.label')" name="district"
+                                    v-model="shippingForm.district"
+                                    :placeholder="t('Views.Checkout.shipping.fields.district.placeholder')"
+                                    :required="true" />
 
-                                <InputField label="Phường/Xã *" name="ward" v-model="shippingForm.ward"
-                                    placeholder="Nhập phường/xã" :required="true" />
+                                <InputField :label="t('Views.Checkout.shipping.fields.ward.label')" name="ward"
+                                    v-model="shippingForm.ward"
+                                    :placeholder="t('Views.Checkout.shipping.fields.ward.placeholder')"
+                                    :required="true" />
                             </div>
 
                             <!-- Shipping Method -->
                             <div class="mt-6">
-                                <h3 class="font-semibold text-black mb-4">Phương thức giao hàng</h3>
+                                <h3 class="font-semibold text-black mb-4">{{ t('Views.Checkout.shipping.methodTitle') }}
+                                </h3>
                                 <div class="space-y-3">
                                     <label v-for="option in shippingOptions" :key="option.value" :class="[
                                         'flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all',
@@ -97,10 +112,12 @@
 
                             <!-- Note -->
                             <div class="mt-6">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Ghi chú (tuỳ chọn)</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    {{ t('Views.Checkout.shipping.noteLabel') }}
+                                </label>
                                 <textarea v-model="shippingForm.note" rows="3"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                                    placeholder="Ghi chú cho đơn hàng..."></textarea>
+                                    :placeholder="t('Views.Checkout.shipping.notePlaceholder')"></textarea>
                             </div>
                         </div>
                     </div>
@@ -108,7 +125,7 @@
                     <!-- Payment Method -->
                     <div v-else-if="currentStep === 2" class="space-y-6">
                         <div class="bg-white border border-gray-200 rounded-lg p-6">
-                            <h2 class="text-xl font-bold text-black mb-6">Phương thức thanh toán</h2>
+                            <h2 class="text-xl font-bold text-black mb-6">{{ t('Views.Checkout.payment.title') }}</h2>
 
                             <div class="space-y-3">
                                 <label v-for="option in paymentOptions" :key="option.value" :class="[
@@ -133,16 +150,23 @@
                             <div v-if="paymentMethod === 'credit_card'"
                                 class="mt-6 p-4 border border-gray-200 rounded-lg">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <InputField label="Số thẻ" name="cardNumber" v-model="cardInfo.number"
-                                        placeholder="1234 5678 9012 3456" :maxlength="19" />
+                                    <InputField :label="t('Views.Checkout.payment.creditCardForm.numberLabel')"
+                                        name="cardNumber" v-model="cardInfo.number"
+                                        :placeholder="t('Views.Checkout.payment.creditCardForm.numberPlaceholder')"
+                                        :maxlength="19" />
 
-                                    <InputField label="Tên chủ thẻ" name="cardName" v-model="cardInfo.name"
-                                        placeholder="NGUYEN VAN A" />
+                                    <InputField :label="t('Views.Checkout.payment.creditCardForm.nameLabel')"
+                                        name="cardName" v-model="cardInfo.name"
+                                        :placeholder="t('Views.Checkout.payment.creditCardForm.namePlaceholder')" />
 
-                                    <InputField label="Ngày hết hạn" name="cardExpiry" v-model="cardInfo.expiry"
-                                        placeholder="MM/YY" :maxlength="5" />
+                                    <InputField :label="t('Views.Checkout.payment.creditCardForm.expiryLabel')"
+                                        name="cardExpiry" v-model="cardInfo.expiry"
+                                        :placeholder="t('Views.Checkout.payment.creditCardForm.expiryPlaceholder')"
+                                        :maxlength="5" />
 
-                                    <InputField label="CVV" name="cardCvv" v-model="cardInfo.cvv" placeholder="123"
+                                    <InputField :label="t('Views.Checkout.payment.creditCardForm.cvvLabel')"
+                                        name="cardCvv" v-model="cardInfo.cvv"
+                                        :placeholder="t('Views.Checkout.payment.creditCardForm.cvvPlaceholder')"
                                         :maxlength="3" />
                                 </div>
                             </div>
@@ -160,8 +184,10 @@
                                             </svg>
                                         </div>
                                         <div>
-                                            <h3 class="text-white font-bold text-lg">Ví điện tử MoMo</h3>
-                                            <p class="text-white/80 text-sm">Thanh toán nhanh chóng và an toàn</p>
+                                            <h3 class="text-white font-bold text-lg">{{
+                                                t('Views.Checkout.payment.momo.headerTitle') }}</h3>
+                                            <p class="text-white/80 text-sm">{{
+                                                t('Views.Checkout.payment.momo.headerDescription') }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -171,7 +197,7 @@
                                     <!-- Phone Input -->
                                     <div class="mb-6">
                                         <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                            Số điện thoại MoMo *
+                                            {{ t('Views.Checkout.payment.momo.phoneLabel') }}
                                         </label>
                                         <div class="relative">
                                             <div
@@ -184,12 +210,12 @@
                                                 </svg>
                                             </div>
                                             <input type="tel" v-model="momoInfo.phoneNumber"
-                                                placeholder="Nhập số điện thoại đã đăng ký MoMo"
+                                                :placeholder="t('Views.Checkout.payment.momo.phonePlaceholder')"
                                                 class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A50064] focus:border-[#A50064] transition-colors"
                                                 :maxlength="10" @input="formatPhoneNumber" />
                                         </div>
                                         <p class="mt-2 text-xs text-gray-500">
-                                            Số điện thoại phải có 10 chữ số và đã đăng ký ví MoMo
+                                            {{ t('Views.Checkout.payment.momo.phoneHint') }}
                                         </p>
                                     </div>
 
@@ -222,55 +248,45 @@
                                                                     </svg>
                                                                 </div>
                                                             </div>
-                                                            <p class="text-xs font-medium text-[#A50064]">Mã QR sẽ được
-                                                                tạo sau</p>
+                                                            <p class="text-xs font-medium text-[#A50064]">
+                                                                {{ t('Views.Checkout.payment.momo.qrPending') }}
+                                                            </p>
                                                         </div>
                                                         <p v-if="momoInfo.phoneNumber.length !== 10"
-                                                            class="text-xs text-gray-500">QR Code sẽ hiển thị sau khi
-                                                            nhập số điện thoại</p>
+                                                            class="text-xs text-gray-500">
+                                                            {{ t('Views.Checkout.payment.momo.qrInstructionPending') }}
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <p class="text-sm font-medium text-gray-700 mb-1">Hoặc quét mã QR để thanh
-                                                toán</p>
-                                            <p class="text-xs text-gray-500">Mở ứng dụng MoMo và quét mã QR ở trên</p>
+                                            <p class="text-sm font-medium text-gray-700 mb-1">
+                                                {{ t('Views.Checkout.payment.momo.qrTitle') }}
+                                            </p>
+                                            <p class="text-xs text-gray-500">
+                                                {{ t('Views.Checkout.payment.momo.qrDescription') }}
+                                            </p>
                                             <p v-if="momoInfo.phoneNumber.length === 10"
                                                 class="text-xs text-[#A50064] font-medium mt-2">
-                                                ✓ Số điện thoại đã được xác nhận
+                                                {{ t('Views.Checkout.payment.momo.phoneVerified') }}
                                             </p>
                                         </div>
                                     </div>
 
                                     <!-- Payment Instructions -->
                                     <div class="mb-6">
-                                        <h4 class="text-sm font-semibold text-gray-700 mb-3">Hướng dẫn thanh toán:</h4>
+                                        <h4 class="text-sm font-semibold text-gray-700 mb-3">
+                                            {{ t('Views.Checkout.payment.momo.instructionsTitle') }}
+                                        </h4>
                                         <div class="space-y-2">
-                                            <div class="flex items-start gap-3">
+                                            <div class="flex items-start gap-3" v-for="step in momoInstructionSteps"
+                                                :key="`momo-step-${step}`">
                                                 <div
                                                     class="w-6 h-6 bg-[#A50064] text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                                                    1</div>
-                                                <p class="text-sm text-gray-600">Nhập số điện thoại đã đăng ký ví MoMo
-                                                    của bạn</p>
-                                            </div>
-                                            <div class="flex items-start gap-3">
-                                                <div
-                                                    class="w-6 h-6 bg-[#A50064] text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                                                    2</div>
-                                                <p class="text-sm text-gray-600">Quét mã QR bằng ứng dụng MoMo hoặc xác
-                                                    nhận trên điện thoại</p>
-                                            </div>
-                                            <div class="flex items-start gap-3">
-                                                <div
-                                                    class="w-6 h-6 bg-[#A50064] text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                                                    3</div>
-                                                <p class="text-sm text-gray-600">Xác nhận thanh toán trên ứng dụng MoMo
-                                                    của bạn</p>
-                                            </div>
-                                            <div class="flex items-start gap-3">
-                                                <div
-                                                    class="w-6 h-6 bg-[#A50064] text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                                                    4</div>
-                                                <p class="text-sm text-gray-600">Chờ xác nhận thanh toán thành công</p>
+                                                    {{ step }}
+                                                </div>
+                                                <p class="text-sm text-gray-600">
+                                                    {{ t(`Views.Checkout.payment.momo.instructions.step${step}`) }}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -285,11 +301,11 @@
                                                     d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                             </svg>
                                             <div class="flex-1">
-                                                <p class="text-sm font-semibold text-[#A50064] mb-1">Thanh toán an toàn
-                                                    với MoMo</p>
+                                                <p class="text-sm font-semibold text-[#A50064] mb-1">
+                                                    {{ t('Views.Checkout.payment.momo.securityTitle') }}
+                                                </p>
                                                 <p class="text-xs text-gray-600">
-                                                    Thông tin thanh toán của bạn được mã hóa và bảo mật. Chúng tôi không
-                                                    lưu trữ số điện thoại hay thông tin ví của bạn.
+                                                    {{ t('Views.Checkout.payment.momo.securityDescription') }}
                                                 </p>
                                             </div>
                                         </div>
@@ -308,6 +324,182 @@
                                 </div>
                             </div>
 
+                            <!-- ShopeePay Payment Form -->
+                            <div v-if="paymentMethod === 'shopee_pay'"
+                                class="mt-6 border border-gray-200 rounded-lg overflow-hidden">
+                                <!-- ShopeePay Header -->
+                                <div class="bg-gradient-to-r from-[#EE4D2D] to-[#FF6B4A] px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden">
+                                            <img :src="shopeePayIcon" alt="ShopeePay"
+                                                class="w-full h-full object-contain" />
+                                        </div>
+                                        <div>
+                                            <h3 class="text-white font-bold text-lg">{{
+                                                t('Views.Checkout.payment.shopeePay.headerTitle') }}</h3>
+                                            <p class="text-white/80 text-sm">{{
+                                                t('Views.Checkout.payment.shopeePay.headerDescription') }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- ShopeePay Content -->
+                                <div class="p-6 bg-white">
+                                    <!-- Phone Input -->
+                                    <div class="mb-6">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                            {{ t('Views.Checkout.payment.shopeePay.phoneLabel') }}
+                                        </label>
+                                        <div class="relative">
+                                            <div
+                                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                </svg>
+                                            </div>
+                                            <input type="tel" v-model="shopeePayInfo.phoneNumber"
+                                                :placeholder="t('Views.Checkout.payment.shopeePay.phonePlaceholder')"
+                                                class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[#EE4D2D] focus:border-[#EE4D2D] transition-colors"
+                                                :maxlength="10" @input="formatShopeePayPhone" />
+                                        </div>
+                                        <p class="mt-2 text-xs text-gray-500">
+                                            {{ t('Views.Checkout.payment.shopeePay.phoneHint') }}
+                                        </p>
+                                    </div>
+
+                                    <!-- Payment Instructions -->
+                                    <div class="mb-6">
+                                        <h4 class="text-sm font-semibold text-gray-700 mb-3">
+                                            {{ t('Views.Checkout.payment.shopeePay.instructionsTitle') }}
+                                        </h4>
+                                        <div class="space-y-2">
+                                            <div class="flex items-start gap-3"
+                                                v-for="step in shopeePayInstructionSteps" :key="`shopee-step-${step}`">
+                                                <div
+                                                    class="w-6 h-6 bg-[#EE4D2D] text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                                                    {{ step }}
+                                                </div>
+                                                <p class="text-sm text-gray-600">
+                                                    {{ t(`Views.Checkout.payment.shopeePay.instructions.step${step}`) }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Security & Info -->
+                                    <div
+                                        class="bg-gradient-to-r from-[#FFF5F0] to-[#FFE8E0] border border-[#FFD4C4] rounded-lg p-4">
+                                        <div class="flex items-start gap-3">
+                                            <svg class="w-5 h-5 text-[#EE4D2D] mt-0.5 flex-shrink-0" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                            </svg>
+                                            <div class="flex-1">
+                                                <p class="text-sm font-semibold text-[#EE4D2D] mb-1">
+                                                    {{ t('Views.Checkout.payment.shopeePay.securityTitle') }}
+                                                </p>
+                                                <p class="text-xs text-gray-600">
+                                                    {{ t('Views.Checkout.payment.shopeePay.securityDescription') }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ZaloPay Payment Form -->
+                            <div v-if="paymentMethod === 'zalopay'"
+                                class="mt-6 border border-gray-200 rounded-lg overflow-hidden">
+                                <!-- ZaloPay Header -->
+                                <div class="bg-gradient-to-r from-[#0068FF] to-[#0084FF] px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden">
+                                            <img :src="zalopayIcon" alt="ZaloPay"
+                                                class="w-full h-full object-contain" />
+                                        </div>
+                                        <div>
+                                            <h3 class="text-white font-bold text-lg">{{
+                                                t('Views.Checkout.payment.zaloPay.headerTitle') }}</h3>
+                                            <p class="text-white/80 text-sm">{{
+                                                t('Views.Checkout.payment.zaloPay.headerDescription') }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- ZaloPay Content -->
+                                <div class="p-6 bg-white">
+                                    <!-- Phone Input -->
+                                    <div class="mb-6">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                            {{ t('Views.Checkout.payment.zaloPay.phoneLabel') }}
+                                        </label>
+                                        <div class="relative">
+                                            <div
+                                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                </svg>
+                                            </div>
+                                            <input type="tel" v-model="zalopayInfo.phoneNumber"
+                                                :placeholder="t('Views.Checkout.payment.zaloPay.phonePlaceholder')"
+                                                class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0068FF] focus:border-[#0068FF] transition-colors"
+                                                :maxlength="10" @input="formatZaloPayPhone" />
+                                        </div>
+                                        <p class="mt-2 text-xs text-gray-500">
+                                            {{ t('Views.Checkout.payment.zaloPay.phoneHint') }}
+                                        </p>
+                                    </div>
+
+                                    <!-- Payment Instructions -->
+                                    <div class="mb-6">
+                                        <h4 class="text-sm font-semibold text-gray-700 mb-3">
+                                            {{ t('Views.Checkout.payment.zaloPay.instructionsTitle') }}
+                                        </h4>
+                                        <div class="space-y-2">
+                                            <div class="flex items-start gap-3" v-for="step in zaloPayInstructionSteps"
+                                                :key="`zalo-step-${step}`">
+                                                <div
+                                                    class="w-6 h-6 bg-[#0068FF] text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                                                    {{ step }}
+                                                </div>
+                                                <p class="text-sm text-gray-600">
+                                                    {{ t(`Views.Checkout.payment.zaloPay.instructions.step${step}`) }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Security & Info -->
+                                    <div
+                                        class="bg-gradient-to-r from-[#E6F2FF] to-[#D0E7FF] border border-[#B3D9FF] rounded-lg p-4">
+                                        <div class="flex items-start gap-3">
+                                            <svg class="w-5 h-5 text-[#0068FF] mt-0.5 flex-shrink-0" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                            </svg>
+                                            <div class="flex-1">
+                                                <p class="text-sm font-semibold text-[#0068FF] mb-1">
+                                                    {{ t('Views.Checkout.payment.zaloPay.securityTitle') }}
+                                                </p>
+                                                <p class="text-xs text-gray-600">
+                                                    {{ t('Views.Checkout.payment.zaloPay.securityDescription') }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Security Notice -->
                             <div class="mt-4 p-4 bg-gray-50 rounded-lg">
                                 <div class="flex items-start gap-3">
@@ -317,8 +509,7 @@
                                             d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                     </svg>
                                     <p class="text-sm text-gray-600">
-                                        Thông tin thẻ của bạn được bảo mật và mã hóa. Chúng tôi không lưu trữ thông tin
-                                        thẻ của bạn.
+                                        {{ t('Views.Checkout.payment.securityNotice') }}
                                     </p>
                                 </div>
                             </div>
@@ -329,29 +520,31 @@
                     <div v-else-if="currentStep === 3" class="space-y-6">
                         <!-- Shipping Info Review -->
                         <div class="bg-white border border-gray-200 rounded-lg p-6">
-                            <h2 class="text-xl font-bold text-black mb-4">Thông tin giao hàng</h2>
+                            <h2 class="text-xl font-bold text-black mb-4">{{
+                                t('Views.Checkout.review.shippingInfoTitle') }}</h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                 <div>
-                                    <p class="text-gray-600">Họ tên</p>
+                                    <p class="text-gray-600">{{ t('Views.Checkout.review.labels.fullName') }}</p>
                                     <p class="font-semibold text-black">{{ shippingForm.fullName }}</p>
                                 </div>
                                 <div>
-                                    <p class="text-gray-600">Số điện thoại</p>
+                                    <p class="text-gray-600">{{ t('Views.Checkout.review.labels.phone') }}</p>
                                     <p class="font-semibold text-black">{{ shippingForm.phone }}</p>
                                 </div>
                                 <div>
-                                    <p class="text-gray-600">Email</p>
+                                    <p class="text-gray-600">{{ t('Views.Checkout.review.labels.email') }}</p>
                                     <p class="font-semibold text-black">{{ shippingForm.email }}</p>
                                 </div>
                                 <div>
-                                    <p class="text-gray-600">Địa chỉ</p>
+                                    <p class="text-gray-600">{{ t('Views.Checkout.review.labels.address') }}</p>
                                     <p class="font-semibold text-black">
                                         {{ shippingForm.address }}, {{ shippingForm.ward }}, {{ shippingForm.district
-                                        }}, {{ shippingForm.city }}
+                                        }},
+                                        {{ shippingForm.city }}
                                     </p>
                                 </div>
                                 <div v-if="shippingForm.note">
-                                    <p class="text-gray-600">Ghi chú</p>
+                                    <p class="text-gray-600">{{ t('Views.Checkout.review.labels.note') }}</p>
                                     <p class="font-semibold text-black">{{ shippingForm.note }}</p>
                                 </div>
                             </div>
@@ -359,7 +552,8 @@
 
                         <!-- Payment Method Review -->
                         <div class="bg-white border border-gray-200 rounded-lg p-6">
-                            <h2 class="text-xl font-bold text-black mb-4">Phương thức thanh toán</h2>
+                            <h2 class="text-xl font-bold text-black mb-4">{{
+                                t('Views.Checkout.review.paymentMethodTitle') }}</h2>
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="font-semibold text-black">{{ getPaymentMethodLabel(paymentMethod) }}</p>
@@ -368,14 +562,15 @@
                                 </div>
                                 <button @click="currentStep = 2"
                                     class="text-black hover:text-gray-700 transition-colors">
-                                    Chỉnh sửa
+                                    {{ t('Views.Checkout.review.editButton') }}
                                 </button>
                             </div>
                         </div>
 
                         <!-- Order Items Review -->
                         <div class="bg-white border border-gray-200 rounded-lg p-6">
-                            <h2 class="text-xl font-bold text-black mb-4">Sản phẩm</h2>
+                            <h2 class="text-xl font-bold text-black mb-4">{{ t('Views.Checkout.review.productsTitle') }}
+                            </h2>
                             <div class="space-y-4">
                                 <div v-for="item in cartItems" :key="item.id"
                                     class="flex items-center gap-4 py-3 border-b border-gray-100 last:border-b-0">
@@ -383,13 +578,16 @@
                                     <div class="flex-1">
                                         <h3 class="font-semibold text-black">{{ item.name }}</h3>
                                         <p class="text-sm text-gray-600">{{ item.brand }}</p>
-                                        <p class="text-sm text-gray-600">Size: {{ item.size }} | Màu: {{ item.color }}
+                                        <p class="text-sm text-gray-600">
+                                            {{ t('Views.Checkout.review.sizeLabel') }} {{ item.size }} |
+                                            {{ t('Views.Checkout.review.colorLabel') }} {{ item.color }}
                                         </p>
                                     </div>
                                     <div class="text-right">
                                         <p class="font-semibold text-black">{{ formatPrice(item.price * item.quantity)
-                                            }}</p>
-                                        <p class="text-sm text-gray-600">Số lượng: {{ item.quantity }}</p>
+                                        }}</p>
+                                        <p class="text-sm text-gray-600">{{ t('Views.Checkout.review.quantityLabel') }}
+                                            {{ item.quantity }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -400,7 +598,7 @@
                 <!-- Right Column - Order Summary -->
                 <div class="lg:w-1/3">
                     <div class="bg-white border border-gray-200 rounded-lg p-6 sticky top-4">
-                        <h2 class="text-xl font-bold text-black mb-6">Tóm tắt đơn hàng</h2>
+                        <h2 class="text-xl font-bold text-black mb-6">{{ t('Views.Checkout.summary.title') }}</h2>
 
                         <!-- Order Items -->
                         <div class="space-y-3 mb-6">
@@ -408,7 +606,10 @@
                                 <img :src="item.image" :alt="item.name" class="w-12 h-12 object-cover rounded" />
                                 <div class="flex-1 min-w-0">
                                     <p class="font-medium text-black text-sm truncate">{{ item.name }}</p>
-                                    <p class="text-gray-600 text-xs">Size {{ item.size }} | SL: {{ item.quantity }}</p>
+                                    <p class="text-gray-600 text-xs">
+                                        {{ t('Views.Checkout.summary.sizePrefix') }} {{ item.size }} |
+                                        {{ t('Views.Checkout.summary.quantityPrefix') }} {{ item.quantity }}
+                                    </p>
                                 </div>
                                 <p class="font-semibold text-black text-sm whitespace-nowrap">
                                     {{ formatPrice(item.price * item.quantity) }}
@@ -419,18 +620,18 @@
                         <!-- Pricing -->
                         <div class="space-y-2 border-t border-gray-200 pt-4">
                             <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Tạm tính</span>
+                                <span class="text-gray-600">{{ t('Views.Checkout.summary.subtotal') }}</span>
                                 <span class="text-black">{{ formatPrice(subtotal) }}</span>
                             </div>
 
                             <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Phí vận chuyển</span>
-                                <span class="text-black">{{ shippingFee > 0 ? formatPrice(shippingFee) : 'Miễn phí'
-                                    }}</span>
+                                <span class="text-gray-600">{{ t('Views.Checkout.summary.shippingFee') }}</span>
+                                <span class="text-black">{{ shippingFee > 0 ? formatPrice(shippingFee) :
+                                    t('Views.Checkout.summary.freeShipping') }}</span>
                             </div>
 
                             <div class="flex justify-between text-lg font-bold border-t border-gray-200 pt-3 mt-2">
-                                <span class="text-black">Tổng cộng</span>
+                                <span class="text-black">{{ t('Views.Checkout.summary.total') }}</span>
                                 <span class="text-black">{{ formatPrice(total) }}</span>
                             </div>
                         </div>
@@ -440,10 +641,9 @@
                             {{ actionButtonText }}
                         </Button>
 
-                        <!-- Back Button -->
                         <button v-if="currentStep > 1" @click="goToPreviousStep"
-                            class="w-full mt-3 text-center text-gray-600 hover:text-black transition-colors">
-                            ← Quay lại
+                            class="w-full mt-3 text-sm text-gray-600 hover:text-black transition-colors">
+                            {{ t('Views.Checkout.summary.previousStep') }}
                         </button>
 
                         <!-- Security Badge -->
@@ -453,7 +653,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg>
-                                <span>Thanh toán an toàn & bảo mật</span>
+                                <span>{{ t('Views.Checkout.payment.securityBadge') }}</span>
                             </div>
                         </div>
                     </div>
@@ -484,27 +684,29 @@
 
                             <h2 class="text-2xl font-bold text-black mb-4">{{ $t('CheckoutLayout.orderSuccess') }}</h2>
                             <p class="text-gray-600 mb-2">{{ $t('CheckoutLayout.thankYou') }}</p>
-                            <p class="text-gray-600 mb-6">{{ $t('CheckoutLayout.orderId') }} <strong class="text-black">{{ orderResult?.id
+                            <p class="text-gray-600 mb-6">{{ $t('CheckoutLayout.orderId') }} <strong
+                                    class="text-black">{{ orderResult?.id
                                     }}</strong></p>
 
                             <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
                                 <div class="flex justify-between items-center mb-2">
-                                    <span class="text-gray-600">Tổng thanh toán:</span>
+                                    <span class="text-gray-600">{{ t('Views.Checkout.successModal.totalLabel') }}</span>
                                     <span class="text-xl font-bold text-black">{{ formatPrice(orderResult?.total || 0)
-                                        }}</span>
+                                    }}</span>
                                 </div>
                                 <div class="flex justify-between items-center text-sm">
-                                    <span class="text-gray-600">Dự kiến giao hàng:</span>
+                                    <span class="text-gray-600">{{
+                                        t('Views.Checkout.successModal.deliveryEstimateLabel') }}</span>
                                     <span class="text-black">{{ formatDate(orderResult?.estimatedDelivery) }}</span>
                                 </div>
                             </div>
 
                             <div class="flex gap-4 justify-center">
                                 <Button :variant="'outline'" @click="handleSuccessModalClose">
-                                    Tiếp tục mua sắm
+                                    {{ t('Views.Checkout.successModal.continueShopping') }}
                                 </Button>
                                 <Button :variant="'primary'" @click="viewOrder">
-                                    Xem đơn hàng
+                                    {{ t('Views.Checkout.successModal.viewOrder') }}
                                 </Button>
                             </div>
                         </div>
@@ -522,15 +724,21 @@ import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
 import { useToast } from '@/composables/useToast';
 import PaymentService from '@/api-services/PaymentService';
+import { useI18n } from 'vue-i18n';
 
 // Import các component UI
 import InputField from '@/components/FormInput.vue';
 import Button from '@/components/Button.vue';
 
+// Import payment icons
+import shopeePayIcon from '@/assets/icons/ShopeePay-B.jpg';
+import zalopayIcon from '@/assets/icons/zalopay.png';
+
 const router = useRouter();
 const orderStore = useOrderStore();
 const authStore = useAuthStore();
 const toast = useToast();
+const { t } = useI18n();
 
 // Step management
 const currentStep = ref(1);
@@ -556,6 +764,12 @@ const cardInfo = ref({
     cvv: ''
 });
 const momoInfo = ref({
+    phoneNumber: ''
+});
+const shopeePayInfo = ref({
+    phoneNumber: ''
+});
+const zalopayInfo = ref({
     phoneNumber: ''
 });
 
@@ -592,55 +806,69 @@ const showSuccessModal = ref(false);
 const orderResult = ref(null);
 
 // Constants
-const steps = [
-    { number: 1, label: 'Giao hàng' },
-    { number: 2, label: 'Thanh toán' },
-    { number: 3, label: 'Xác nhận' }
-];
+const steps = computed(() => ([
+    { number: 1, label: t('Views.Checkout.steps.shipping') },
+    { number: 2, label: t('Views.Checkout.steps.payment') },
+    { number: 3, label: t('Views.Checkout.steps.review') }
+]));
 
-const shippingOptions = [
+const shippingOptions = computed(() => ([
     {
         value: 'standard',
-        label: 'Giao hàng tiêu chuẩn',
-        description: 'Nhận hàng trong 3-5 ngày',
-        price: '30.000đ'
+        label: t('Views.Checkout.shipping.methods.standard.label'),
+        description: t('Views.Checkout.shipping.methods.standard.description'),
+        price: t('Views.Checkout.shipping.methods.standard.price')
     },
     {
         value: 'express',
-        label: 'Giao hàng nhanh',
-        description: 'Nhận hàng trong 1-2 ngày',
-        price: '50.000đ'
+        label: t('Views.Checkout.shipping.methods.express.label'),
+        description: t('Views.Checkout.shipping.methods.express.description'),
+        price: t('Views.Checkout.shipping.methods.express.price')
     },
     {
         value: 'pickup',
-        label: 'Nhận tại cửa hàng',
-        description: 'Nhận hàng trực tiếp',
-        price: 'Miễn phí'
+        label: t('Views.Checkout.shipping.methods.pickup.label'),
+        description: t('Views.Checkout.shipping.methods.pickup.description'),
+        price: t('Views.Checkout.shipping.methods.pickup.price')
     }
-];
+]));
 
-const paymentOptions = [
+const paymentOptions = computed(() => ([
     {
         value: 'cod',
-        label: 'Thanh toán khi nhận hàng (COD)',
-        description: 'Trả tiền mặt khi nhận được hàng'
+        label: t('Views.Checkout.payment.options.cod.label'),
+        description: t('Views.Checkout.payment.options.cod.description')
     },
     {
         value: 'credit_card',
-        label: 'Thẻ tín dụng/Ghi nợ',
-        description: 'Thanh toán an toàn bằng thẻ Visa, MasterCard'
+        label: t('Views.Checkout.payment.options.creditCard.label'),
+        description: t('Views.Checkout.payment.options.creditCard.description')
     },
     {
         value: 'bank_transfer',
-        label: 'Chuyển khoản ngân hàng',
-        description: 'Chuyển khoản trực tiếp đến tài khoản ngân hàng'
+        label: t('Views.Checkout.payment.options.bankTransfer.label'),
+        description: t('Views.Checkout.payment.options.bankTransfer.description')
     },
     {
         value: 'momo',
-        label: 'Ví MoMo',
-        description: 'Thanh toán nhanh qua ví điện tử MoMo'
+        label: t('Views.Checkout.payment.options.momo.label'),
+        description: t('Views.Checkout.payment.options.momo.description')
+    },
+    {
+        value: 'shopee_pay',
+        label: t('Views.Checkout.payment.options.shopeePay.label'),
+        description: t('Views.Checkout.payment.options.shopeePay.description')
+    },
+    {
+        value: 'zalopay',
+        label: t('Views.Checkout.payment.options.zaloPay.label'),
+        description: t('Views.Checkout.payment.options.zaloPay.description')
     }
-];
+]));
+
+const momoInstructionSteps = [1, 2, 3, 4];
+const shopeePayInstructionSteps = [1, 2, 3];
+const zaloPayInstructionSteps = [1, 2, 3];
 
 // Computed
 const shippingFee = computed(() => {
@@ -664,10 +892,14 @@ const total = computed(() => {
 
 const actionButtonText = computed(() => {
     switch (currentStep.value) {
-        case 1: return 'Tiếp tục thanh toán';
-        case 2: return 'Tiếp tục xác nhận';
-        case 3: return 'Đặt hàng';
-        default: return 'Tiếp tục';
+        case 1:
+            return t('Views.Checkout.actions.nextToPayment');
+        case 2:
+            return t('Views.Checkout.actions.nextToReview');
+        case 3:
+            return t('Views.Checkout.actions.placeOrder');
+        default:
+            return t('Views.Checkout.actions.continue');
     }
 });
 
@@ -689,15 +921,27 @@ const validateShipping = () => {
 
 const goToNextStep = () => {
     if (currentStep.value === 1 && !validateShipping()) {
-        toast.warning('Vui lòng điền đầy đủ thông tin giao hàng');
+        toast.warning(t('Views.Checkout.toasts.fillShipping'));
         return;
     }
 
-    // Validate MoMo phone number if MoMo is selected
-    if (currentStep.value === 2 && paymentMethod.value === 'momo') {
-        if (!momoInfo.value.phoneNumber || momoInfo.value.phoneNumber.length !== 10) {
-            toast.warning('Vui lòng nhập số điện thoại MoMo hợp lệ (10 chữ số)');
-            return;
+    // Validate payment phone numbers if e-wallet is selected
+    if (currentStep.value === 2) {
+        if (paymentMethod.value === 'momo') {
+            if (!momoInfo.value.phoneNumber || momoInfo.value.phoneNumber.length !== 10) {
+                toast.warning(t('Views.Checkout.toasts.invalidMomoPhone'));
+                return;
+            }
+        } else if (paymentMethod.value === 'shopee_pay') {
+            if (!shopeePayInfo.value.phoneNumber || shopeePayInfo.value.phoneNumber.length !== 10) {
+                toast.warning(t('Views.Checkout.toasts.invalidShopeePayPhone'));
+                return;
+            }
+        } else if (paymentMethod.value === 'zalopay') {
+            if (!zalopayInfo.value.phoneNumber || zalopayInfo.value.phoneNumber.length !== 10) {
+                toast.warning(t('Views.Checkout.toasts.invalidZaloPayPhone'));
+                return;
+            }
         }
     }
 
@@ -726,7 +970,7 @@ const placeOrder = async () => {
     try {
         // Kiểm tra user đã đăng nhập chưa
         if (!authStore.user) {
-            toast.warning('Vui lòng đăng nhập để đặt hàng');
+            toast.warning(t('Views.Checkout.toasts.loginRequired'));
             router.push('/login');
             return;
         }
@@ -760,9 +1004,15 @@ const placeOrder = async () => {
             total: total.value,
             paymentMethod: paymentMethod.value,
             estimatedDelivery: estimatedDelivery,
-            // Add MoMo phone number if MoMo payment is selected
+            // Add phone number if e-wallet payment is selected
             ...(paymentMethod.value === 'momo' && momoInfo.value.phoneNumber ? {
                 momoPhoneNumber: momoInfo.value.phoneNumber
+            } : {}),
+            ...(paymentMethod.value === 'shopee_pay' && shopeePayInfo.value.phoneNumber ? {
+                shopeePayPhoneNumber: shopeePayInfo.value.phoneNumber
+            } : {}),
+            ...(paymentMethod.value === 'zalopay' && zalopayInfo.value.phoneNumber ? {
+                zalopayPhoneNumber: zalopayInfo.value.phoneNumber
             } : {})
         };
 
@@ -770,7 +1020,7 @@ const placeOrder = async () => {
         const result = await orderStore.createOrder(orderData);
 
         if (!result) {
-            throw new Error('Không thể tạo đơn hàng');
+            throw new Error('order_creation_failed');
         }
 
         const orderId = result.id || result._id || result.data?.id || result.data?._id;
@@ -778,7 +1028,7 @@ const placeOrder = async () => {
         // Nếu thanh toán bằng MoMo, tạo payment request và redirect
         if (paymentMethod.value === 'momo') {
             try {
-                toast.info('Đang tạo yêu cầu thanh toán MoMo...');
+                toast.info(t('Views.Checkout.toasts.creatingMomoPayment'));
 
                 // Tạo payment request
                 const paymentResponse = await PaymentService.createMomoPayment({
@@ -793,11 +1043,12 @@ const placeOrder = async () => {
                     window.location.href = paymentResponse.pay_url;
                     return; // Không hiển thị success modal vì đang redirect
                 } else {
-                    throw new Error('Không nhận được payment URL từ MoMo');
+                    throw new Error('missing_pay_url');
                 }
             } catch (error) {
                 console.error('Error creating MoMo payment:', error);
-                toast.error(error?.detail || error?.message || 'Có lỗi xảy ra khi tạo yêu cầu thanh toán. Đơn hàng đã được tạo.');
+                const fallbackMessage = t('Views.Checkout.toasts.createPaymentError');
+                toast.error(error?.detail || error?.message || fallbackMessage);
 
                 // Vẫn hiển thị success modal nếu có lỗi payment
                 orderResult.value = {
@@ -822,7 +1073,7 @@ const placeOrder = async () => {
         showSuccessModal.value = true;
     } catch (error) {
         console.error('Error placing order:', error);
-        toast.error('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
+        toast.error(t('Views.Checkout.toasts.placeOrderError'));
     }
 };
 
@@ -848,20 +1099,24 @@ const formatDate = (dateString) => {
 
 const getPaymentMethodLabel = (method) => {
     const methods = {
-        cod: 'Thanh toán khi nhận hàng',
-        credit_card: 'Thẻ tín dụng/Ghi nợ',
-        bank_transfer: 'Chuyển khoản ngân hàng',
-        momo: 'Ví MoMo'
+        cod: t('Views.Checkout.review.paymentMethods.cod'),
+        credit_card: t('Views.Checkout.review.paymentMethods.creditCard'),
+        bank_transfer: t('Views.Checkout.review.paymentMethods.bankTransfer'),
+        momo: t('Views.Checkout.review.paymentMethods.momo'),
+        shopee_pay: t('Views.Checkout.review.paymentMethods.shopeePay'),
+        zalopay: t('Views.Checkout.review.paymentMethods.zaloPay')
     };
     return methods[method] || method;
 };
 
 const getPaymentMethodDescription = (method) => {
     const descriptions = {
-        cod: 'Trả tiền mặt khi nhận hàng',
-        credit_card: 'Thanh toán an toàn bằng thẻ',
-        bank_transfer: 'Chuyển khoản trực tiếp',
-        momo: 'Thanh toán qua ví điện tử'
+        cod: t('Views.Checkout.review.paymentDescriptions.cod'),
+        credit_card: t('Views.Checkout.review.paymentDescriptions.creditCard'),
+        bank_transfer: t('Views.Checkout.review.paymentDescriptions.bankTransfer'),
+        momo: t('Views.Checkout.review.paymentDescriptions.momo'),
+        shopee_pay: t('Views.Checkout.review.paymentDescriptions.shopeePay'),
+        zalopay: t('Views.Checkout.review.paymentDescriptions.zaloPay')
     };
     return descriptions[method] || '';
 };
@@ -873,6 +1128,26 @@ const formatPhoneNumber = (event) => {
         value = value.slice(0, 10);
     }
     momoInfo.value.phoneNumber = value;
+    event.target.value = value;
+};
+
+// Format phone number for ShopeePay (only numbers, max 10 digits)
+const formatShopeePayPhone = (event) => {
+    let value = event.target.value.replace(/\D/g, ''); // Remove non-digits
+    if (value.length > 10) {
+        value = value.slice(0, 10);
+    }
+    shopeePayInfo.value.phoneNumber = value;
+    event.target.value = value;
+};
+
+// Format phone number for ZaloPay (only numbers, max 10 digits)
+const formatZaloPayPhone = (event) => {
+    let value = event.target.value.replace(/\D/g, ''); // Remove non-digits
+    if (value.length > 10) {
+        value = value.slice(0, 10);
+    }
+    zalopayInfo.value.phoneNumber = value;
     event.target.value = value;
 };
 

@@ -2,6 +2,7 @@ from fastapi import APIRouter, Query, Depends, HTTPException
 from fastapi import APIRouter, UploadFile, File,Path,Body
 from typing import List, Optional, Annotated, Any
 from fastapi.params import Depends
+from starlette.responses import JSONResponse
 
 from dependences.dependencies import get_product_repo, get_image_repo, get_comment_repo
 from repositories.image_repository import ImageRepository
@@ -68,6 +69,14 @@ async def list_products(
         sort_by=sort_by,
         sort_order=sort_order
     )
+
+@product_router.get("/active")
+async def list_active_products(
+    product_repo: ProductRepository = Depends(get_product_repo)
+):
+    service = ProductService(None, product_repo)
+    products = await service.get_active_products()
+    return JSONResponse(status_code=200, content={"products": products})
 
 @product_router.get("/top-rated", response_model=List[ProductResponse])
 async def get_top_rated_products(

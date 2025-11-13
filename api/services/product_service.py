@@ -224,6 +224,17 @@ class ProductService:
         return updated_product
 
 
+    async def get_active_products(self) -> List[Dict]:
+        products = await self.product_repo.get_active_products()
+        formatted_products = []
+        for product in products:
+            product_dict = dict(product)
+            if "_id" in product_dict:
+                product_dict["id"] = str(product_dict["_id"])
+                product_dict.pop("_id", None)
+            formatted_products.append(product_dict)
+        return formatted_products
+
 
 
 

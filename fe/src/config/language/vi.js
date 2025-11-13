@@ -1573,6 +1573,66 @@ Myshoes.vn hiện đang có chương trình ưu đãi đặc biệt cho các m�
       resendError: "Gửi lại mã thất bại!",
       pleaseRegister: "Vui lòng đăng ký để nhận mã xác thực",
     },
+    PaymentDemo: {
+      badge: "🧪 DEMO MODE - Thanh toán thử nghiệm",
+      title: "Thanh toán MoMo",
+      subtitle: "Trang thanh toán demo - Không thực sự trừ tiền",
+      orderIdLabel: "Mã đơn hàng:",
+      amountLabel: "Số tiền:",
+      transactionIdLabel: "Transaction ID:",
+      phoneLabel: "Số điện thoại MoMo",
+      phonePlaceholder: "0123456789",
+      passwordLabel: "Mật khẩu (Demo)",
+      passwordPlaceholder: "Nhập bất kỳ (demo)",
+      otpTitle: "Xác thực OTP",
+      otpInstruction: "Mã OTP đã được gửi tới số điện thoại MoMo của bạn (demo). Vui lòng nhập mã gồm 6 chữ số để hoàn tất giao dịch.",
+      otpInputLabel: "Nhập mã OTP",
+      otpPlaceholder: "••••••",
+      otpDemoCodeMessage: "Mã OTP demo mặc định: {code}",
+      infoNoteLabel: "Lưu ý:",
+      infoNoteText: "Đây là chế độ demo. Không có giao dịch thực tế nào được thực hiện. Bạn có thể test cả trường hợp thanh toán thành công và thất bại.",
+      buttons: {
+        continue: "✅ Tiếp tục & Nhập OTP (Demo)",
+        processing: "Đang xử lý...",
+        confirm: "🔐 Xác nhận OTP",
+        back: "Quay lại",
+        cancel: "Hủy bỏ",
+      },
+      otpErrors: {
+        incomplete: "Vui lòng nhập đầy đủ 6 chữ số OTP",
+        incorrect: "Mã OTP không chính xác. Vui lòng thử lại.",
+      },
+      toasts: {
+        noOrder: "Không tìm thấy thông tin đơn hàng",
+        invalidPhone: "Vui lòng nhập số điện thoại MoMo hợp lệ",
+        missingPassword: "Vui lòng nhập mật khẩu demo",
+        otpSent: "Mã OTP demo đã được gửi về SMS. Vui lòng nhập mã để tiếp tục.",
+        otpInvalid: "Mã OTP không hợp lệ (demo)",
+        success: "Thanh toán thành công! (Demo)",
+        failure: "Thanh toán thất bại! (Demo)",
+        genericError: "Có lỗi xảy ra",
+        processError: "Có lỗi xảy ra khi xử lý thanh toán demo",
+      },
+      PaymentSuccess: {
+        title: "Thanh toán thành công!",
+        description: "Đơn hàng của bạn đã được thanh toán thành công.",
+        orderIdLabel: "Mã đơn hàng",
+        actions: {
+          viewOrder: "Xem đơn hàng",
+          goHome: "Về trang chủ",
+        },
+      },
+      PaymentCancel: {
+        title: "Thanh toán đã bị hủy",
+        description: "Bạn đã hủy quá trình thanh toán. Đơn hàng vẫn được lưu và bạn có thể thanh toán lại sau.",
+        orderIdLabel: "Mã đơn hàng",
+        actions: {
+          retry: "Thử thanh toán lại",
+          viewOrder: "Xem đơn hàng",
+          goHome: "Về trang chủ",
+        },
+      },
+    },
     OrderDetail: {
       title: "Đơn hàng của bạn",
       thankYou: "Cảm ơn bạn đã mua hàng tại Shoez",
@@ -1614,11 +1674,16 @@ Myshoes.vn hiện đang có chương trình ưu đãi đặc biệt cho các m�
       statusCancelled: "Đã hủy",
       paymentCOD: "Thanh toán khi nhận hàng",
       paymentCreditCard: "Thẻ tín dụng",
+      paymentTransfer: "Chuyển khoản ngân hàng",
       paymentMomo: "MoMo",
+      paymentShopeePay: "ShopeePay",
+      paymentZalopay: "ZaloPay",
       paymentCODDesc: "Bạn sẽ thanh toán khi nhận hàng",
       paymentCardDesc: "Đã thanh toán bằng thẻ",
       paymentTransferDesc: "Đã chuyển khoản ngân hàng",
       paymentMomoDesc: "Đã thanh toán qua MoMo",
+      paymentShopeePayDesc: "Đã thanh toán qua ShopeePay",
+      paymentZalopayDesc: "Đã thanh toán qua ZaloPay",
       shippingStandard: "Giao hàng tiêu chuẩn",
       shippingExpress: "Giao hàng nhanh",
       shippingPickup: "Nhận tại cửa hàng",
@@ -1717,6 +1782,194 @@ Myshoes.vn hiện đang có chương trình ưu đãi đặc biệt cho các m�
       tip1: "Kiểm tra kỹ size và mô tả sản phẩm trước khi mua.",
       tip2: "Lưu lại mã đơn hàng để tra cứu nhanh.",
       contactSupport: "Liên hệ hỗ trợ",
+    },
+    Checkout: {
+      header: {
+        title: "Thanh toán",
+        subtitle: "Hoàn tất đơn hàng của bạn"
+      },
+      steps: {
+        shipping: "Giao hàng",
+        payment: "Thanh toán",
+        review: "Xác nhận"
+      },
+      shipping: {
+        title: "Thông tin giao hàng",
+        fields: {
+          fullName: {
+            label: "Họ và tên *",
+            placeholder: "Nhập họ và tên"
+          },
+          phone: {
+            label: "Số điện thoại *",
+            placeholder: "Nhập số điện thoại"
+          },
+          email: {
+            label: "Email *",
+            placeholder: "Nhập email"
+          },
+          address: {
+            label: "Địa chỉ *",
+            placeholder: "Nhập địa chỉ chi tiết"
+          },
+          city: {
+            label: "Tỉnh/Thành phố *",
+            placeholder: "Nhập tỉnh/thành phố"
+          },
+          district: {
+            label: "Quận/Huyện *",
+            placeholder: "Nhập quận/huyện"
+          },
+          ward: {
+            label: "Phường/Xã *",
+            placeholder: "Nhập phường/xã"
+          }
+        },
+        methodTitle: "Phương thức giao hàng",
+        methods: {
+          standard: {
+            label: "Giao hàng tiêu chuẩn",
+            description: "Nhận hàng trong 3-5 ngày",
+            price: "30.000đ"
+          },
+          express: {
+            label: "Giao hàng nhanh",
+            description: "Nhận hàng trong 1-2 ngày",
+            price: "50.000đ"
+          },
+          pickup: {
+            label: "Nhận tại cửa hàng",
+            description: "Nhận hàng trực tiếp",
+            price: "Miễn phí"
+          }
+        },
+        noteLabel: "Ghi chú (tuỳ chọn)",
+        notePlaceholder: "Ghi chú cho đơn hàng..."
+      },
+      payment: {
+        title: "Phương thức thanh toán",
+        options: {
+          cod: {
+            label: "Thanh toán khi nhận hàng (COD)",
+            description: "Trả tiền mặt khi nhận hàng"
+          },
+          creditCard: {
+            label: "Thẻ tín dụng/Ghi nợ",
+            description: "Thanh toán an toàn bằng thẻ Visa, MasterCard"
+          },
+          bankTransfer: {
+            label: "Chuyển khoản ngân hàng",
+            description: "Chuyển khoản trực tiếp tới tài khoản ngân hàng"
+          },
+          momo: {
+            label: "Ví MoMo",
+            description: "Thanh toán nhanh qua ví MoMo"
+          },
+          shopeePay: {
+            label: "ShopeePay",
+            description: "Thanh toán nhanh qua ví ShopeePay"
+          },
+          zaloPay: {
+            label: "ZaloPay",
+            description: "Thanh toán nhanh qua ví ZaloPay"
+          }
+        },
+        creditCardForm: {
+          numberLabel: "Số thẻ",
+          numberPlaceholder: "1234 5678 9012 3456",
+          nameLabel: "Tên chủ thẻ",
+          namePlaceholder: "NGUYEN VAN A",
+          expiryLabel: "Ngày hết hạn",
+          expiryPlaceholder: "MM/YY",
+          cvvLabel: "CVV",
+          cvvPlaceholder: "123"
+        },
+        momo: {
+          headerTitle: "Ví điện tử MoMo",
+          headerDescription: "Thanh toán nhanh chóng và an toàn",
+          phoneLabel: "Số điện thoại MoMo *",
+          phonePlaceholder: "Nhập số điện thoại đã đăng ký MoMo",
+          phoneHint: "Số điện thoại phải có 10 chữ số và đã đăng ký ví MoMo",
+          qrPending: "Mã QR sẽ được tạo sau",
+          qrInstructionPending: "QR sẽ hiển thị sau khi nhập số điện thoại",
+          qrTitle: "Hoặc quét mã QR để thanh toán",
+          qrDescription: "Mở ứng dụng MoMo và quét mã QR phía trên",
+          phoneVerified: "✓ Số điện thoại đã được xác nhận",
+          instructionsTitle: "Hướng dẫn thanh toán",
+          instructions: {
+            step1: "Nhập số điện thoại đã đăng ký ví MoMo",
+            step2: "Quét mã QR trong ứng dụng MoMo hoặc xác nhận trên điện thoại",
+            step3: "Xác nhận thanh toán trên ứng dụng MoMo",
+            step4: "Chờ xác nhận thanh toán"
+          },
+          securityTitle: "Thanh toán an toàn với MoMo",
+          securityDescription: "Thông tin thanh toán của bạn được mã hóa. Chúng tôi không lưu trữ số điện thoại hay thông tin ví của bạn."
+        },
+        shopeePay: {
+          headerTitle: "Ví ShopeePay",
+          headerDescription: "Thanh toán nhanh chóng và an toàn",
+          phoneLabel: "Số điện thoại ShopeePay *",
+          phonePlaceholder: "Nhập số điện thoại đã đăng ký ShopeePay",
+          phoneHint: "Số điện thoại phải có 10 chữ số và đã đăng ký ShopeePay",
+          instructionsTitle: "Hướng dẫn thanh toán",
+          instructions: {
+            step1: "Nhập số điện thoại đã đăng ký ví ShopeePay",
+            step2: "Xác nhận thanh toán trên ứng dụng ShopeePay",
+            step3: "Chờ xác nhận thanh toán"
+          },
+          securityTitle: "Thanh toán an toàn với ShopeePay",
+          securityDescription: "Thông tin thanh toán của bạn được mã hóa. Chúng tôi không lưu trữ số điện thoại hay thông tin ví của bạn."
+        },
+        zaloPay: {
+          headerTitle: "Ví ZaloPay",
+          headerDescription: "Thanh toán nhanh chóng và an toàn",
+          phoneLabel: "Số điện thoại ZaloPay *",
+          phonePlaceholder: "Nhập số điện thoại đã đăng ký ZaloPay",
+          phoneHint: "Số điện thoại phải có 10 chữ số và đã đăng ký ZaloPay",
+          instructionsTitle: "Hướng dẫn thanh toán",
+          instructions: {
+            step1: "Nhập số điện thoại đã đăng ký ví ZaloPay",
+            step2: "Xác nhận thanh toán trên ứng dụng ZaloPay",
+            step3: "Chờ xác nhận thanh toán"
+          },
+          securityTitle: "Thanh toán an toàn với ZaloPay",
+          securityDescription: "Thông tin thanh toán của bạn được mã hóa. Chúng tôi không lưu trữ số điện thoại hay thông tin ví của bạn."
+        },
+        securityNotice: "Thông tin thẻ của bạn được bảo mật và mã hóa. Chúng tôi không lưu trữ thông tin thẻ của bạn.",
+        securityBadge: "Thanh toán an toàn & bảo mật"
+      },
+      summary: {
+        title: "Tóm tắt đơn hàng",
+        sizePrefix: "Size",
+        quantityPrefix: "SL:",
+        subtotal: "Tạm tính",
+        shippingFee: "Phí vận chuyển",
+        freeShipping: "Miễn phí",
+        total: "Tổng cộng",
+        previousStep: "Quay lại bước trước"
+      },
+      actions: {
+        nextToPayment: "Tiếp tục thanh toán",
+        nextToReview: "Tiếp tục xác nhận",
+        placeOrder: "Đặt hàng",
+        continue: "Tiếp tục"
+      },
+      toasts: {
+        fillShipping: "Vui lòng điền đầy đủ thông tin giao hàng",
+        invalidMomoPhone: "Vui lòng nhập số điện thoại MoMo hợp lệ (10 chữ số)",
+        invalidShopeePayPhone: "Vui lòng nhập số điện thoại ShopeePay hợp lệ (10 chữ số)",
+        invalidZaloPayPhone: "Vui lòng nhập số điện thoại ZaloPay hợp lệ (10 chữ số)",
+        loginRequired: "Vui lòng đăng nhập để đặt hàng",
+        creatingMomoPayment: "Đang tạo yêu cầu thanh toán MoMo...",
+        createPaymentError: "Có lỗi xảy ra khi tạo yêu cầu thanh toán. Đơn hàng đã được tạo.",
+        placeOrderError: "Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại."
+      },
+      successModal: {
+        totalLabel: "Tổng thanh toán",
+        deliveryEstimateLabel: "Dự kiến giao hàng",
+        continueShopping: "Tiếp tục mua sắm",
+        viewOrder: "Xem đơn hàng"
+      }
     },
   },
   OAuthCallback: {

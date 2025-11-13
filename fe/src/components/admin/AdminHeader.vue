@@ -37,15 +37,15 @@
             <div v-if="showNotifications"
               class="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-96 overflow-hidden">
               <div class="p-4 border-b border-gray-200 flex items-center justify-between">
-                <h3 class="font-semibold text-gray-900">{{$t('Admin.Header.notifications')}}</h3>
+                <h3 class="font-semibold text-gray-900">{{ $t('Admin.Header.notifications') }}</h3>
                 <button @click="clearAllNotifications" class="text-sm text-blue-600 hover:text-blue-800">
-                  {{$t('Admin.Header.clearAll')}}
+                  {{ $t('Admin.Header.clearAll') }}
                 </button>
               </div>
 
               <div class="overflow-y-auto max-h-80">
                 <div v-if="notifications.length === 0" class="p-8 text-center text-gray-500">
-                  {{$t('Admin.Header.noNotifications')}}
+                  {{ $t('Admin.Header.noNotifications') }}
                 </div>
 
                 <div v-for="notif in notifications" :key="notif.id"
