@@ -286,6 +286,30 @@ const routes = [
     }
   },
   {
+    path: '/payment/demo',
+    name: 'PaymentDemo',
+    component: () => import('@/views/PaymentDemo.vue'),
+    meta: {
+      title: 'Thanh toán Demo - Shoez Shop'
+    }
+  },
+  {
+    path: '/payment/success',
+    name: 'PaymentSuccess',
+    component: () => import('@/views/PaymentSuccess.vue'),
+    meta: {
+      title: 'Thanh toán thành công - Shoez Shop'
+    }
+  },
+  {
+    path: '/payment/cancel',
+    name: 'PaymentCancel',
+    component: () => import('@/views/PaymentCancel.vue'),
+    meta: {
+      title: 'Thanh toán đã hủy - Shoez Shop'
+    }
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
     component: () => import("@/views/NotFound.vue"),

@@ -89,3 +89,6 @@ class UserService:
         await self.user_repository.update_by_id(user_id=user_id, data={"avatar": new_avatar_url})
         return new_avatar_url
 
+    async def count_users_by_role(self, role: str) -> int:
+        return await self.user_repository.count_by_role(role)
+

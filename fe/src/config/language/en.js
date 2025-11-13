@@ -1618,6 +1618,66 @@ Myshoes.vn currently has special promotion for fall sneakers with up to 30% disc
       resendError: "Resend failed!",
       pleaseRegister: "Please register to receive verification code",
     },
+    PaymentDemo: {
+      badge: "🧪 DEMO MODE - Test payment",
+      title: "MoMo Payment",
+      subtitle: "Demo payment page - No real charge",
+      orderIdLabel: "Order ID:",
+      amountLabel: "Amount:",
+      transactionIdLabel: "Transaction ID:",
+      phoneLabel: "MoMo phone number",
+      phonePlaceholder: "0123456789",
+      passwordLabel: "Password (Demo)",
+      passwordPlaceholder: "Enter anything (demo)",
+      otpTitle: "OTP Verification",
+      otpInstruction: "An OTP has been sent to your MoMo phone number (demo). Please enter the 6-digit code to complete the transaction.",
+      otpInputLabel: "Enter OTP",
+      otpPlaceholder: "••••••",
+      otpDemoCodeMessage: "Default demo OTP: {code}",
+      infoNoteLabel: "Note:",
+      infoNoteText: "This is demo mode. No real transaction will be performed. You can test both success and failure scenarios.",
+      buttons: {
+        continue: "✅ Continue & enter OTP (Demo)",
+        processing: "Processing...",
+        confirm: "🔐 Confirm OTP",
+        back: "Back",
+        cancel: "Cancel",
+      },
+      otpErrors: {
+        incomplete: "Please enter all 6 OTP digits",
+        incorrect: "Incorrect OTP. Please try again.",
+      },
+      toasts: {
+        noOrder: "Order information not found",
+        invalidPhone: "Please enter a valid MoMo phone number",
+        missingPassword: "Please enter demo password",
+        otpSent: "Demo OTP has been sent via SMS. Please enter the code to continue.",
+        otpInvalid: "Invalid OTP (demo)",
+        success: "Payment successful! (Demo)",
+        failure: "Payment failed! (Demo)",
+        genericError: "An error occurred",
+        processError: "An error occurred while processing demo payment",
+      },
+      PaymentSuccess: {
+        title: "Payment Successful!",
+        description: "Your order has been paid successfully.",
+        orderIdLabel: "Order ID",
+        actions: {
+          viewOrder: "View order",
+          goHome: "Back to home",
+        },
+      },
+      PaymentCancel: {
+        title: "Payment Cancelled",
+        description: "You cancelled the payment process. Your order is saved and you can pay later.",
+        orderIdLabel: "Order ID",
+        actions: {
+          retry: "Try paying again",
+          viewOrder: "View order",
+          goHome: "Back to home",
+        },
+      },
+    },
     OrderDetail: {
       title: "Your Order",
       thankYou: "Thank you for shopping at Shoez",
@@ -1659,11 +1719,16 @@ Myshoes.vn currently has special promotion for fall sneakers with up to 30% disc
       statusCancelled: "Cancelled",
       paymentCOD: "Cash on Delivery",
       paymentCreditCard: "Credit Card",
+      paymentTransfer: "Bank Transfer",
       paymentMomo: "MoMo",
+      paymentShopeePay: "ShopeePay",
+      paymentZalopay: "ZaloPay",
       paymentCODDesc: "You will pay when receiving the order",
       paymentCardDesc: "Paid by card",
       paymentTransferDesc: "Bank transfer",
       paymentMomoDesc: "Paid via MoMo",
+      paymentShopeePayDesc: "Paid via ShopeePay",
+      paymentZalopayDesc: "Paid via ZaloPay",
       shippingStandard: "Standard Shipping",
       shippingExpress: "Express Shipping",
       shippingPickup: "Store Pickup",
@@ -1762,6 +1827,194 @@ Myshoes.vn currently has special promotion for fall sneakers with up to 30% disc
       tip1: "Check size and product description carefully before buying.",
       tip2: "Save order number for quick lookup.",
       contactSupport: "Contact Support",
+    },
+    Checkout: {
+      header: {
+        title: "Checkout",
+        subtitle: "Complete your order"
+      },
+      steps: {
+        shipping: "Shipping",
+        payment: "Payment",
+        review: "Review"
+      },
+      shipping: {
+        title: "Shipping Information",
+        fields: {
+          fullName: {
+            label: "Full name *",
+            placeholder: "Enter full name"
+          },
+          phone: {
+            label: "Phone number *",
+            placeholder: "Enter phone number"
+          },
+          email: {
+            label: "Email *",
+            placeholder: "Enter email"
+          },
+          address: {
+            label: "Address *",
+            placeholder: "Enter detailed address"
+          },
+          city: {
+            label: "City *",
+            placeholder: "Enter city"
+          },
+          district: {
+            label: "District *",
+            placeholder: "Enter district"
+          },
+          ward: {
+            label: "Ward *",
+            placeholder: "Enter ward"
+          }
+        },
+        methodTitle: "Shipping method",
+        methods: {
+          standard: {
+            label: "Standard shipping",
+            description: "Receive within 3-5 days",
+            price: "30.000đ"
+          },
+          express: {
+            label: "Express shipping",
+            description: "Receive within 1-2 days",
+            price: "50.000đ"
+          },
+          pickup: {
+            label: "Store pickup",
+            description: "Pick up in person",
+            price: "Free"
+          }
+        },
+        noteLabel: "Note (optional)",
+        notePlaceholder: "Add a note for your order..."
+      },
+      payment: {
+        title: "Payment method",
+        options: {
+          cod: {
+            label: "Cash on delivery (COD)",
+            description: "Pay with cash when receiving the order"
+          },
+          creditCard: {
+            label: "Credit/Debit card",
+            description: "Secure payment with Visa, MasterCard"
+          },
+          bankTransfer: {
+            label: "Bank transfer",
+            description: "Transfer directly to our bank account"
+          },
+          momo: {
+            label: "MoMo wallet",
+            description: "Fast payment via MoMo e-wallet"
+          },
+          shopeePay: {
+            label: "ShopeePay",
+            description: "Fast payment via ShopeePay wallet"
+          },
+          zaloPay: {
+            label: "ZaloPay",
+            description: "Fast payment via ZaloPay wallet"
+          }
+        },
+        creditCardForm: {
+          numberLabel: "Card number",
+          numberPlaceholder: "1234 5678 9012 3456",
+          nameLabel: "Card holder name",
+          namePlaceholder: "NGUYEN VAN A",
+          expiryLabel: "Expiry date",
+          expiryPlaceholder: "MM/YY",
+          cvvLabel: "CVV",
+          cvvPlaceholder: "123"
+        },
+        momo: {
+          headerTitle: "MoMo e-wallet",
+          headerDescription: "Fast and secure payment",
+          phoneLabel: "MoMo phone number *",
+          phonePlaceholder: "Enter the phone number registered with MoMo",
+          phoneHint: "Phone number must be 10 digits and registered with MoMo",
+          qrPending: "QR code will be generated shortly",
+          qrInstructionPending: "QR code will appear after entering your phone number",
+          qrTitle: "Or scan QR to pay",
+          qrDescription: "Open the MoMo app and scan the QR above",
+          phoneVerified: "✓ Phone number verified",
+          instructionsTitle: "Payment instructions",
+          instructions: {
+            step1: "Enter your registered MoMo phone number",
+            step2: "Scan the QR code in the MoMo app or confirm on your phone",
+            step3: "Confirm the payment in your MoMo app",
+            step4: "Wait for payment confirmation"
+          },
+          securityTitle: "Secure payment with MoMo",
+          securityDescription: "Your payment details are encrypted. We do not store your phone number or wallet information."
+        },
+        shopeePay: {
+          headerTitle: "ShopeePay wallet",
+          headerDescription: "Fast and secure payment",
+          phoneLabel: "ShopeePay phone number *",
+          phonePlaceholder: "Enter the phone number registered with ShopeePay",
+          phoneHint: "Phone number must be 10 digits and registered with ShopeePay",
+          instructionsTitle: "Payment instructions",
+          instructions: {
+            step1: "Enter your registered ShopeePay phone number",
+            step2: "Confirm the payment in the ShopeePay app",
+            step3: "Wait for payment confirmation"
+          },
+          securityTitle: "Secure payment with ShopeePay",
+          securityDescription: "Your payment details are encrypted. We do not store your phone number or wallet information."
+        },
+        zaloPay: {
+          headerTitle: "ZaloPay wallet",
+          headerDescription: "Fast and secure payment",
+          phoneLabel: "ZaloPay phone number *",
+          phonePlaceholder: "Enter the phone number registered with ZaloPay",
+          phoneHint: "Phone number must be 10 digits and registered with ZaloPay",
+          instructionsTitle: "Payment instructions",
+          instructions: {
+            step1: "Enter your registered ZaloPay phone number",
+            step2: "Confirm the payment in the ZaloPay app",
+            step3: "Wait for payment confirmation"
+          },
+          securityTitle: "Secure payment with ZaloPay",
+          securityDescription: "Your payment details are encrypted. We do not store your phone number or wallet information."
+        },
+        securityNotice: "Your card information is encrypted and secure. We do not store your card details.",
+        securityBadge: "Secure & encrypted payment"
+      },
+      summary: {
+        title: "Order summary",
+        sizePrefix: "Size",
+        quantityPrefix: "Qty:",
+        subtotal: "Subtotal",
+        shippingFee: "Shipping fee",
+        freeShipping: "Free",
+        total: "Total",
+        previousStep: "Back to previous step"
+      },
+      actions: {
+        nextToPayment: "Continue to payment",
+        nextToReview: "Continue to confirmation",
+        placeOrder: "Place order",
+        continue: "Continue"
+      },
+      toasts: {
+        fillShipping: "Please complete shipping information",
+        invalidMomoPhone: "Please enter a valid MoMo phone number (10 digits)",
+        invalidShopeePayPhone: "Please enter a valid ShopeePay phone number (10 digits)",
+        invalidZaloPayPhone: "Please enter a valid ZaloPay phone number (10 digits)",
+        loginRequired: "Please log in to place an order",
+        creatingMomoPayment: "Creating MoMo payment request...",
+        createPaymentError: "An error occurred while creating the payment request. The order has been created.",
+        placeOrderError: "An error occurred while placing the order. Please try again."
+      },
+      successModal: {
+        totalLabel: "Total payment",
+        deliveryEstimateLabel: "Estimated delivery",
+        continueShopping: "Continue shopping",
+        viewOrder: "View order"
+      }
     },
   },
   OAuthCallback: {

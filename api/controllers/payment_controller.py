@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Body
 from fastapi.responses import JSONResponse, RedirectResponse
 from typing import Dict, Any
+import time
 from schemas.payment_schemas import (
     MomoCreatePaymentRequest,
     MomoCreatePaymentResponse,
@@ -180,6 +181,77 @@ async def momo_payment_callback(
     except Exception as e:
         logger.error(f"Error processing MoMo callback: {str(e)}")
         # Still return 200 to MoMo to prevent retries
+        return JSONResponse(
+            content={
+                "status": "error",
+                "message": str(e)
+            },
+            status_code=200
+        )
+
+
+@payment_router.post("/momo/demo-callback")
+async def momo_demo_callback(
+    request: Request,
+    order_id: str = Body(...),
+    result: str = Body("success"),  # "success" or "failed"
+    momo_service: MomoPaymentService = Depends(get_momo_payment_service),
+    order_service: OrderService = Depends(get_order_service)
+):
+    """
+    Demo callback endpoint để simulate MoMo payment callback
+    
+    Args:
+        order_id: ID đơn hàng
+        result: "success" hoặc "failed"
+    """
+    try:
+        # Tạo mock callback data
+        callback_data = {
+            "partnerCode": "DEMO_PARTNER",
+            "partnerRefId": order_id,
+            "partnerTransId": f"DEMO_{order_id}_{int(time.time())}",
+            "amount": 0,  # Sẽ được lấy từ order
+            "transId": f"DEMO_TRANS_{int(time.time())}",
+            "resultCode": 0 if result == "success" else 1001,
+            "message": "Demo payment successful" if result == "success" else "Demo payment failed",
+            "responseTime": int(time.time() * 1000),
+            "signature": "DEMO_SIGNATURE"
+        }
+        
+        # Get order để lấy amount
+        order_repo = OrderRepository(get_database())
+        order = await order_repo.get_by_id(order_id)
+        if order:
+            callback_data["amount"] = int(order.get("total", 0))
+        
+        logger.info(f"[DEMO] Processing demo callback for order {order_id} with result: {result}")
+        
+        # Process callback
+        payment_result = await momo_service.process_callback(callback_data)
+        
+        order_id = payment_result["order_id"]
+        payment_status = payment_result["payment_status"]
+        
+        # Update order based on payment status
+        if payment_status == "success":
+            await order_service.update_order_status(order_id, "confirmed")
+            logger.info(f"[DEMO] Order {order_id} payment successful")
+        elif payment_status == "failed":
+            await order_service.update_order_status(order_id, "pending")
+            logger.warning(f"[DEMO] Order {order_id} payment failed")
+        
+        return JSONResponse(
+            content={
+                "status": "success",
+                "message": "Demo callback processed",
+                "payment_status": payment_status
+            },
+            status_code=200
+        )
+        
+    except Exception as e:
+        logger.error(f"[DEMO] Error processing demo callback: {str(e)}")
         return JSONResponse(
             content={
                 "status": "error",

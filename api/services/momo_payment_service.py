@@ -25,15 +25,19 @@ class MomoPaymentService:
     """
     
     def __init__(self):
-        self.partner_code = getattr(settings, 'MOMO_PARTNER_CODE', None)
-        self.access_key = getattr(settings, 'MOMO_ACCESS_KEY', None)
-        self.secret_key = getattr(settings, 'MOMO_SECRET_KEY', None)
-        self.api_url = getattr(settings, 'MOMO_API_URL', 'https://test-payment.momo.vn/v2/gateway/api/create')
-        self.ipn_url = getattr(settings, 'MOMO_IPN_URL', None)
-        self.redirect_url = getattr(settings, 'MOMO_REDIRECT_URL', None)
+        self.partner_code = getattr(settings, 'momo_partner_code', None)
+        self.access_key = getattr(settings, 'momo_access_key', None)
+        self.secret_key = getattr(settings, 'momo_secret_key', None)
+        self.api_url = getattr(settings, 'momo_api_url', 'https://test-payment.momo.vn/v2/gateway/api/create')
+        self.ipn_url = getattr(settings, 'momo_ipn_url', None)
+        self.redirect_url = getattr(settings, 'momo_redirect_url', None)
+        self.demo_mode = getattr(settings, 'momo_demo_mode', False)
         
-        if not all([self.partner_code, self.access_key, self.secret_key]):
+        if not all([self.partner_code, self.access_key, self.secret_key]) and not self.demo_mode:
             logger.warning("MoMo payment credentials not configured. Payment features will not work.")
+        
+        if self.demo_mode:
+            logger.info("MoMo payment is running in DEMO MODE - No real API calls will be made")
     
     def _generate_request_id(self) -> str:
         """Generate unique request ID"""
@@ -90,6 +94,31 @@ class MomoPaymentService:
         Returns:
             Dict chứa pay_url và transaction info
         """
+        # DEMO MODE: Tạo mock payment URL
+        if self.demo_mode:
+            logger.info(f"[DEMO MODE] Creating mock MoMo payment request for order {order_id}")
+            
+            # Generate unique IDs
+            partner_ref_id = order_id
+            partner_trans_id = f"DEMO_ORDER_{order_id}_{int(time.time())}"
+            request_id = self._generate_request_id()
+            amount_int = int(amount)
+            
+            # Tạo demo payment URL - redirect đến demo payment page
+            demo_pay_url = f"{settings.frontend_url}/payment/demo?order_id={order_id}&amount={amount_int}&transaction_id={partner_trans_id}&return_url={return_url or ''}"
+            
+            logger.info(f"[DEMO MODE] Mock payment URL created: {demo_pay_url}")
+            
+            return {
+                "pay_url": demo_pay_url,
+                "order_id": order_id,
+                "transaction_id": partner_trans_id,
+                "request_id": request_id,
+                "partner_ref_id": partner_ref_id,
+                "demo_mode": True
+            }
+        
+        # REAL MODE: Gọi MoMo API thật
         if not all([self.partner_code, self.access_key, self.secret_key]):
             raise HTTPException(
                 status_code=500,
@@ -204,6 +233,11 @@ class MomoPaymentService:
         Returns:
             True nếu signature hợp lệ, False nếu không
         """
+        # DEMO MODE: Skip signature verification
+        if self.demo_mode:
+            logger.info("[DEMO MODE] Skipping signature verification")
+            return True
+        
         try:
             # Extract required fields
             partner_code = callback_data.get("partnerCode")

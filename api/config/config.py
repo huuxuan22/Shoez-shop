@@ -40,16 +40,17 @@ class Settings(BaseSettings):
     smtp_from_email: str = Field(..., alias="SMTP_FROM_EMAIL")
     smtp_use_tls: bool = Field(default=True, alias="SMTP_USE_TLS")
     # MoMo Payment Configuration
-    MOMO_PARTNER_CODE: Optional[str] = Field(default=None, alias="MOMO_PARTNER_CODE")
-    MOMO_ACCESS_KEY: Optional[str] = Field(default=None, alias="MOMO_ACCESS_KEY")
-    MOMO_SECRET_KEY: Optional[str] = Field(default=None, alias="MOMO_SECRET_KEY")
-    MOMO_API_URL: Optional[str] = Field(
+    momo_partner_code: Optional[str] = Field(default=None, alias="MOMO_PARTNER_CODE")
+    momo_access_key: Optional[str] = Field(default=None, alias="MOMO_ACCESS_KEY")
+    momo_secret_key: Optional[str] = Field(default=None, alias="MOMO_SECRET_KEY")
+    momo_api_url: Optional[str] = Field(
         default="https://test-payment.momo.vn/v2/gateway/api/create",
         alias="MOMO_API_URL"
     )
-    MOMO_IPN_URL: Optional[str] = Field(default=None, alias="MOMO_IPN_URL")
-    MOMO_REDIRECT_URL: Optional[str] = Field(default=None, alias="MOMO_REDIRECT_URL")
-    MOMO_ENVIRONMENT: str = Field(default="sandbox", alias="MOMO_ENVIRONMENT")
+    momo_ipn_url: Optional[str] = Field(default=None, alias="MOMO_IPN_URL")
+    momo_redirect_url: Optional[str] = Field(default=None, alias="MOMO_REDIRECT_URL")
+    momo_environment: str = Field(default="sandbox", alias="MOMO_ENVIRONMENT")
+    momo_demo_mode: bool = Field(default=False, alias="MOMO_DEMO_MODE")
     
     class Config:
         env_file = '.env'

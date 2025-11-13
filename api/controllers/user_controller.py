@@ -29,6 +29,14 @@ async def create_user(user: UserCreate, user_repo: UserRepository = Depends(get_
     user_create = service.create_user(user)
     return (JSONResponse(status_code=200, content={"user_create": user_create}))
 
+
+@user_router.get("/count-role-user", summary="Đếm số user có quyền USER")
+@require_roles("ADMIN")
+async def count_user_role_user(user_repo: UserRepository = Depends(get_user_repo)):
+    service = UserService(user_repo)
+    total_users = await service.count_users_by_role("USER")
+    return JSONResponse(status_code=200, content={"total_user_role_user": total_users})
+
 @user_router.put("/")
 async def update_user(user: UserUpdate, user_repo: UserRepository = Depends(get_user_repo)):
     service = UserService(user_repo)

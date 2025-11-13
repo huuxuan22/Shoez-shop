@@ -75,6 +75,11 @@ class ProductRepository(BaseRepository[Product]):
         # Filter out falsy values and ensure str
         return [str(c).strip() for c in categories if c]
 
+    async def get_active_products(self) -> List[Dict[str, Any]]:
+        cursor = self.collection.find({"is_active": True})
+        products = await cursor.to_list(length=None)
+        return products
+
     async def delete_product(self, product_id: str) -> bool:
         try:
             obj_id = ObjectId(product_id)  # Chuyển string sang ObjectId

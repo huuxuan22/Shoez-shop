@@ -14,7 +14,7 @@ async def get_unresolved_low_rating_reviews(
 ):
     """Lấy danh sách reviews chưa resolved - Chỉ admin"""
     user_role = current_user.get("role")
-    if user_role != "admin":
+    if user_role != "ADMIN":
         raise HTTPException(status_code=403, detail="Only admin can access")
     
     try:
