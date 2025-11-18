@@ -17,7 +17,7 @@ class ConversationRepository(BaseRepository[Conversation]):
         query = {
             "participants.role": "ADMIN"
         }
-        conversations = await self.find_all(query)
+        conversations = await self.get_all(query=query)
         return conversations
 
     async def get_conversation_by_participants(self, user_id: str, admin_id: str) -> Optional[Dict[str, Any]]:

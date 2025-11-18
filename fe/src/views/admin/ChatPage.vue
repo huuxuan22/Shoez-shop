@@ -10,33 +10,53 @@
 
                 <!-- User List -->
                 <div class="flex-1 overflow-y-auto">
-                    <div v-for="user in userChatList" :key="user.id" @click="selectUser(user)"
-                        class="p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors"
-                        :class="{ 'bg-blue-50 border-l-4 border-l-blue-500': selectedUser?.id === user.id }">
-                        <div class="flex items-center space-x-3">
-                            <!-- Avatar -->
-                            <div class="relative">
-                                <div
-                                    class="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
-                                    <img v-if="user.avatar" :src="user.avatar" :alt="user.name"
-                                        class="w-full h-full object-cover" />
-                                    <span v-else class="text-gray-600 font-semibold text-lg">
-                                        {{ user.name.charAt(0).toUpperCase() }}
-                                    </span>
-                                </div>
-                                <div v-if="user.unread > 0"
-                                    class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                                    <span class="text-white text-xs font-bold">{{ user.unread > 99 ? '99+' : user.unread
-                                        }}</span>
-                                </div>
-                            </div>
+                    <!-- Loading State -->
+                    <div v-if="conversationStore.loading" class="p-4 text-center text-gray-500">
+                        <p>Đang tải danh sách khách hàng...</p>
+                    </div>
 
-                            <!-- User Info -->
-                            <div class="flex-1 min-w-0">
-                                <p class="font-medium text-gray-900 truncate">{{ user.name }}</p>
-                                <p v-if="getLastMessage(user.id)" class="text-sm text-gray-500 truncate">
-                                    {{ getLastMessage(user.id) }}
-                                </p>
+                    <!-- Empty State -->
+                    <div v-else-if="userChatList.length === 0" class="p-4 text-center text-gray-500">
+                        <p>Chưa có khách hàng nào nhắn tin</p>
+                    </div>
+
+                    <!-- User List -->
+                    <div v-else>
+                        <div v-for="user in userChatList" :key="user.id" @click="selectUser(user)"
+                            class="p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors"
+                            :class="{ 'bg-blue-50 border-l-4 border-l-blue-500': selectedUser?.id === user.id }">
+                            <div class="flex items-center space-x-3">
+                                <!-- Avatar -->
+                                <div class="relative">
+                                    <div
+                                        class="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+                                        <img v-if="user.avatar" :src="user.avatar" :alt="user.name"
+                                            class="w-full h-full object-cover" />
+                                        <span v-else class="text-gray-600 font-semibold text-lg">
+                                            {{ user.name.charAt(0).toUpperCase() }}
+                                        </span>
+                                    </div>
+                                    <!-- Unread Badge -->
+                                    <div v-if="user.unread > 0"
+                                        class="absolute -top-1 -right-1 h-5 bg-red-500 rounded-full flex items-center justify-center shadow-md border-2 border-white"
+                                        :style="{
+                                            minWidth: user.unread > 99 ? '28px' : user.unread > 9 ? '24px' : '20px',
+                                            paddingLeft: user.unread > 99 ? '6px' : user.unread > 9 ? '5px' : '4px',
+                                            paddingRight: user.unread > 99 ? '6px' : user.unread > 9 ? '5px' : '4px'
+                                        }">
+                                        <span class="text-white text-[11px] font-bold leading-none">
+                                            {{ user.unread > 99 ? '99+' : user.unread }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- User Info -->
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-medium text-gray-900 truncate">{{ user.name }}</p>
+                                    <p v-if="getLastMessage(user.id)" class="text-sm text-gray-500 truncate">
+                                        {{ getLastMessage(user.id) }}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -107,17 +127,14 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import AdminLayout from '@/layouts/admin/AdminLayout.vue'
+import { useConversationStore } from '@/stores/conversation'
 
-// Fake data
-const userChatList = ref([
-    { id: 1, name: "Nguyen Van A", avatar: "", unread: 3 },
-    { id: 2, name: "Tran B", avatar: "", unread: 0 },
-    { id: 3, name: "Le Thi C", avatar: "", unread: 5 },
-    { id: 4, name: "Pham Van D", avatar: "", unread: 1 },
-    { id: 5, name: "Hoang Thi E", avatar: "", unread: 0 },
-])
+const conversationStore = useConversationStore()
+
+// Get userChatList from store
+const userChatList = computed(() => conversationStore.userChatList)
 
 // Fake messages data for each user
 const messagesData = ref({
@@ -151,21 +168,24 @@ const currentMessages = computed(() => {
 })
 
 const getLastMessage = (userId) => {
-    const messages = messagesData.value[userId] || []
-    if (messages.length === 0) return ''
-    const lastMsg = messages[messages.length - 1]
-    return lastMsg.message
+    const user = userChatList.value.find(user => user.id === userId)
+    return user?.lastMessage || ''
 }
 
 const selectUser = (user) => {
     selectedUser.value = user
     // Reset unread count when selecting user
-    user.unread = 0
+    conversationStore.resetUnread(user.id)
     // Scroll to bottom when selecting user
     nextTick(() => {
         scrollToBottom()
     })
 }
+
+// Load conversation users on mount
+onMounted(async () => {
+    await conversationStore.fetchUsersChattingWithAdmin()
+})
 
 const sendMessage = () => {
     if (!newMessage.value.trim() || !selectedUser.value) return

@@ -671,6 +671,7 @@ Myshoes.vn currently has special promotion for fall sneakers with up to 30% disc
       categories: "Categories",
       brands: "Brands",
       analytics: "Analytics",
+      messages: "Messages",
       settings: "Settings",
       title: "Shoez Admin",
       panel: "Management Panel",

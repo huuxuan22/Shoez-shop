@@ -90,7 +90,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
-          <span class="font-medium">Tin nhắn</span>
+          <span class="font-medium">{{ $t('Admin.Nav.messages') }}</span>
         </div>
         <span v-if="totalUnread > 0"
           class="bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 min-w-[20px] text-center">
@@ -134,18 +134,34 @@
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
+import { useConversationStore } from '@/stores/conversation';
 import ConfirmModal from '../ConfirmModal.vue';
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
+const conversationStore = useConversationStore();
 const showConfirm = ref(false);
 
-// Fake data for unread messages count
+// Get total unread from conversation store
 const totalUnread = computed(() => {
-  return 5;
+  return conversationStore.totalUnread;
+});
+
+// Load conversations when component mounts
+onMounted(async () => {
+  if (authStore.isAuthenticated && authStore.isAdmin) {
+    await conversationStore.fetchUsersChattingWithAdmin();
+  }
+});
+
+// Watch for route changes to refresh conversations
+watch(() => route.path, async (newPath) => {
+  if (newPath === '/admin/messages' && authStore.isAuthenticated && authStore.isAdmin) {
+    await conversationStore.fetchUsersChattingWithAdmin();
+  }
 });
 
 const isActive = (path) => {
