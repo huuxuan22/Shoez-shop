@@ -243,6 +243,16 @@ const routes = [
     }
   },
   {
+    path: "/admin/messages",
+    name: "AdminMessages",
+    component: () => import("@/views/admin/ChatPage.vue"),
+    meta: {
+      title: "Tin nhắn - Admin - Shoez Shop",
+      requiresAuth: true,
+      requiresAdmin: true
+    }
+  },
+  {
     path: "/admin/settings",
     name: "AdminSettings",
     component: () => import("@/views/admin/Dashboard.vue"), // Placeholder
