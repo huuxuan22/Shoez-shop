@@ -232,19 +232,34 @@ class BaseRepository(Generic[ModelType]):
             self,
             skip: int = 0,
             limit: int = 100,
-            filter_query: Optional[Dict[str, Any]] = None
+            filter_query: Optional[Dict[str, Any]] = None,
+            query: Optional[Dict[str, Any]] = None,
+            sort: Optional[List[tuple]] = None,
+            projection: Optional[Dict[str, Any]] = None
     ) -> List[ModelType]:
         """
-        Returns a list of documents.
+        Returns a list of documents with optional sorting and projection.
 
         :param skip: The number of records to skip.
         :param limit: The number of records to return.
-        :param filter_query: Additional filter query
+        :param filter_query: Additional filter query (preferred).
+        :param query: Alias for filter_query (for backward compatibility).
+        :param sort: List of tuples for sorting, e.g., [("field", 1)] for ascending, [("field", -1)] for descending.
+        :param projection: Dictionary specifying which fields to include/exclude, e.g., {"field1": 1, "field2": 0}.
         :return: A list of documents.
         """
         try:
-            query = filter_query or {}
-            cursor = self.collection.find(query).skip(skip).limit(limit)
+            # Support both filter_query and query for backward compatibility
+            query_dict = filter_query or query or {}
+            cursor = self.collection.find(query_dict, projection=projection)
+            
+            if sort:
+                cursor = cursor.sort(sort)
+            
+            if skip > 0:
+                cursor = cursor.skip(skip)
+            
+            cursor = cursor.limit(limit)
             documents = await cursor.to_list(length=limit)
             return [self._convert_id(doc) for doc in documents]
         except PyMongoError as e:

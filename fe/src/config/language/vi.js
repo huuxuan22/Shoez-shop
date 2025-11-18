@@ -671,6 +671,7 @@ Myshoes.vn hiện đang có chương trình ưu đãi đặc biệt cho các m�
       categories: "Danh mục",
       brands: "Thương hiệu",
       analytics: "Thống kê",
+      messages: "Tin nhắn",
       settings: "Cài đặt",
       title: "Shoez Admin",
       panel: "Management Panel",
