@@ -8,4 +8,6 @@ from model.comment_product_model import CommentProduct
 from model.review_model import Review
 from model.category_model import Category
 from model.brand_model import Brand
+from model.conversation_model import Conversation, Participant, LastMessage
+from model.message_model import Message
 

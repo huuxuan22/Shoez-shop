@@ -11,6 +11,8 @@ from repositories.comment_repository import CommentRepository
 from repositories.notification_repository import NotificationRepository
 from repositories.category_repository import CategoryRepository
 from repositories.brand_repository import BrandRepository
+from repositories.conversation_repository import ConversationRepository
+from repositories.message_repository import MessageRepository
 from config.database import get_database
 
 async def set_language_dependency(request: Request):
@@ -58,6 +60,14 @@ async def get_category_repo():
 
 async def get_brand_repo():
     async with BrandRepository(get_database()) as repo:
+        yield repo
+
+async def get_conversation_repo():
+    async with ConversationRepository(get_database()) as repo:
+        yield repo
+
+async def get_message_repo():
+    async with MessageRepository(get_database()) as repo:
         yield repo
 
 
