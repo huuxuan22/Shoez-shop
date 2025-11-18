@@ -13,7 +13,7 @@
 
 <script setup>
 import { onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import ToastManager from '@/components/shared/ToastManager.vue'
 import ReviewPromptBanner from '@/components/reviews/ReviewPromptBanner.vue'
 import { useAuthStore } from '@/stores/auth'
@@ -27,6 +27,7 @@ import ReviewService from '@/api-services/ReviewService'
 
 // Load favourites when app starts (if user is logged in)
 const router = useRouter()
+const route = useRoute()
 const { info } = useToast()
 
 onMounted(async () => {
@@ -66,10 +67,16 @@ onMounted(async () => {
   }
 })
 
-// Show only for authenticated users
+// Show only for authenticated users, but hide on admin pages
 const authStore = useAuthStore()
 authStore.initializeAuth()
-const showContacts = computed(() => authStore.isAuthenticated && !!authStore.user)
+const showContacts = computed(() => {
+  // Don't show on admin pages
+  if (route.path.startsWith('/admin')) {
+    return false
+  }
+  return authStore.isAuthenticated && !!authStore.user
+})
 
 // Replace with your real links
 const zaloUrl = 'https://zalo.me/your-id-or-qr'
