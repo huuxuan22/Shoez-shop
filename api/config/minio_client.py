@@ -8,7 +8,7 @@ class MinioClient:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = Minio(
-                settings.minio_url,
+                endpoint=settings.minio_url,
                 access_key=settings.minio_access_key,
                 secret_key=settings.minio_secret_key,
                 secure=settings.minio_secure,
