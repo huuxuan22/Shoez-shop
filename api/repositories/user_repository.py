@@ -107,5 +107,33 @@ class UserRepository(BaseRepository[User]):
         query = {"role": role, "is_deleted": {"$ne": True}}
         return await self.collection.count_documents(query)
 
+    async def search_users_by_email_or_phone(self, query: str, limit: int = 20) -> List[Dict[str, Any]]:
+        """
+        Tìm kiếm users theo email hoặc số điện thoại
+        - query: từ khóa tìm kiếm (email hoặc phone)
+        - limit: số lượng kết quả tối đa
+        - Chỉ trả về users có role USER và không bị soft delete
+        """
+        search_query = {
+            "role": "USER",
+            "is_deleted": {"$ne": True},
+            "$or": [
+                {"email": {"$regex": query, "$options": "i"}},
+                {"numberphone": {"$regex": query, "$options": "i"}}
+            ]
+        }
+        
+        users = []
+        cursor = self.collection.find(search_query).limit(limit)
+        async for user in cursor:
+            # Ensure id field exists
+            if 'id' not in user and '_id' in user:
+                user['id'] = str(user['_id'])
+            # Remove _id from response
+            if '_id' in user:
+                del user['_id']
+            users.append(user)
+        return users
+
 
 
