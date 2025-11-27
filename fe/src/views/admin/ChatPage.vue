@@ -5,7 +5,17 @@
             <div class="w-[30%] border-r border-gray-200 flex flex-col">
                 <!-- Header -->
                 <div class="p-4 border-b border-gray-200 bg-gray-50">
-                    <h2 class="text-lg font-semibold text-gray-900">Danh sách khách hàng</h2>
+                    <h2 class="text-lg font-semibold text-gray-900 mb-3">Danh sách khách hàng</h2>
+                    <!-- Search Bar -->
+                    <div class="relative">
+                        <input v-model="searchQuery" type="text" placeholder="Tìm kiếm khách hàng..."
+                            class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" />
+                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
                 </div>
 
                 <!-- User List -->
@@ -15,14 +25,25 @@
                         <p>Đang tải danh sách khách hàng...</p>
                     </div>
 
+                    <!-- Loading Search -->
+                    <div v-else-if="isSearching" class="p-4 text-center text-gray-500">
+                        <p>Đang tìm kiếm...</p>
+                    </div>
+
                     <!-- Empty State -->
-                    <div v-else-if="userChatList.length === 0" class="p-4 text-center text-gray-500">
+                    <div v-else-if="displayUserList.length === 0 && !searchQuery" class="p-4 text-center text-gray-500">
                         <p>Chưa có khách hàng nào nhắn tin</p>
+                    </div>
+
+                    <!-- No Search Results -->
+                    <div v-else-if="displayUserList.length === 0 && searchQuery" class="p-4 text-center text-gray-500">
+                        <p>Không tìm thấy khách hàng nào</p>
                     </div>
 
                     <!-- User List -->
                     <div v-else>
-                        <div v-for="user in userChatList" :key="user.id" @click="selectUser(user)"
+                        <div v-for="user in displayUserList" :key="`${user.id}-${user.isNewConversation || false}`"
+                            @click="selectUser(user)"
                             class="p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors"
                             :class="{ 'bg-blue-50 border-l-4 border-l-blue-500': selectedUser?.id === user.id }">
                             <div class="flex items-center space-x-3">
@@ -52,9 +73,18 @@
 
                                 <!-- User Info -->
                                 <div class="flex-1 min-w-0">
-                                    <p class="font-medium text-gray-900 truncate">{{ user.name }}</p>
+                                    <div class="flex items-center gap-2">
+                                        <p class="font-medium text-gray-900 truncate">{{ user.name }}</p>
+                                        <span v-if="user.isNewConversation"
+                                            class="px-2 py-0.5 text-xs bg-green-100 text-green-700 rounded-full">
+                                            Mới
+                                        </span>
+                                    </div>
                                     <p v-if="getLastMessage(user.id)" class="text-sm text-gray-500 truncate">
                                         {{ getLastMessage(user.id) }}
+                                    </p>
+                                    <p v-else-if="user.email || user.phone" class="text-sm text-gray-400 truncate">
+                                        {{ user.email || user.phone }}
                                     </p>
                                 </div>
                             </div>
@@ -130,11 +160,97 @@
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import AdminLayout from '@/layouts/admin/AdminLayout.vue'
 import { useConversationStore } from '@/stores/conversation'
+import ConversationService from '@/api-services/ConversationService'
 
 const conversationStore = useConversationStore()
 
+// Search query
+const searchQuery = ref('')
+const searchResults = ref([])
+const isSearching = ref(false)
+
 // Get userChatList from store
 const userChatList = computed(() => conversationStore.userChatList)
+
+// Check if query looks like email or phone
+const isEmailOrPhone = (query) => {
+    const trimmed = query.trim()
+    // Check for email pattern
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    // Check for phone pattern (numbers, may have +, spaces, dashes)
+    const phonePattern = /^[\d\s\+\-\(\)]+$/
+    return emailPattern.test(trimmed) || (phonePattern.test(trimmed) && trimmed.replace(/\D/g, '').length >= 7)
+}
+
+// Filtered user list based on search query (from existing chat list)
+const filteredUserList = computed(() => {
+    if (!searchQuery.value.trim()) {
+        return userChatList.value
+    }
+
+    const query = searchQuery.value.toLowerCase().trim()
+    return userChatList.value.filter(user => {
+        const name = (user.name || '').toLowerCase()
+        const lastMessage = (user.lastMessage || '').toLowerCase()
+        return name.includes(query) || lastMessage.includes(query)
+    })
+})
+
+// Combined display list: existing chats + search results
+const displayUserList = computed(() => {
+    if (!searchQuery.value.trim()) {
+        return userChatList.value
+    }
+
+    // If searching by email/phone, show search results
+    if (isEmailOrPhone(searchQuery.value)) {
+        // Merge: existing chats that match + new search results
+        const existingIds = new Set(userChatList.value.map(u => u.id))
+        const newUsers = searchResults.value.filter(u => !existingIds.has(u.id))
+        return [...filteredUserList.value, ...newUsers]
+    }
+
+    // Otherwise, just show filtered existing chats
+    return filteredUserList.value
+})
+
+// Search users by email/phone
+const searchUsers = async () => {
+    const query = searchQuery.value.trim()
+
+    if (!query || query.length < 2) {
+        searchResults.value = []
+        return
+    }
+
+    // Only search by API if it looks like email/phone
+    if (isEmailOrPhone(query)) {
+        isSearching.value = true
+        try {
+            const results = await ConversationService.searchUsers(query)
+            searchResults.value = results
+        } catch (error) {
+            console.error('Error searching users:', error)
+            searchResults.value = []
+        } finally {
+            isSearching.value = false
+        }
+    } else {
+        searchResults.value = []
+    }
+}
+
+// Watch search query with debounce
+let searchTimeout = null
+watch(searchQuery, (newValue) => {
+    if (searchTimeout) {
+        clearTimeout(searchTimeout)
+    }
+
+    searchTimeout = setTimeout(() => {
+        searchUsers()
+    }, 500) // Debounce 500ms
+})
 
 // Fake messages data for each user
 const messagesData = ref({
