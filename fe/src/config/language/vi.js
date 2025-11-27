@@ -693,6 +693,18 @@ Myshoes.vn hiện đang có chương trình ưu đãi đặc biệt cho các m�
         markRespondedFailed: "Không thể đánh dấu thông báo là đã phản hồi. Vui lòng thử lại."
       }
     },
+    Chat: {
+      customerList: "Danh sách khách hàng",
+      searchPlaceholder: "Tìm kiếm khách hàng...",
+      loading: "Đang tải danh sách khách hàng...",
+      searching: "Đang tìm kiếm...",
+      noCustomers: "Chưa có khách hàng nào nhắn tin",
+      noResults: "Không tìm thấy khách hàng nào",
+      new: "Mới",
+      active: "Đang hoạt động",
+      selectCustomer: "Chọn một khách hàng để bắt đầu trò chuyện",
+      messagePlaceholder: "Nhập tin nhắn...",
+    },
     Categories: {
       title: "Danh mục",
       subtitle: "Quản lý danh mục sản phẩm của cửa hàng",

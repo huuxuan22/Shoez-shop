@@ -693,6 +693,18 @@ Myshoes.vn currently has special promotion for fall sneakers with up to 30% disc
         markRespondedFailed: "Unable to mark notification as responded. Please try again."
       }
     },
+    Chat: {
+      customerList: "Customer List",
+      searchPlaceholder: "Search customers...",
+      loading: "Loading customer list...",
+      searching: "Searching...",
+      noCustomers: "No customers have messaged yet",
+      noResults: "No customers found",
+      new: "New",
+      active: "Active",
+      selectCustomer: "Select a customer to start chatting",
+      messagePlaceholder: "Type a message...",
+    },
     Categories: {
       title: "Categories",
       subtitle: "Manage your store's product categories",
