@@ -31,6 +31,20 @@ const MessageService = {
     },
 
     /**
+     * User gửi tin nhắn cho admin
+     */
+    async userSendMessage(payload) {
+        try {
+            const response = await BaseAxios.post('/messages/user-send', payload, {
+                withCredentials: true
+            });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    /**
      * Đánh dấu messages là đã đọc
      */
     async markAsRead(conversationId) {
