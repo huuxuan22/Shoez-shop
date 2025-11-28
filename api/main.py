@@ -22,6 +22,7 @@ from controllers.payment_controller import payment_router
 from controllers.brand_controller import brand_router
 from controllers.statistics_controller import statistics_router
 from controllers.conversation_controller import conversation_router
+from controllers.message_controller import message_router
 from exceptions.register_handlers import register_all_handlers
 import exceptions.handlers 
 from dependences.dependencies import set_language_dependency
@@ -58,6 +59,7 @@ app.include_router(payment_router, prefix=f"{PRE_FIX}/payments")
 app.include_router(brand_router, prefix=PRE_FIX)
 app.include_router(statistics_router, prefix=PRE_FIX)
 app.include_router(conversation_router, prefix=PRE_FIX)
+app.include_router(message_router, prefix=PRE_FIX)
 @app.on_event("startup")
 async def startup_event():
     """Startup event handler"""
