@@ -43,14 +43,14 @@ class MessageService:
             try:
                 conversation = await self.conversation_repository.get_by_id(conversation_id)
                 if not conversation:
-                    raise ValueError("Conversation not found")
+                    conversation = None
             except Exception:
                 conversation = None
         else:
             conversation = None
 
         # Nếu chưa có conversation, tạo mới
-        if not conversation and conversation is not None:
+        if not conversation:
             conversation = await self.conversation_repository.create_or_get_conversation(
                 user_id=receiver_id,
                 admin_id=admin_id
@@ -144,6 +144,143 @@ class MessageService:
             formatted_messages.append(msg_dict)
 
         return formatted_messages
+
+    async def user_send_message(
+        self,
+        user_id: str,
+        content: str,
+        conversation_id: str = None
+    ) -> Dict[str, Any]:
+        """
+        User gửi tin nhắn cho admin
+        - Tạo hoặc lấy conversation
+        - Lưu message vào database
+        - Cập nhật lastMessage và unread của conversation
+        - Emit realtime cho admin
+        """
+        # Kiểm tra user_id có tồn tại không
+        user = await self.user_repository.get_by_id_str(user_id)
+        if not user:
+            raise ValueError("User not found")
+
+        admin_id = None
+        conversation = None
+
+        # Tạo hoặc lấy conversation
+        if conversation_id and conversation_id.strip() != '':
+            try:
+                conversation = await self.conversation_repository.get_by_id(conversation_id)
+                if conversation:
+                    # Tìm admin_id từ participants
+                    participants = conversation.get("participants", [])
+                    for p in participants:
+                        if p.get("role") == "ADMIN":
+                            admin_id = p.get("userId")
+                            break
+            except Exception:
+                conversation = None
+
+        # Nếu chưa có conversation hoặc không tìm thấy admin, tìm admin đầu tiên
+        if not admin_id:
+            # Tìm admin đầu tiên trong hệ thống
+            admin = await self.user_repository.find_one({"role": "ADMIN"})
+            if not admin:
+                raise ValueError("Admin not found in system")
+            # Format admin_id tương tự như get_by_id_str
+            if "_id" in admin:
+                admin_id = str(admin["_id"])
+            elif "id" in admin:
+                admin_id = str(admin["id"])
+            else:
+                raise ValueError("Admin ID not found")
+
+        # Nếu chưa có conversation, tạo mới
+        if not conversation:
+            conversation = await self.conversation_repository.create_or_get_conversation(
+                user_id=user_id,
+                admin_id=admin_id
+            )
+            conversation_id = str(conversation.get("_id", ""))
+
+        # Tạo message
+        message_data = {
+            "conversationId": ObjectId(conversation_id),
+            "senderId": user_id,
+            "receiverId": admin_id,
+            "content": content,
+            "type": "text",
+            "isRead": False,
+            "createdAt": datetime.now()
+        }
+
+        created_message = await self.message_repository.create_message(message_data)
+
+        # Cập nhật lastMessage của conversation
+        last_message = {
+            "content": content,
+            "senderId": user_id,
+            "createdAt": datetime.now()
+        }
+        await self.conversation_repository.update_last_message(conversation_id, last_message)
+
+        # Tăng unread cho admin
+        await self.conversation_repository.increment_unread(conversation_id, admin_id)
+
+        # Format message để trả về
+        message_dict = jsonable_encoder(created_message)
+        if "_id" in message_dict:
+            message_dict["id"] = str(message_dict["_id"])
+            del message_dict["_id"]
+        if "conversationId" in message_dict:
+            message_dict["conversationId"] = str(message_dict["conversationId"])
+
+        # Emit realtime cho admin
+        sio = get_sio()
+        # Format createdAt to ISO string
+        created_at = message_dict.get("createdAt")
+        if isinstance(created_at, datetime):
+            created_at = created_at.isoformat()
+        elif created_at and not isinstance(created_at, str):
+            created_at = str(created_at)
+        
+        # Emit vào room admin và room cụ thể của admin
+        await sio.emit(
+            'new_message',
+            {
+                "conversationId": conversation_id,
+                "senderId": user_id,
+                "receiverId": admin_id,
+                "content": content,
+                "type": "text",
+                "createdAt": created_at,
+                "isRead": False,
+                "id": message_dict.get("id")
+            },
+            room="admin",
+            namespace="/notifications"
+        )
+        
+        # Cũng emit vào room cụ thể của admin nếu có
+        await sio.emit(
+            'new_message',
+            {
+                "conversationId": conversation_id,
+                "senderId": user_id,
+                "receiverId": admin_id,
+                "content": content,
+                "type": "text",
+                "createdAt": created_at,
+                "isRead": False,
+                "id": message_dict.get("id")
+            },
+            room=f"admin_{admin_id}",
+            namespace="/notifications"
+        )
+
+        return {
+            "message": message_dict,
+            "conversationId": conversation_id
+        }
 
     async def mark_messages_as_read(
         self,
