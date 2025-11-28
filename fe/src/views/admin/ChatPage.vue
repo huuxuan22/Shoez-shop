@@ -125,15 +125,29 @@
                 <!-- Messages Area -->
                 <div v-if="selectedUser" ref="messagesContainer"
                     class="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-4">
-                    <div v-for="(msg, index) in currentMessages" :key="index" class="flex"
-                        :class="msg.from === 'admin' ? 'justify-end' : 'justify-start'">
-                        <div class="max-w-[70%] rounded-lg px-4 py-2"
-                            :class="msg.from === 'admin' ? 'bg-blue-500 text-white' : 'bg-white text-gray-900 border border-gray-200'">
-                            <p class="text-sm">{{ msg.message }}</p>
-                            <p class="text-xs mt-1" :class="msg.from === 'admin' ? 'text-blue-100' : 'text-gray-500'">
-                                {{ formatTime(msg.time) }}
-                            </p>
+                    <!-- Loading State -->
+                    <div v-if="loadingMessages" class="flex justify-center items-center h-full">
+                        <p class="text-gray-500">{{ $t('Admin.Chat.loading') }}</p>
+                    </div>
+
+                    <!-- Messages -->
+                    <div v-else-if="currentMessages.length > 0">
+                        <div v-for="msg in currentMessages" :key="msg.id || `${msg.time}-${msg.message}`" class="flex"
+                            :class="msg.from === 'admin' ? 'justify-end' : 'justify-start'">
+                            <div class="max-w-[70%] rounded-lg px-4 py-2"
+                                :class="msg.from === 'admin' ? 'bg-blue-500 text-white' : 'bg-white text-gray-900 border border-gray-200'">
+                                <p class="text-sm">{{ msg.message }}</p>
+                                <p class="text-xs mt-1"
+                                    :class="msg.from === 'admin' ? 'text-blue-100' : 'text-gray-500'">
+                                    {{ formatTime(msg.time) }}
+                                </p>
+                            </div>
                         </div>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div v-else class="flex justify-center items-center h-full">
+                        <p class="text-gray-500">{{ $t('Admin.Chat.noMessages') }}</p>
                     </div>
                 </div>
 
@@ -142,12 +156,14 @@
                     <form @submit.prevent="sendMessage" class="flex items-center space-x-2">
                         <input v-model="newMessage" type="text" :placeholder="$t('Admin.Chat.messagePlaceholder')"
                             class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                        <button type="submit" :disabled="!newMessage.trim()"
+                        <button type="submit" :disabled="!newMessage.trim() || sendingMessage"
                             class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg v-if="!sendingMessage" class="w-5 h-5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                             </svg>
+                            <span v-else class="text-sm">...</span>
                         </button>
                     </form>
                 </div>
@@ -157,12 +173,16 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { io } from 'socket.io-client'
 import AdminLayout from '@/layouts/admin/AdminLayout.vue'
 import { useConversationStore } from '@/stores/conversation'
 import ConversationService from '@/api-services/ConversationService'
+import MessageService from '@/api-services/MessageService'
+import { useToast } from '@/composables/useToast'
 
 const conversationStore = useConversationStore()
+const toast = useToast()
 
 // Search query
 const searchQuery = ref('')
@@ -171,6 +191,13 @@ const isSearching = ref(false)
 
 // Get userChatList from store
 const userChatList = computed(() => conversationStore.userChatList)
+
+// Messages data - keyed by userId
+const messagesData = ref({})
+const loadingMessages = ref(false)
+
+// Socket for realtime updates
+const socket = ref(null)
 
 // Check if query looks like email or phone
 const isEmailOrPhone = (query) => {
@@ -252,31 +279,10 @@ watch(searchQuery, (newValue) => {
     }, 500) // Debounce 500ms
 })
 
-// Fake messages data for each user
-const messagesData = ref({
-    1: [
-        { from: "user", message: "Xin chào", time: "2025-11-10 10:32" },
-        { from: "admin", message: "Tôi hỗ trợ gì cho bạn?", time: "2025-11-10 10:33" },
-        { from: "user", message: "Tôi muốn hỏi về sản phẩm", time: "2025-11-10 10:35" },
-    ],
-    2: [
-        { from: "user", message: "Sản phẩm có còn hàng không?", time: "2025-11-10 09:15" },
-        { from: "admin", message: "Vâng, sản phẩm vẫn còn hàng", time: "2025-11-10 09:16" },
-    ],
-    3: [
-        { from: "user", message: "Khi nào tôi nhận được hàng?", time: "2025-11-10 11:20" },
-    ],
-    4: [
-        { from: "user", message: "Cảm ơn bạn", time: "2025-11-10 08:45" },
-    ],
-    5: [
-        { from: "admin", message: "Chào bạn, bạn cần hỗ trợ gì?", time: "2025-11-10 14:00" },
-    ],
-})
-
 const selectedUser = ref(null)
 const newMessage = ref('')
 const messagesContainer = ref(null)
+const sendingMessage = ref(false)
 
 const currentMessages = computed(() => {
     if (!selectedUser.value) return []
@@ -288,47 +294,150 @@ const getLastMessage = (userId) => {
     return user?.lastMessage || ''
 }
 
-const selectUser = (user) => {
+// Load messages for a user
+const loadMessages = async (user) => {
+    if (!user.conversationId && !user.isNewConversation) {
+        return
+    }
+
+    // If new conversation, no messages yet
+    if (user.isNewConversation) {
+        messagesData.value[user.id] = []
+        return
+    }
+
+    loadingMessages.value = true
+    try {
+        const messages = await MessageService.getMessages(user.conversationId)
+
+        // Format messages for display
+        const formattedMessages = messages.map(msg => ({
+            from: msg.senderId === user.id ? 'user' : 'admin',
+            message: msg.content,
+            time: msg.createdAt,
+            id: msg.id || msg._id
+        }))
+
+        messagesData.value[user.id] = formattedMessages
+
+        // Mark messages as read
+        if (user.conversationId) {
+            try {
+                await MessageService.markAsRead(user.conversationId)
+            } catch (error) {
+                console.error('Error marking messages as read:', error)
+            }
+        }
+
+        // Scroll to bottom after loading
+        nextTick(() => {
+            scrollToBottom()
+        })
+    } catch (error) {
+        console.error('Error loading messages:', error)
+        toast.error('Không thể tải tin nhắn', 'Lỗi')
+        messagesData.value[user.id] = []
+    } finally {
+        loadingMessages.value = false
+    }
+}
+
+const selectUser = async (user) => {
     selectedUser.value = user
     // Reset unread count when selecting user
     conversationStore.resetUnread(user.id)
-    // Scroll to bottom when selecting user
-    nextTick(() => {
-        scrollToBottom()
-    })
+
+    // Load messages if not already loaded
+    if (!messagesData.value[user.id]) {
+        await loadMessages(user)
+    } else {
+        // Scroll to bottom if messages already loaded
+        nextTick(() => {
+            scrollToBottom()
+        })
+    }
 }
 
-// Load conversation users on mount
-onMounted(async () => {
-    await conversationStore.fetchUsersChattingWithAdmin()
-})
+// Send message
+const sendMessage = async () => {
+    if (!newMessage.value.trim() || !selectedUser.value || sendingMessage.value) return
 
-const sendMessage = () => {
-    if (!newMessage.value.trim() || !selectedUser.value) return
+    const content = newMessage.value.trim()
+    sendingMessage.value = true
 
-    const message = {
-        from: "admin",
-        message: newMessage.value.trim(),
-        time: new Date().toISOString().slice(0, 16).replace('T', ' ')
+    try {
+        const payload = {
+            receiverId: selectedUser.value.id,
+            content: content,
+            conversationId: selectedUser.value.conversationId || null
+        }
+
+        const result = await MessageService.adminSendMessage(payload)
+
+        // Update conversationId if it's a new conversation
+        if (!selectedUser.value.conversationId && result.conversationId) {
+            selectedUser.value.conversationId = result.conversationId
+            // Update in store
+            const userInStore = userChatList.value.find(u => u.id === selectedUser.value.id)
+            if (userInStore) {
+                userInStore.conversationId = result.conversationId
+                userInStore.isNewConversation = false
+            }
+        }
+
+        // Add message to local state
+        const message = result.message || result
+        if (!messagesData.value[selectedUser.value.id]) {
+            messagesData.value[selectedUser.value.id] = []
+        }
+
+        messagesData.value[selectedUser.value.id].push({
+            from: 'admin',
+            message: message.content || content,
+            time: message.createdAt || new Date().toISOString(),
+            id: message.id || message._id
+        })
+
+        // Update last message in store
+        const userInStore = userChatList.value.find(u => u.id === selectedUser.value.id)
+        if (userInStore) {
+            userInStore.lastMessage = content
+            userInStore.lastMessageTime = message.createdAt || new Date().toISOString()
+        }
+
+        newMessage.value = ''
+
+        // Scroll to bottom after sending
+        nextTick(() => {
+            scrollToBottom()
+        })
+    } catch (error) {
+        console.error('Error sending message:', error)
+        toast.error('Không thể gửi tin nhắn', 'Lỗi')
+    } finally {
+        sendingMessage.value = false
     }
-
-    if (!messagesData.value[selectedUser.value.id]) {
-        messagesData.value[selectedUser.value.id] = []
-    }
-
-    messagesData.value[selectedUser.value.id].push(message)
-    newMessage.value = ''
-
-    // Scroll to bottom after sending
-    nextTick(() => {
-        scrollToBottom()
-    })
 }
 
 const formatTime = (timeStr) => {
     if (!timeStr) return ''
     try {
-        const date = new Date(timeStr.replace(' ', 'T'))
+        // Handle ISO format or other formats
+        const date = new Date(timeStr)
+        if (isNaN(date.getTime())) {
+            // Try parsing as 'YYYY-MM-DD HH:mm' format
+            const parsed = new Date(timeStr.replace(' ', 'T'))
+            if (isNaN(parsed.getTime())) {
+                return timeStr
+            }
+            return parsed.toLocaleString('vi-VN', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            })
+        }
         return date.toLocaleString('vi-VN', {
             day: '2-digit',
             month: '2-digit',
@@ -346,6 +455,88 @@ const scrollToBottom = () => {
         messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
     }
 }
+
+// Connect socket for realtime updates
+const connectSocket = () => {
+    socket.value = io('http://localhost:8000/notifications', {
+        transports: ['websocket', 'polling'],
+        autoConnect: true
+    })
+
+    socket.value.on('connect', () => {
+        console.log('✅ Admin chat connected to socket')
+        socket.value.emit('join_room', { room: 'admin' })
+    })
+
+    // Listen for new messages from users
+    socket.value.on('new_message', (data) => {
+        console.log('📬 Received new message:', data)
+
+        // Find the user who sent the message
+        const userId = data.senderId
+        const user = userChatList.value.find(u => u.id === userId || u.userId === userId)
+
+        if (user) {
+            // Add message to messagesData
+            if (!messagesData.value[userId]) {
+                messagesData.value[userId] = []
+            }
+
+            // Check if message already exists (avoid duplicates)
+            const existingMessage = messagesData.value[userId].find(
+                msg => msg.id === data.id || (msg.message === data.content && msg.time === data.createdAt)
+            )
+
+            if (!existingMessage) {
+                messagesData.value[userId].push({
+                    from: 'user',
+                    message: data.content,
+                    time: data.createdAt,
+                    id: data.id
+                })
+
+                // Update last message in store
+                user.lastMessage = data.content
+                user.lastMessageTime = data.createdAt
+
+                // If this user is currently selected, scroll to bottom
+                if (selectedUser.value && selectedUser.value.id === userId) {
+                    nextTick(() => {
+                        scrollToBottom()
+                    })
+                }
+            }
+        }
+
+        // Refresh user list to update unread counts
+        conversationStore.fetchUsersChattingWithAdmin()
+    })
+
+    socket.value.on('disconnect', () => {
+        console.log('❌ Admin chat disconnected from socket')
+    })
+
+    socket.value.on('connect_error', (error) => {
+        console.error('Socket connection error:', error)
+    })
+}
+
+const disconnectSocket = () => {
+    if (socket.value) {
+        socket.value.disconnect()
+        socket.value = null
+    }
+}
+
+// Load conversation users on mount
+onMounted(async () => {
+    await conversationStore.fetchUsersChattingWithAdmin()
+    connectSocket()
+})
+
+onUnmounted(() => {
+    disconnectSocket()
+})
 
 // Watch for new messages and auto-scroll
 watch(currentMessages, () => {
