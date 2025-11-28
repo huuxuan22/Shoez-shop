@@ -154,8 +154,21 @@
                 <!-- Message Input -->
                 <div v-if="selectedUser" class="p-4 border-t border-gray-200 bg-white">
                     <form @submit.prevent="sendMessage" class="flex items-center space-x-2">
-                        <input v-model="newMessage" type="text" :placeholder="$t('Admin.Chat.messagePlaceholder')"
-                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input ref="messageInput" v-model="newMessage" type="text"
+                            :placeholder="$t('Admin.Chat.messagePlaceholder')"
+                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            @focus="emojiPickerOpen = false" />
+
+                        <!-- Emoji Button -->
+                        <button ref="emojiButton" type="button" @click="toggleEmojiPicker"
+                            class="w-10 h-10 rounded-full bg-white border border-gray-300 text-black flex items-center justify-center hover:bg-gray-100 transition-colors"
+                            :title="$t('Admin.Chat.addEmoji')">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-3.5-9c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm7 0c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />
+                            </svg>
+                        </button>
+
                         <button type="submit" :disabled="!newMessage.trim() || sendingMessage"
                             class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors">
                             <svg v-if="!sendingMessage" class="w-5 h-5" fill="none" stroke="currentColor"
@@ -170,16 +183,32 @@
             </div>
         </div>
     </AdminLayout>
+
+    <!-- Emoji Picker - Rendered outside component using Teleport -->
+    <Teleport to="body">
+        <transition name="fade">
+            <div v-if="emojiPickerOpen && emojiPickerPosition" class="emoji-picker-wrapper fixed z-[9999]" :style="{
+                bottom: `${emojiPickerPosition.bottom}px`,
+                right: `${emojiPickerPosition.right}px`
+            }">
+                <div class="emoji-picker-container bg-white rounded-lg shadow-2xl border border-gray-200 p-2">
+                    <EmojiPicker :native="true" :disable-skin-tones="false" @select="onEmojiSelect" />
+                </div>
+            </div>
+        </transition>
+    </Teleport>
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted, onBeforeUnmount } from 'vue'
 import { io } from 'socket.io-client'
 import AdminLayout from '@/layouts/admin/AdminLayout.vue'
 import { useConversationStore } from '@/stores/conversation'
 import ConversationService from '@/api-services/ConversationService'
 import MessageService from '@/api-services/MessageService'
 import { useToast } from '@/composables/useToast'
+import EmojiPicker from 'vue3-emoji-picker'
+import 'vue3-emoji-picker/css'
 
 const conversationStore = useConversationStore()
 const toast = useToast()
@@ -283,6 +312,10 @@ const selectedUser = ref(null)
 const newMessage = ref('')
 const messagesContainer = ref(null)
 const sendingMessage = ref(false)
+const emojiPickerOpen = ref(false)
+const emojiPickerPosition = ref(null)
+const messageInput = ref(null)
+const emojiButton = ref(null)
 
 const currentMessages = computed(() => {
     if (!selectedUser.value) return []
@@ -528,10 +561,115 @@ const disconnectSocket = () => {
     }
 }
 
+// Emoji picker functions
+const calculateEmojiPickerPosition = () => {
+    if (!emojiButton.value) return null
+
+    const buttonRect = emojiButton.value.getBoundingClientRect()
+    const pickerHeight = 400 // Approximate height of emoji picker
+    const pickerWidth = 320 // Width of emoji picker
+    const spacing = 8 // Space between button and picker
+
+    // Calculate position
+    // Position above the button
+    const bottom = window.innerHeight - buttonRect.top + spacing
+    const right = window.innerWidth - buttonRect.right
+
+    // Check if picker would go off screen on the right
+    const adjustedRight = right < 0 ? buttonRect.left : right
+
+    // Check if picker would go off screen on the top
+    const adjustedBottom = buttonRect.top < pickerHeight
+        ? window.innerHeight - buttonRect.bottom - pickerHeight - spacing
+        : bottom
+
+    return {
+        bottom: adjustedBottom,
+        right: adjustedRight
+    }
+}
+
+const toggleEmojiPicker = () => {
+    if (!emojiPickerOpen.value) {
+        // Calculate position before opening
+        nextTick(() => {
+            emojiPickerPosition.value = calculateEmojiPickerPosition()
+            emojiPickerOpen.value = true
+        })
+    } else {
+        emojiPickerOpen.value = false
+    }
+}
+
+const onEmojiSelect = (emoji) => {
+    // Insert emoji at cursor position or at the end
+    const input = messageInput.value
+    if (input) {
+        const start = input.selectionStart || 0
+        const end = input.selectionEnd || 0
+        const textBefore = newMessage.value.substring(0, start)
+        const textAfter = newMessage.value.substring(end)
+        const emojiText = emoji.i || emoji.emoji || emoji
+        newMessage.value = textBefore + emojiText + textAfter
+
+        // Set cursor position after inserted emoji
+        nextTick(() => {
+            input.focus()
+            const newPosition = start + emojiText.length
+            input.setSelectionRange(newPosition, newPosition)
+        })
+    } else {
+        // Fallback: append emoji to the end
+        const emojiText = emoji.i || emoji.emoji || emoji
+        newMessage.value += emojiText
+    }
+
+    // Close emoji picker after selection
+    emojiPickerOpen.value = false
+}
+
+// Close emoji picker when clicking outside
+const handleClickOutside = (event) => {
+    if (emojiPickerOpen.value) {
+        const emojiPicker = event.target.closest('.emoji-picker-container') ||
+            event.target.closest('.emoji-picker') ||
+            event.target.closest('.emoji-picker-wrapper') ||
+            event.target.closest('[class*="emoji"]')
+        const emojiButtonEl = event.target.closest('button[type="button"]')
+
+        // Check if click is on the emoji button
+        const isEmojiButton = emojiButton.value && emojiButton.value.contains(event.target)
+
+        if (!emojiPicker && !isEmojiButton && !emojiButtonEl) {
+            emojiPickerOpen.value = false
+        }
+    }
+}
+
+// Update position on window resize
+const handleResize = () => {
+    if (emojiPickerOpen.value) {
+        emojiPickerPosition.value = calculateEmojiPickerPosition()
+    }
+}
+
 // Load conversation users on mount
 onMounted(async () => {
     await conversationStore.fetchUsersChattingWithAdmin()
     connectSocket()
+
+    // Add click outside listener for emoji picker
+    document.addEventListener('click', handleClickOutside)
+    // Add resize listener to update emoji picker position
+    window.addEventListener('resize', handleResize)
+    window.addEventListener('scroll', handleResize, true)
+})
+
+onBeforeUnmount(() => {
+    // Remove click outside listener
+    document.removeEventListener('click', handleClickOutside)
+    window.removeEventListener('resize', handleResize)
+    window.removeEventListener('scroll', handleResize, true)
 })
 
 onUnmounted(() => {
@@ -546,4 +684,46 @@ watch(currentMessages, () => {
 }, { deep: true })
 </script>
 
-<style scoped></style>
+<style scoped>
+/* Emoji Picker Styles */
+.emoji-picker-wrapper {
+    pointer-events: auto;
+}
+
+.emoji-picker-container {
+    width: 320px;
+    max-height: 400px;
+    overflow: hidden;
+    pointer-events: auto;
+}
+
+:deep(.emoji-picker) {
+    width: 100%;
+    max-height: 400px;
+}
+
+:deep(.emoji-picker__container) {
+    border: none;
+    box-shadow: none;
+}
+
+:deep(.emoji-picker__search) {
+    padding: 8px;
+}
+
+:deep(.emoji-picker__emojis) {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Fade transition for emoji picker */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.15s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>

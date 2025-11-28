@@ -62,29 +62,48 @@
                 </div>
 
                 <!-- Input -->
-                <form class="flex items-center gap-2 p-3 border-t bg-white" @submit.prevent="send">
-                    <input v-model="draft" type="text"
-                        :placeholder="$t('Shared.MessengerChatWidget.messagePlaceholder')"
-                        :disabled="sendingMessage || !isAuthenticated"
-                        class="flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                        @keydown.enter.exact.prevent="send" />
-                    <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="onFileChange" />
-                    <button type="button" :disabled="!isAuthenticated"
-                        class="w-10 h-10 rounded-full bg-white border border-gray-300 text-black flex items-center justify-center hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                        @click="triggerFile" :title="$t('Shared.MessengerChatWidget.sendImage')">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M16.5 6.5v8.25a4.75 4.75 0 1 1-9.5 0V7.75a3.25 3.25 0 1 1 6.5 0v6.75a1.75 1.75 0 1 1-3.5 0V8.5h1.5v6a.25.25 0 1 0 .5 0V7.75a4.75 4.75 0 1 0-9.5 0v7a6.25 6.25 0 1 0 12.5 0V6.5h1.5Z" />
-                        </svg>
-                    </button>
-                    <button type="submit" :disabled="!draft.trim() || sendingMessage || !isAuthenticated"
-                        class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <svg v-if="!sendingMessage" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z" />
-                        </svg>
-                        <span v-else class="text-xs">...</span>
-                    </button>
-                </form>
+                <div class="relative">
+                    <form class="flex items-center gap-2 p-3 border-t bg-white" @submit.prevent="send">
+                        <div class="relative flex-1">
+                            <input ref="messageInput" v-model="draft" type="text"
+                                :placeholder="$t('Shared.MessengerChatWidget.messagePlaceholder')"
+                                :disabled="sendingMessage || !isAuthenticated"
+                                class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                @keydown.enter.exact.prevent="send" @focus="emojiPickerOpen = false" />
+                        </div>
+
+                        <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="onFileChange" />
+
+                        <!-- Emoji Button -->
+                        <button ref="emojiButton" type="button" :disabled="!isAuthenticated" @click="toggleEmojiPicker"
+                            class="w-10 h-10 rounded-full bg-white border border-gray-300 text-black flex items-center justify-center hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            :title="$t('Shared.MessengerChatWidget.addEmoji')">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-3.5-9c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm7 0c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />
+                            </svg>
+                        </button>
+
+                        <!-- File Upload Button -->
+                        <button type="button" :disabled="!isAuthenticated" @click="triggerFile"
+                            class="w-10 h-10 rounded-full bg-white border border-gray-300 text-black flex items-center justify-center hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            :title="$t('Shared.MessengerChatWidget.sendImage')">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M16.5 6.5v8.25a4.75 4.75 0 1 1-9.5 0V7.75a3.25 3.25 0 1 1 6.5 0v6.75a1.75 1.75 0 1 1-3.5 0V8.5h1.5v6a.25.25 0 1 0 .5 0V7.75a4.75 4.75 0 1 0-9.5 0v7a6.25 6.25 0 1 0 12.5 0V6.5h1.5Z" />
+                            </svg>
+                        </button>
+
+                        <!-- Send Button -->
+                        <button type="submit" :disabled="!draft.trim() || sendingMessage || !isAuthenticated"
+                            class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <svg v-if="!sendingMessage" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z" />
+                            </svg>
+                            <span v-else class="text-xs">...</span>
+                        </button>
+                    </form>
+                </div>
 
                 <!-- Not authenticated message -->
                 <div v-if="!isAuthenticated"
@@ -108,16 +127,32 @@
             </svg>
         </button>
     </div>
+
+    <!-- Emoji Picker - Rendered outside component using Teleport -->
+    <Teleport to="body">
+        <transition name="fade">
+            <div v-if="emojiPickerOpen && emojiPickerPosition" class="emoji-picker-wrapper fixed z-[9999]" :style="{
+                bottom: `${emojiPickerPosition.bottom}px`,
+                right: `${emojiPickerPosition.right}px`
+            }">
+                <div class="emoji-picker-container bg-white rounded-lg shadow-2xl border border-gray-200 p-2">
+                    <EmojiPicker :native="true" :disable-skin-tones="false" @select="onEmojiSelect" />
+                </div>
+            </div>
+        </transition>
+    </Teleport>
 </template>
 
 <script setup>
-import { ref, watch, nextTick, computed, onMounted, onUnmounted } from 'vue'
+import { ref, watch, nextTick, computed, onMounted, onUnmounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { io } from 'socket.io-client'
 import { useAuthStore } from '@/stores/auth'
 import MessageService from '@/api-services/MessageService'
 import { useToast } from '@/composables/useToast'
+import EmojiPicker from 'vue3-emoji-picker'
+import 'vue3-emoji-picker/css'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -131,9 +166,13 @@ const conversationId = ref(null)
 const loadingMessages = ref(false)
 const sendingMessage = ref(false)
 const socket = ref(null)
+const emojiPickerOpen = ref(false)
 
 const scrollArea = ref(null)
 const fileInput = ref(null)
+const messageInput = ref(null)
+const emojiButton = ref(null)
+const emojiPickerPosition = ref(null)
 
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const userId = computed(() => {
@@ -363,6 +402,98 @@ watch(isAuthenticated, (newVal) => {
     }
 })
 
+// Emoji picker functions
+const calculateEmojiPickerPosition = () => {
+    if (!emojiButton.value) return null
+
+    const buttonRect = emojiButton.value.getBoundingClientRect()
+    const pickerHeight = 400 // Approximate height of emoji picker
+    const pickerWidth = 320 // Width of emoji picker
+    const spacing = 8 // Space between button and picker
+
+    // Calculate position
+    // Position above the button
+    const bottom = window.innerHeight - buttonRect.top + spacing
+    const right = window.innerWidth - buttonRect.right
+
+    // Check if picker would go off screen on the right
+    const adjustedRight = right < 0 ? buttonRect.left : right
+
+    // Check if picker would go off screen on the top
+    const adjustedBottom = buttonRect.top < pickerHeight
+        ? window.innerHeight - buttonRect.bottom - pickerHeight - spacing
+        : bottom
+
+    return {
+        bottom: adjustedBottom,
+        right: adjustedRight
+    }
+}
+
+const toggleEmojiPicker = () => {
+    if (!emojiPickerOpen.value) {
+        // Calculate position before opening
+        nextTick(() => {
+            emojiPickerPosition.value = calculateEmojiPickerPosition()
+            emojiPickerOpen.value = true
+        })
+    } else {
+        emojiPickerOpen.value = false
+    }
+}
+
+const onEmojiSelect = (emoji) => {
+    // Insert emoji at cursor position or at the end
+    const input = messageInput.value
+    if (input) {
+        const start = input.selectionStart || 0
+        const end = input.selectionEnd || 0
+        const textBefore = draft.value.substring(0, start)
+        const textAfter = draft.value.substring(end)
+        const emojiText = emoji.i || emoji.emoji || emoji
+        draft.value = textBefore + emojiText + textAfter
+
+        // Set cursor position after inserted emoji
+        nextTick(() => {
+            input.focus()
+            const newPosition = start + emojiText.length
+            input.setSelectionRange(newPosition, newPosition)
+        })
+    } else {
+        // Fallback: append emoji to the end
+        const emojiText = emoji.i || emoji.emoji || emoji
+        draft.value += emojiText
+    }
+
+    // Close emoji picker after selection
+    emojiPickerOpen.value = false
+}
+
+// Close emoji picker when clicking outside
+const handleClickOutside = (event) => {
+    if (emojiPickerOpen.value) {
+        const emojiPicker = event.target.closest('.emoji-picker-container') ||
+            event.target.closest('.emoji-picker') ||
+            event.target.closest('.emoji-picker-wrapper') ||
+            event.target.closest('[class*="emoji"]')
+        const emojiButtonEl = event.target.closest('button[type="button"]')
+
+        // Check if click is on the emoji button
+        const isEmojiButton = emojiButton.value && emojiButton.value.contains(event.target)
+
+        if (!emojiPicker && !isEmojiButton && !emojiButtonEl) {
+            emojiPickerOpen.value = false
+        }
+    }
+}
+
+// Update position on window resize
+const handleResize = () => {
+    if (emojiPickerOpen.value) {
+        emojiPickerPosition.value = calculateEmojiPickerPosition()
+    }
+}
+
 function triggerFile() {
     fileInput.value?.click()
 }
@@ -417,6 +548,19 @@ onMounted(() => {
     if (isAuthenticated.value) {
         connectSocket()
     }
+
+    // Add click outside listener for emoji picker
+    document.addEventListener('click', handleClickOutside)
+    // Add resize listener to update emoji picker position
+    window.addEventListener('resize', handleResize)
+    window.addEventListener('scroll', handleResize, true)
+})
+
+onBeforeUnmount(() => {
+    // Remove click outside listener
+    document.removeEventListener('click', handleClickOutside)
+    window.removeEventListener('resize', handleResize)
+    window.removeEventListener('scroll', handleResize, true)
 })
 
 onUnmounted(() => {
@@ -433,5 +577,36 @@ onUnmounted(() => {
 .fade-enter-from,
 .fade-leave-to {
     opacity: 0;
+}
+
+/* Emoji Picker Styles */
+.emoji-picker-wrapper {
+    pointer-events: auto;
+}
+
+.emoji-picker-container {
+    width: 320px;
+    max-height: 400px;
+    overflow: hidden;
+    pointer-events: auto;
+}
+
+:deep(.emoji-picker) {
+    width: 100%;
+    max-height: 400px;
+}
+
+:deep(.emoji-picker__container) {
+    border: none;
+    box-shadow: none;
+}
+
+:deep(.emoji-picker__search) {
+    padding: 8px;
+}
+
+:deep(.emoji-picker__emojis) {
+    max-height: 300px;
+    overflow-y: auto;
 }
 </style>
