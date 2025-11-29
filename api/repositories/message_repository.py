@@ -14,9 +14,10 @@ class MessageRepository(BaseRepository[Message]):
         Lấy danh sách messages theo conversation_id
         """
         try:
+            # Chuyển đổi conversation_id từ string sang ObjectId
             oid = ObjectId(conversation_id)
             query = {"conversationId": oid}
-            messages = await self.find_all(query, sort=[("createdAt", -1)], limit=limit)
+            messages = await self.get_all(filter_query=query, sort=[("createdAt", -1)], limit=limit)
             # Reverse để có thứ tự từ cũ đến mới
             return list(reversed(messages)) if messages else []
         except Exception:
@@ -61,4 +62,21 @@ class MessageRepository(BaseRepository[Message]):
             return count
         except Exception:
             return 0
+
+    async def get_messages_by_user_id(self, user_id: str, limit: int = 100) -> List[Dict[str, Any]]:
+        """
+        Lấy danh sách messages của user (cả tin nhắn gửi và nhận)
+        """
+        try:
+            query = {
+                "$or": [
+                    {"senderId": user_id},
+                    {"receiverId": user_id}
+                ]
+            }
+            messages = await self.get_all(filter_query=query, sort=[("createdAt", -1)], limit=limit)
+            # Reverse để có thứ tự từ cũ đến mới
+            return list(reversed(messages)) if messages else []
+        except Exception:
+            return []
 

@@ -1,6 +1,7 @@
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 from fastapi.encoders import jsonable_encoder
+from utils.logger import logger
 from repositories.review_repository import ReviewRepository
 from schemas.review_schemas import ReviewCreateSchema, ReviewUpdateSchema
 from bson import ObjectId
@@ -54,7 +55,6 @@ class ReviewService:
                     "updated_at": datetime.utcnow()
                 }
                 updated = await self.review_repo.update(review_id, update_dict)
-                print(f'📝 Updated existing review: {review_id}')
                 return updated
 
         # Tạo review mới
@@ -87,7 +87,6 @@ class ReviewService:
             from services.low_rating_review_service import get_low_rating_review_service
             low_rating_service = get_low_rating_review_service()
             saved_review = await low_rating_service.create_low_rating_review(review)
-            print(f'💾 Saved low rating review to DB: {saved_review.get("review_id")}')
             
             # 2. Gửi WebSocket notification
             from config.socket import get_sio
@@ -105,8 +104,7 @@ class ReviewService:
             
             await sio.emit('admin_notification', notification_data, room='admin', namespace='/notifications')
         except Exception as e:
-            print(f"Error notifying admin: {e}")
-
+            logger.error(f"Error notifying admin: {e}")
     async def get_reviews_by_product(self, product_id: str, page: int = 1, limit: int = 20) -> Dict[str, Any]:
         """Lấy reviews theo product_id với pagination"""
         skip = (page - 1) * limit

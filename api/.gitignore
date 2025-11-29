@@ -32,7 +32,7 @@ venv/
 ENV/
 env/
 env.example/
-
+docs/
 # IDE
 .vscode/
 .idea/

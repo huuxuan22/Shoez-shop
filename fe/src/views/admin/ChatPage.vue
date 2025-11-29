@@ -43,7 +43,7 @@
                     <!-- User List -->
                     <div v-else>
                         <div v-for="user in displayUserList" :key="`${user.id}-${user.isNewConversation || false}`"
-                            @click="selectUser(user)"
+                            @click="() => { console.log('🖱️ Clicked on user:', user); selectUser(user); }"
                             class="p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors"
                             :class="{ 'bg-blue-50 border-l-4 border-l-blue-500': selectedUser?.id === user.id }">
                             <div class="flex items-center space-x-3">
@@ -131,7 +131,7 @@
                     </div>
 
                     <!-- Messages -->
-                    <div v-else-if="currentMessages.length > 0">
+                    <div v-else-if="currentMessages.length > 0" class="flex flex-col gap-2">
                         <div v-for="msg in currentMessages" :key="msg.id || `${msg.time}-${msg.message}`" class="flex"
                             :class="msg.from === 'admin' ? 'justify-end' : 'justify-start'">
                             <div class="max-w-[70%] rounded-lg px-4 py-2"
@@ -329,27 +329,46 @@ const getLastMessage = (userId) => {
 
 // Load messages for a user
 const loadMessages = async (user) => {
-    if (!user.conversationId && !user.isNewConversation) {
-        return
-    }
-
     // If new conversation, no messages yet
     if (user.isNewConversation) {
         messagesData.value[user.id] = []
+        loadingMessages.value = false
+        return
+    }
+
+    // Check if conversationId exists - must be truthy and not empty string
+    const hasConversationId = user.conversationId &&
+        user.conversationId !== null &&
+        user.conversationId !== undefined &&
+        String(user.conversationId).trim() !== ''
+
+    if (!hasConversationId) {
+        messagesData.value[user.id] = []
+        loadingMessages.value = false
         return
     }
 
     loadingMessages.value = true
     try {
-        const messages = await MessageService.getMessages(user.conversationId)
+        const convId = String(user.conversationId).trim()
+        const messages = await MessageService.getMessages(convId, 100)
+        if (!messages || messages.length === 0) {
+            messagesData.value[user.id] = []
+            return
+        }
 
         // Format messages for display
-        const formattedMessages = messages.map(msg => ({
-            from: msg.senderId === user.id ? 'user' : 'admin',
-            message: msg.content,
-            time: msg.createdAt,
-            id: msg.id || msg._id
-        }))
+        const formattedMessages = messages.map(msg => {
+            // Determine if message is from admin or user
+            // Admin messages have senderId = admin_id, user messages have senderId = user.id
+            const isFromUser = msg.senderId === user.id || msg.senderId === user.userId
+            return {
+                from: isFromUser ? 'user' : 'admin',
+                message: msg.content,
+                time: msg.createdAt,
+                id: msg.id || msg._id
+            }
+        })
 
         messagesData.value[user.id] = formattedMessages
 
@@ -367,7 +386,6 @@ const loadMessages = async (user) => {
             scrollToBottom()
         })
     } catch (error) {
-        console.error('Error loading messages:', error)
         toast.error('Không thể tải tin nhắn', 'Lỗi')
         messagesData.value[user.id] = []
     } finally {
@@ -380,15 +398,11 @@ const selectUser = async (user) => {
     // Reset unread count when selecting user
     conversationStore.resetUnread(user.id)
 
-    // Load messages if not already loaded
-    if (!messagesData.value[user.id]) {
-        await loadMessages(user)
-    } else {
-        // Scroll to bottom if messages already loaded
-        nextTick(() => {
-            scrollToBottom()
-        })
-    }
+    await loadMessages(user)
+
+    nextTick(() => {
+        scrollToBottom()
+    })
 }
 
 // Send message
@@ -436,9 +450,18 @@ const sendMessage = async () => {
         if (userInStore) {
             userInStore.lastMessage = content
             userInStore.lastMessageTime = message.createdAt || new Date().toISOString()
+            userInStore.unread = 0
         }
 
         newMessage.value = ''
+
+        // Refresh user list to update unread counts (admin's unread should be reset)
+        await conversationStore.fetchUsersChattingWithAdmin()
+
+        // Scroll to bottom after sending
+        nextTick(() => {
+            scrollToBottom()
+        })
 
         // Scroll to bottom after sending
         nextTick(() => {

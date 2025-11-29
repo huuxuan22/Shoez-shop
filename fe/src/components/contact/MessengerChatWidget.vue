@@ -3,7 +3,7 @@
         <!-- Chat Window -->
         <transition name="fade">
             <div v-if="open"
-                class="w-[320px] sm:w-[360px] bg-white shadow-2xl border border-gray-200 rounded-xl overflow-hidden">
+                class="w-[420px] sm:w-[460px] bg-white shadow-2xl border border-gray-200 rounded-xl overflow-hidden">
                 <!-- Header -->
                 <div class="flex items-center justify-between px-4 py-3 bg-black text-white">
                     <div class="flex items-center gap-2">
@@ -37,7 +37,7 @@
                     </div>
 
                     <!-- Messages List -->
-                    <div v-else class="space-y-3">
+                    <div v-else class="flex flex-col gap-2">
                         <div v-for="(m, i) in messages" :key="m.id || i" class="flex"
                             :class="m.from === 'user' ? 'justify-end' : 'justify-start'">
                             <div v-if="m.type === 'text'" :class="[
@@ -118,13 +118,25 @@
 
         <!-- Floating trigger button -->
         <button type="button"
-            class="w-12 h-12 rounded-full bg-white shadow-lg border border-gray-300 flex items-center justify-center hover:bg-black hover:text-white"
+            class="relative w-12 h-12 rounded-full bg-white shadow-lg border border-gray-300 flex items-center justify-center hover:bg-black hover:text-white"
             :title="$t('Shared.MessengerChatWidget.openChat')" @click="open = !open">
             <!-- Messenger icon -->
             <svg class="w-7 h-7 text-black" viewBox="0 0 24 24" fill="currentColor">
                 <path
                     d="M12 2C6.48 2 2 6.02 2 10.98c0 2.73 1.35 5.17 3.5 6.85V22l3.2-1.76c1.01.28 2.09.44 3.3.44 5.52 0 10-4.02 10-8.98S17.52 2 12 2Zm.21 11.93-2.58-2.76-4.13 2.76 4.64-4.96 2.6 2.76 4.1-2.76-4.63 4.96Z" />
             </svg>
+            <!-- Unread Badge -->
+            <div v-if="unreadCount > 0 && !open"
+                class="absolute -top-1 -right-1 h-5 bg-red-500 rounded-full flex items-center justify-center shadow-md border-2 border-white z-10"
+                :style="{
+                    minWidth: unreadCount > 99 ? '28px' : unreadCount > 9 ? '24px' : '20px',
+                    paddingLeft: unreadCount > 99 ? '6px' : unreadCount > 9 ? '5px' : '4px',
+                    paddingRight: unreadCount > 99 ? '6px' : unreadCount > 9 ? '5px' : '4px'
+                }">
+                <span class="text-white text-[11px] font-bold leading-none">
+                    {{ unreadCount > 99 ? '99+' : unreadCount }}
+                </span>
+            </div>
         </button>
     </div>
 
@@ -167,6 +179,7 @@ const loadingMessages = ref(false)
 const sendingMessage = ref(false)
 const socket = ref(null)
 const emojiPickerOpen = ref(false)
+const unreadCount = ref(0) // Test: Set to 5 to see badge. Change back to 0 after testing
 
 const scrollArea = ref(null)
 const fileInput = ref(null)
@@ -177,7 +190,10 @@ const emojiPickerPosition = ref(null)
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const userId = computed(() => {
     const user = authStore.user
-    return user?.id || user?._id || null
+    if (!user) return null
+    // Normalize userId - ensure it's a string
+    const id = user.id || user._id
+    return id ? String(id) : null
 })
 
 const welcomeMessage = computed(() => t('Shared.MessengerChatWidget.welcomeMessage'))
@@ -187,17 +203,93 @@ const findConversation = async () => {
     if (!isAuthenticated.value || !userId.value) return null
 
     try {
-        // Try to get conversation by checking if user has sent any messages
-        // For now, we'll rely on conversationId from previous messages
-        // In the future, we can add an API endpoint to get user's conversation
+        // Try to get conversation from localStorage
         const storedConvId = localStorage.getItem(`conversation_${userId.value}`)
         if (storedConvId) {
             return storedConvId
         }
     } catch (error) {
-        console.error('Error finding conversation:', error)
+        // Silent error handling
     }
     return null
+}
+
+// Initialize conversationId and load messages based on userId
+const initializeConversation = async () => {
+    if (!isAuthenticated.value || !userId.value) {
+        messages.value = [
+            { type: 'text', from: 'admin', text: welcomeMessage.value, time: new Date().toISOString() }
+        ]
+        return
+    }
+
+    loadingMessages.value = true
+    try {
+        const result = await MessageService.getUserMessages(1000)
+
+        if (result && result.conversationId) {
+            conversationId.value = result.conversationId
+            // Save to localStorage
+            localStorage.setItem(`conversation_${userId.value}`, result.conversationId)
+
+            // Update unread count
+            unreadCount.value = result.unread || 0
+
+            // Format and set messages
+            if (result.messages && result.messages.length > 0) {
+                const formattedMessages = result.messages.map(msg => ({
+                    type: 'text',
+                    from: msg.senderId === userId.value ? 'user' : 'admin',
+                    text: msg.content,
+                    time: msg.createdAt,
+                    id: msg.id || msg._id
+                }))
+
+                messages.value = formattedMessages
+
+                // Mark as read and reset unread when opening widget
+                if (open.value) {
+                    try {
+                        await MessageService.markAsRead(result.conversationId)
+                        unreadCount.value = 0
+                    } catch (error) {
+                        throw error
+                    }
+                }
+
+                nextTick(() => scrollToBottom())
+            } else {
+                messages.value = [
+                    { type: 'text', from: 'admin', text: welcomeMessage.value, time: new Date().toISOString() }
+                ]
+            }
+        } else {
+            const storedConvId = localStorage.getItem(`conversation_${userId.value}`)
+            if (storedConvId) {
+                conversationId.value = storedConvId
+                // Load messages using conversationId
+                await loadMessages()
+            } else {
+                // No conversation yet, show welcome message
+                messages.value = [
+                    { type: 'text', from: 'admin', text: welcomeMessage.value, time: new Date().toISOString() }
+                ]
+            }
+        }
+    } catch (error) {
+        // Fallback: try localStorage
+        const storedConvId = localStorage.getItem(`conversation_${userId.value}`)
+        if (storedConvId) {
+            conversationId.value = storedConvId
+            await loadMessages()
+        } else {
+            messages.value = [
+                { type: 'text', from: 'admin', text: welcomeMessage.value, time: new Date().toISOString() }
+            ]
+        }
+    } finally {
+        loadingMessages.value = false
+    }
 }
 
 // Load messages when opening chat
@@ -226,7 +318,8 @@ const loadMessages = async () => {
 
     loadingMessages.value = true
     try {
-        const msgs = await MessageService.getMessages(conversationId.value)
+        // Load all messages (increase limit to get all messages)
+        const msgs = await MessageService.getMessages(conversationId.value, 1000)
 
         // Format messages for display
         const formattedMessages = msgs.map(msg => ({
@@ -237,20 +330,23 @@ const loadMessages = async () => {
             id: msg.id || msg._id
         }))
 
-        messages.value = formattedMessages.length > 0
-            ? formattedMessages
-            : [{ type: 'text', from: 'admin', text: welcomeMessage.value, time: new Date().toISOString() }]
+        // Always show messages if they exist, even if empty show welcome message
+        if (formattedMessages.length > 0) {
+            messages.value = formattedMessages
+        } else {
+            messages.value = [{ type: 'text', from: 'admin', text: welcomeMessage.value, time: new Date().toISOString() }]
+        }
 
-        // Mark as read
+        // Mark as read and reset unread
         try {
             await MessageService.markAsRead(conversationId.value)
+            unreadCount.value = 0
         } catch (error) {
-            console.error('Error marking messages as read:', error)
+            throw error;
         }
 
         nextTick(() => scrollToBottom())
     } catch (error) {
-        console.error('Error loading messages:', error)
         messages.value = [
             { type: 'text', from: 'admin', text: welcomeMessage.value, time: new Date().toISOString() }
         ]
@@ -263,7 +359,6 @@ const loadMessages = async () => {
 const send = async () => {
     const text = draft.value.trim()
     if (!text || sendingMessage.value) return
-
     // Check authentication
     if (!isAuthenticated.value) {
         toast.info('Vui lòng đăng nhập để gửi tin nhắn', 'Thông báo')
@@ -290,6 +385,9 @@ const send = async () => {
             }
         }
 
+        // Reset unread count when user sends a message (user has replied)
+        unreadCount.value = 0
+
         // Add message to local state
         const message = result.message || result
         messages.value.push({
@@ -303,7 +401,6 @@ const send = async () => {
         draft.value = ''
         nextTick(() => scrollToBottom())
     } catch (error) {
-        console.error('Error sending message:', error)
         toast.error('Không thể gửi tin nhắn', 'Lỗi')
     } finally {
         sendingMessage.value = false
@@ -320,16 +417,24 @@ const connectSocket = () => {
     })
 
     socket.value.on('connect', () => {
-        console.log('✅ User chat connected to socket')
-        socket.value.emit('join_user_room', { user_id: userId.value })
+        // Normalize userId to string before joining room
+        const normalizedUserId = userId.value ? String(userId.value).trim() : null
+        if (normalizedUserId) {
+            socket.value.emit('join_user_room', { user_id: normalizedUserId })
+        } else {
+            throw new Error('Cannot join room: userId is null or empty')
+        }
     })
 
     // Listen for new messages from admin
     socket.value.on('new_message', (data) => {
-        console.log('📬 Received new message from admin:', data)
+        // Normalize IDs to strings for comparison
+        const normalizedReceiverId = data.receiverId ? String(data.receiverId).trim() : null
+        const normalizedSenderId = data.senderId ? String(data.senderId).trim() : null
+        const normalizedUserId = userId.value ? String(userId.value).trim() : null
 
-        // Check if message is for current user
-        if (data.receiverId === userId.value || data.senderId !== userId.value) {
+        // Check if message is for current user AND from admin (not from user themselves)
+        if (normalizedReceiverId === normalizedUserId && normalizedSenderId !== normalizedUserId) {
             // Check if message already exists (avoid duplicates)
             const existingMessage = messages.value.find(
                 msg => msg.id === data.id || (msg.text === data.content && msg.time === data.createdAt)
@@ -353,17 +458,33 @@ const connectSocket = () => {
                     }
                 }
 
+                // Increase unread count if widget is closed
+                if (!open.value) {
+                    unreadCount.value = (unreadCount.value || 0) + 1
+                } else {
+                    // If widget is open, mark as read immediately
+                    if (conversationId.value) {
+                        MessageService.markAsRead(conversationId.value).catch(err => {
+                            throw err;
+                        })
+                    }
+                }
+
                 nextTick(() => scrollToBottom())
+            } else {
+                throw new Error('Message already exists')
             }
+        } else {
+            throw new Error('Message is not for this user or is from user themselves')
         }
     })
 
     socket.value.on('disconnect', () => {
-        console.log('❌ User chat disconnected from socket')
+        toast.info('Kết nối đã bị ngắt', 'Thông báo')
     })
 
     socket.value.on('connect_error', (error) => {
-        console.error('Socket connection error:', error)
+        toast.error('Lỗi kết nối', 'Lỗi')
     })
 }
 
@@ -377,19 +498,30 @@ const disconnectSocket = () => {
 // Watch for chat open/close
 watch(open, async (newVal) => {
     if (newVal) {
-        // Load messages when opening
-        await loadMessages()
+        // Always reload messages when opening widget to get latest messages from admin
+        // This ensures messages are refreshed every time the widget is opened
+        if (isAuthenticated.value && userId.value) {
+            await initializeConversation()
+        } else {
+            // Show welcome message for non-authenticated users
+            messages.value = [
+                { type: 'text', from: 'admin', text: welcomeMessage.value, time: new Date().toISOString() }
+            ]
+        }
         // Connect socket if authenticated
         if (isAuthenticated.value && !socket.value) {
             connectSocket()
         }
+    } else {
+        disconnectSocket()
     }
 })
 
 // Watch for authentication changes
 watch(isAuthenticated, (newVal) => {
-    if (newVal && open.value) {
-        loadMessages()
+    if (newVal) {
+        // Initialize conversation when user logs in
+        initializeConversation()
         if (!socket.value) {
             connectSocket()
         }
@@ -399,6 +531,13 @@ watch(isAuthenticated, (newVal) => {
         messages.value = [
             { type: 'text', from: 'admin', text: welcomeMessage.value, time: new Date().toISOString() }
         ]
+    }
+})
+
+// Watch for userId changes (when user data loads)
+watch(userId, (newUserId) => {
+    if (newUserId && isAuthenticated.value && !conversationId.value) {
+        initializeConversation()
     }
 })
 
@@ -544,8 +683,9 @@ watch(messages, async () => {
 })
 
 onMounted(() => {
-    // Connect socket if authenticated
-    if (isAuthenticated.value) {
+    // Initialize conversation and load messages if user is authenticated
+    if (isAuthenticated.value && userId.value) {
+        initializeConversation()
         connectSocket()
     }
 

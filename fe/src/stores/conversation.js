@@ -32,16 +32,22 @@ export const useConversationStore = defineStore('conversation', {
             try {
                 const users = await ConversationService.getUsersChattingWithAdmin();
                 // Map data để phù hợp với format của component
-                this.userChatList = users.map(user => ({
-                    id: user.userId || user.id,
-                    conversationId: user.conversationId || user.id,
-                    name: user.name || 'Unknown',
-                    avatar: user.avatar || '',
-                    unread: user.unread || 0,
-                    lastMessage: user.lastMessage || '',
-                    lastMessageTime: user.lastMessageTime || null
-                }));
-                console.log('✅ Loaded conversation users:', this.userChatList.length);
+                this.userChatList = users.map(user => {
+                    const mapped = {
+                        id: user.userId || user.id,
+                        conversationId: user.conversationId || null, // Don't use user.id as fallback
+                        name: user.name || 'Unknown',
+                        avatar: user.avatar || '',
+                        unread: user.unread || 0,
+                        lastMessage: user.lastMessage || '',
+                        lastMessageTime: user.lastMessageTime || null,
+                        email: user.email || '',
+                        phone: user.phone || '',
+                        isNewConversation: user.isNewConversation || false
+                    };
+                    
+                    return mapped;
+                });
             } catch (error) {
                 console.error('Error fetching conversation users:', error);
                 this.error = error.message || 'Failed to load conversation users';

@@ -2,6 +2,7 @@ import aiosmtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config.config import get_settings
+from utils.logger import logger
 import secrets
 import string
 
@@ -118,6 +119,6 @@ async def send_verification_email(to_email: str, code: str) -> bool:
         
         return True
     except Exception as e:
-        print(f"Error sending email: {e}")
+        logger.error(f"Error sending email: {e}")
         return False
 
