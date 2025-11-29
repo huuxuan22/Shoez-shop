@@ -47,6 +47,7 @@ minio/
 uploads/
 media/
 static/
-
+api/docs/
+fe/docs/
 # Git
 .gitignore

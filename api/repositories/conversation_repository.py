@@ -95,3 +95,38 @@ class ConversationRepository(BaseRepository[Conversation]):
         except Exception:
             pass
 
+    async def get_conversation_by_user_id(self, user_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Lấy conversation của user theo user_id
+        Tìm conversation có participant là USER với userId = user_id
+        """
+        
+        if not user_id:
+            return None
+        
+        # Normalize user_id
+        user_id_str = str(user_id).strip()
+        
+        # Try exact match first
+        query = {
+            "participants": {
+                "$elemMatch": {"userId": user_id_str, "role": "USER"}
+            }
+        }
+        conversation = await self.find_one(query)
+        
+        # If not found, try to find all conversations with USER role and check manually
+        if not conversation:
+            # Get all conversations with USER participants
+            all_conversations = await self.get_all(query={"participants.role": "USER"})
+            for conv in all_conversations:
+                participants = conv.get("participants", [])
+                for p in participants:
+                    if p.get("role") == "USER":
+                        # Compare userId as strings (handle both ObjectId and string formats)
+                        p_user_id = str(p.get("userId", "")).strip()
+                        if p_user_id == user_id_str:
+                            return conv
+        
+        return conversation
+

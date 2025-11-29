@@ -78,11 +78,11 @@ async def startup_event():
         logger.minio_error(str(e))
     
     # Show API documentation URLs
-    print("\n" + "="*70)
-    print("📚 API Documentation:")
-    print(f"   Swagger UI: http://127.0.0.1:8000/docs")
-    print(f"   ReDoc:     http://127.0.0.1:8000/redoc")
-    print("="*70 + "\n")
+    logger.info("\n" + "="*70)
+    logger.info("📚 API Documentation:")
+    logger.info(f"   Swagger UI: http://127.0.0.1:8000/docs")
+    logger.info(f"   ReDoc:     http://127.0.0.1:8000/redoc")
+    logger.info("="*70 + "\n")
 
 @app.on_event("shutdown")
 async def shutdown_event():

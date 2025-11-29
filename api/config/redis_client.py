@@ -26,7 +26,6 @@ class RedisClient:
             self._is_available = True
             return True
         except Exception as e:
-            print(f"Warning: Redis connection failed: {e}")
             self._client = None
             self._is_available = False
             return False
@@ -65,7 +64,6 @@ class RedisClient:
             self._client.set(key, code, ex=expire_seconds)
             return True
         except Exception as e:
-            print(f"Error setting verification code in Redis: {e}")
             return False
     
     def get_email_verification_code(self, email: str) -> Optional[str]:
@@ -85,7 +83,6 @@ class RedisClient:
             key = f"email_verification:{email}"
             return self._client.get(key)
         except Exception as e:
-            print(f"Error getting verification code from Redis: {e}")
             return None
     
     def delete_email_verification_code(self, email: str) -> bool:
@@ -106,7 +103,6 @@ class RedisClient:
             self._client.delete(key)
             return True
         except Exception as e:
-            print(f"Error deleting verification code from Redis: {e}")
             return False
 
 # Singleton instance

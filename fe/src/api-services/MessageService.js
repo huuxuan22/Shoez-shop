@@ -19,9 +19,10 @@ const MessageService = {
     /**
      * Lấy danh sách messages theo conversation_id
      */
-    async getMessages(conversationId) {
+    async getMessages(conversationId, limit = 100) {
         try {
             const response = await BaseAxios.get(`/messages/${conversationId}`, {
+                params: { limit },
                 withCredentials: true
             });
             return response.data.messages || [];
@@ -36,6 +37,22 @@ const MessageService = {
     async userSendMessage(payload) {
         try {
             const response = await BaseAxios.post('/messages/user-send', payload, {
+                withCredentials: true
+            });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    /**
+     * Lấy toàn bộ messages của user hiện tại (theo userId)
+     * Tự động tìm conversation và trả về messages
+     */
+    async getUserMessages(limit = 1000) {
+        try {
+            const response = await BaseAxios.get('/messages/user/my-messages', {
+                params: { limit },
                 withCredentials: true
             });
             return response.data;

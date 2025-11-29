@@ -4,6 +4,7 @@ from typing import Optional, Any
 import redis
 import bcrypt
 from jose import jwt, JWTError
+from utils.logger import logger
 from config.config import get_settings
 from pydantic import BaseModel
 from config.enum import MessageKey
@@ -130,7 +131,7 @@ try:
 except Exception:
     r = None
     REDIS_AVAILABLE = False
-    print("Warning: Redis not available. Token blacklist will be disabled.")
+    logger.warning("Redis not available. Token blacklist will be disabled.")
 
 def add_to_blacklist(token: str, expire_seconds: int):
     """Add token to blacklist. Does nothing if Redis is not available."""
@@ -138,7 +139,7 @@ def add_to_blacklist(token: str, expire_seconds: int):
         try:
             r.set(token, "blacklisted", ex=expire_seconds)
         except Exception as e:
-            print(f"Warning: Could not add token to blacklist: {e}")
+            logger.error(f"Could not add token to blacklist: {e}")
 
 def is_blacklisted(token: str) -> bool:
     """Check if token is blacklisted. Returns False if Redis is not available."""

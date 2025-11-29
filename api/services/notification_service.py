@@ -41,7 +41,6 @@ class NotificationService:
         
         # 2. Emit via WebSocket
         await self.sio.emit('notification', notification_data, room=room, namespace='/notifications')
-        print(f'📬 Notification sent to user {user_id}: {notification_data}')
     
     async def send_order_confirmation(
         self, 
@@ -100,7 +99,6 @@ class NotificationService:
             'timestamp': datetime.utcnow().isoformat()
         }
         await self.sio.emit('notification', notification, room='admin', namespace='/notifications')
-        print(f'📬 New order notification sent to admin: Order #{order_id}')
     
     async def send_order_shipping(
         self,

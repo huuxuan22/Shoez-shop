@@ -2,6 +2,7 @@ from fastapi import APIRouter, Body, Depends
 from starlette import status
 from starlette.responses import JSONResponse, RedirectResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from utils.logger import logger
 from dependences.dependencies import get_user_repo
 from exceptions import UserNotFoundException
 from repositories.user_repository import UserRepository
@@ -101,8 +102,7 @@ async def logout(request: Request, response: Response):
             expire_seconds = 3600
             auth.add_to_blacklist(token, expire_seconds)
         except Exception as e:
-            print(f"Warning: Could not blacklist token: {e}")
-    
+            logger.warning(f"Could not blacklist token: {e}")
     # Create the actual response object first, then delete cookies on it
     resp = JSONResponse({
         "success": True,
@@ -192,5 +192,4 @@ async def get_session(
             user_principal=user_principal
         )
     except Exception as e:
-        print(f"Session error: {str(e)}")
         return JSONResponse(status_code=401, content={"message": "Invalid or expired session"})

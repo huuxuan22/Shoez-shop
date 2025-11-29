@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
 from starlette.responses import JSONResponse
 from typing import Optional, Dict, Any, List
+from utils.logger import logger
 from dependences.dependencies import get_order_repo
 from repositories.order_repository import OrderRepository
 from schemas.order_schemas import OrderResponseSchema, OrderCreateSchema, OrderUpdateStatusSchema
@@ -42,7 +43,7 @@ async def create_order(order_data: OrderCreateSchema, order_repo: OrderRepositor
             order_total=order_data.total
         )
     except Exception as e:
-        print(f"Error sending notification: {e}")
+        logger.error(f"Error sending notification: {e}")
     
     return JSONResponse(content=jsonable_encoder(created_order), status_code=200)
 
@@ -215,8 +216,7 @@ async def update_order_status(
                     order_id=order_id
                 )
     except Exception as e:
-        print(f"Error sending notification to user: {e}")
-    
+        logger.error(f"Error sending notification to user: {e}")
     return JSONResponse(content=jsonable_encoder(updated_order), status_code=200)
 
 @order_router.get("/{order_id}", response_model=OrderResponseSchema)

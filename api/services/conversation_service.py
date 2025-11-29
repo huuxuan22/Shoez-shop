@@ -44,7 +44,7 @@ class ConversationService:
                 continue
             
             # Lấy thông tin user
-            user = await self.user_repository.get_by_id_str(user_id)
+            user = await self.user_repository.get_by_id(user_id)
             if not user:
                 continue
             
@@ -57,15 +57,23 @@ class ConversationService:
             # Lấy last message
             last_message = conv.get("lastMessage", {})
             
+            # Chuyển đổi ObjectId thành string cho conversationId
+            conv_id = conv.get("id")
+            if conv_id:
+                # Chuyển đổi ObjectId thành string
+                conv_id_str = str(conv_id)
+            else:
+                continue  # Bỏ qua nếu không có _id
+            
             result.append({
-                "id": str(conv.get("_id", "")),
+                "id": conv_id_str,
                 "userId": user_id,
                 "name": user.get("full_name", "Unknown"),
                 "avatar": user.get("avatar", ""),
                 "unread": unread_count,
                 "lastMessage": last_message.get("content", "") if last_message else "",
                 "lastMessageTime": last_message.get("createdAt") if last_message else None,
-                "conversationId": str(conv.get("_id", ""))
+                "conversationId": conv_id_str
             })
         
         # Sắp xếp theo thời gian lastMessage mới nhất

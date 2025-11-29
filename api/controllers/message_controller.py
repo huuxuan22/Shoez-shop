@@ -156,6 +156,38 @@ async def user_send_message(
         raise HTTPException(status_code=500, detail=f"Error sending message: {str(e)}")
 
 
+@message_router.get("/user/my-messages", summary="Lấy toàn bộ messages của user hiện tại")
+async def get_user_messages(
+    limit: int = Query(1000, ge=1, le=5000, description="Số lượng messages tối đa"),
+    current_user: dict = Depends(get_current_user),
+    message_repo: MessageRepository = Depends(get_message_repo),
+    conversation_repo: ConversationRepository = Depends(get_conversation_repo),
+    user_repo: UserRepository = Depends(get_user_repo)
+):
+    """
+    API lấy toàn bộ messages của user hiện tại
+    - Tự động tìm conversation của user
+    - Trả về conversationId và danh sách messages
+    """
+    # Get user_id - handle both _id (ObjectId) and id (string) formats
+    user_id = None
+    if current_user.get("_id"):
+        user_id = str(current_user.get("_id"))
+    elif current_user.get("id"):
+        user_id = str(current_user.get("id"))
+    
+    if not user_id:
+        raise HTTPException(status_code=401, detail="User not authenticated")
+
+    service = MessageService(message_repo, conversation_repo, user_repo)
+    result = await service.get_user_messages(user_id, limit)
+
+    return JSONResponse(
+        status_code=200,
+        content=result
+    )
+
+
 @message_router.post("/{conversation_id}/mark-read", summary="Đánh dấu messages là đã đọc")
 async def mark_messages_as_read(
     conversation_id: str,
